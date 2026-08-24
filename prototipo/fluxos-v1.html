@@ -1,0 +1,1312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#5B3A5E">
+  <title>Fluxos V1 - Maria Controla</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ameixa: #5b3a5e;
+      --ameixa-escura: #3f2942;
+      --carvao: #2e2a2f;
+      --creme: #fff9f6;
+      --branco: #ffffff;
+      --linha: #e9dde2;
+      --texto-fraco: #746d73;
+      --pessego: #f3d7cf;
+      --pessego-claro: #fff0ea;
+      --lavanda-clara: #f3edf7;
+      --verde: #2d6f5f;
+      --verde-claro: #e9f6f1;
+      --azul: #356b8c;
+      --azul-claro: #e8f2f8;
+      --ouro: #8a6334;
+      --ouro-claro: #fff5df;
+      --erro: #9a3e31;
+      --erro-claro: #fff0ea;
+      --raio: 8px;
+      --sombra: 0 10px 28px rgba(63, 41, 66, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: #efe7eb;
+    }
+
+    body {
+      min-width: 280px;
+      margin: 0;
+      color: var(--carvao);
+      background: var(--creme);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.42;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button {
+      min-height: 44px;
+      padding: 0;
+      border: 0;
+      color: inherit;
+      background: none;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:focus-visible {
+      outline: 3px solid #b79ac8;
+      outline-offset: 3px;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      margin: 0 auto;
+      overflow: hidden;
+      background: var(--creme);
+    }
+
+    .topo {
+      padding: 18px 16px 16px;
+      color: var(--branco);
+      background: var(--ameixa);
+    }
+
+    .barra-marca {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .marca {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 760;
+    }
+
+    .marca-simbolo {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      color: var(--ameixa);
+      background: var(--pessego);
+      border-radius: 8px 8px 8px 3px;
+      font-family: Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .toggle-rede {
+      display: inline-flex;
+      min-height: 36px;
+      align-items: center;
+      gap: 7px;
+      padding: 0 10px;
+      color: var(--ameixa-escura);
+      background: var(--branco);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 780;
+    }
+
+    .ponto-rede {
+      width: 9px;
+      height: 9px;
+      background: var(--verde);
+      border-radius: 50%;
+    }
+
+    .toggle-rede.offline .ponto-rede {
+      background: var(--ouro);
+    }
+
+    .saudacao {
+      margin: 0 0 4px;
+      font-size: 24px;
+      line-height: 1.18;
+    }
+
+    .apoio {
+      max-width: 320px;
+      margin: 0;
+      color: #eaddea;
+      font-size: 14px;
+    }
+
+    .aviso-sync {
+      display: none;
+      margin: 0;
+      padding: 10px 16px;
+      color: var(--ouro);
+      background: var(--ouro-claro);
+      border-bottom: 1px solid #ead9aa;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .aviso-sync.visível {
+      display: block;
+    }
+
+    main {
+      min-height: calc(100vh - 168px);
+      padding: 14px 14px 104px;
+    }
+
+    .tela {
+      display: none;
+      animation: aparecer 130ms ease;
+    }
+
+    .tela.ativa {
+      display: block;
+    }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grade-resumo {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .resumo {
+      min-width: 0;
+      padding: 12px 6px;
+      text-align: center;
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: var(--raio);
+      box-shadow: 0 4px 14px rgba(63, 41, 66, 0.045);
+    }
+
+    .resumo strong {
+      display: block;
+      color: var(--ameixa);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .resumo span {
+      display: block;
+      margin-top: 4px;
+      color: var(--texto-fraco);
+      font-size: 11px;
+      font-weight: 720;
+      line-height: 1.18;
+    }
+
+    .faixa {
+      margin-bottom: 14px;
+      padding: 14px;
+      background: var(--pessego-claro);
+      border: 1px solid #f1ccc1;
+      border-radius: var(--raio);
+    }
+
+    .faixa.verde {
+      background: var(--verde-claro);
+      border-color: #c9e6dc;
+    }
+
+    .faixa.azul {
+      background: var(--azul-claro);
+      border-color: #c7ddeb;
+    }
+
+    .sinal {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 7px;
+      color: var(--erro);
+      font-size: 11px;
+      font-weight: 840;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .sinal::before {
+      width: 8px;
+      height: 8px;
+      background: currentColor;
+      border-radius: 50%;
+      content: "";
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: anywhere;
+    }
+
+    .faixa h2,
+    .cabecalho-tela h2 {
+      margin: 0 0 5px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .faixa p,
+    .cabecalho-tela p {
+      margin: 0;
+      color: var(--texto-fraco);
+      font-size: 14px;
+    }
+
+    .botao-principal,
+    .botao-secundario,
+    .botao-fantasma {
+      display: inline-flex;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 13px;
+      border-radius: var(--raio);
+      font-size: 14px;
+      font-weight: 790;
+      text-align: center;
+    }
+
+    .botao-principal {
+      margin-top: 12px;
+      color: var(--branco);
+      background: var(--ameixa);
+      box-shadow: 0 7px 16px rgba(91, 58, 94, 0.2);
+    }
+
+    .botao-secundario {
+      color: var(--ameixa);
+      background: var(--branco);
+      border: 1px solid rgba(91, 58, 94, 0.18);
+    }
+
+    .botao-fantasma {
+      color: var(--ameixa);
+      background: transparent;
+      border: 1px solid var(--linha);
+    }
+
+    .linha-botoes {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .secao {
+      margin-top: 18px;
+    }
+
+    .cabecalho-secao {
+      display: flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .titulo-secao {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .link-discreto {
+      min-height: 40px;
+      color: var(--ameixa);
+      font-size: 13px;
+      font-weight: 780;
+    }
+
+    .lista {
+      display: grid;
+      gap: 8px;
+    }
+
+    .cartao {
+      padding: 13px;
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: var(--raio);
+      box-shadow: 0 6px 18px rgba(63, 41, 66, 0.045);
+    }
+
+    .cartao.linha {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .cartao h3,
+    .cartao strong {
+      display: block;
+      margin: 0 0 3px;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .detalhe {
+      display: block;
+      color: var(--texto-fraco);
+      font-size: 13px;
+    }
+
+    .etiqueta {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      padding: 0 8px;
+      color: var(--erro);
+      background: var(--erro-claro);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 820;
+      white-space: nowrap;
+    }
+
+    .etiqueta.verde {
+      color: var(--verde);
+      background: var(--verde-claro);
+    }
+
+    .etiqueta.azul {
+      color: var(--azul);
+      background: var(--azul-claro);
+    }
+
+    .etiqueta.ouro {
+      color: var(--ouro);
+      background: var(--ouro-claro);
+    }
+
+    .cabecalho-tela {
+      margin-bottom: 14px;
+    }
+
+    .voltar {
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      gap: 5px;
+      margin: -2px 0 8px;
+      color: var(--ameixa);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .abas {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      margin-bottom: 12px;
+      padding: 4px;
+      background: var(--lavanda-clara);
+      border-radius: var(--raio);
+    }
+
+    .aba {
+      min-height: 38px;
+      border-radius: 6px;
+      color: var(--ameixa-escura);
+      font-size: 12px;
+      font-weight: 780;
+    }
+
+    .aba.ativa {
+      background: var(--branco);
+      box-shadow: 0 3px 10px rgba(63, 41, 66, 0.08);
+    }
+
+    .quadro-detalhes {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .linha-detalhe {
+      display: flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--linha);
+    }
+
+    .linha-detalhe:last-child {
+      border-bottom: 0;
+    }
+
+    .linha-detalhe span:first-child {
+      color: var(--texto-fraco);
+      font-size: 13px;
+    }
+
+    .linha-detalhe strong {
+      margin: 0;
+      text-align: right;
+    }
+
+    .efeito {
+      margin-top: 12px;
+      padding: 11px;
+      color: var(--verde);
+      background: var(--verde-claro);
+      border: 1px solid #c9e6dc;
+      border-radius: var(--raio);
+      font-size: 13px;
+      font-weight: 720;
+    }
+
+    .efeito.alerta {
+      color: var(--ouro);
+      background: var(--ouro-claro);
+      border-color: #ead9aa;
+    }
+
+    .menu-radial-fundo {
+      position: fixed;
+      z-index: 18;
+      top: 0;
+      bottom: 70px;
+      left: 50%;
+      visibility: hidden;
+      width: 100%;
+      max-width: 430px;
+      background: rgba(46, 42, 47, 0.16);
+      opacity: 0;
+      transform: translateX(-50%);
+      transition: opacity 150ms ease, visibility 150ms ease;
+    }
+
+    .menu-radial-fundo.visível {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .navegação {
+      position: fixed;
+      z-index: 20;
+      right: 0;
+      bottom: 0;
+      left: 50%;
+      display: grid;
+      width: 100%;
+      max-width: 430px;
+      min-height: 72px;
+      padding: 7px 6px max(7px, env(safe-area-inset-bottom));
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: end;
+      background: rgba(255, 255, 255, 0.98);
+      border-top: 1px solid var(--linha);
+      box-shadow: 0 -8px 24px rgba(63, 41, 66, 0.12);
+      transform: translateX(-50%);
+    }
+
+    .nav-item {
+      display: flex;
+      min-width: 0;
+      min-height: 56px;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 3px;
+      color: #797078;
+      border-radius: var(--raio);
+      font-size: 10px;
+      font-weight: 740;
+      line-height: 1.1;
+    }
+
+    .nav-item.ativo {
+      color: var(--ameixa);
+    }
+
+    .nav-icone {
+      display: grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+    }
+
+    .nav-icone svg,
+    .ação-icone svg {
+      width: 21px;
+      height: 21px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .dial {
+      position: relative;
+      height: 72px;
+    }
+
+    .registrar {
+      width: 100%;
+      min-height: 72px;
+      margin-top: -24px;
+      color: var(--ameixa);
+    }
+
+    .registrar-circulo {
+      display: grid;
+      width: 54px;
+      height: 54px;
+      margin-bottom: 1px;
+      place-items: center;
+      color: var(--branco);
+      background: var(--ameixa);
+      border: 5px solid var(--branco);
+      border-radius: 50%;
+      box-shadow: 0 7px 18px rgba(91, 58, 94, 0.3);
+      font-size: 29px;
+      font-weight: 350;
+      line-height: 1;
+      transition: transform 160ms ease;
+    }
+
+    .dial.aberto .registrar-circulo {
+      transform: rotate(45deg);
+    }
+
+    .acoes {
+      position: absolute;
+      z-index: 22;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      visibility: hidden;
+    }
+
+    .dial.aberto .acoes {
+      visibility: visible;
+    }
+
+    .acao {
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      display: flex;
+      width: 78px;
+      min-height: 64px;
+      align-items: center;
+      justify-content: flex-start;
+      flex-direction: column;
+      gap: 4px;
+      color: var(--ameixa-escura);
+      font-size: 10px;
+      font-weight: 820;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 14px) scale(0.76);
+      transition: opacity 150ms ease, transform 180ms ease;
+    }
+
+    .dial.aberto .acao {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(calc(-50% + var(--x)), var(--y)) scale(1);
+    }
+
+    .acao-icone {
+      display: grid;
+      width: 45px;
+      height: 45px;
+      place-items: center;
+      color: var(--ameixa);
+      background: var(--branco);
+      border: 2px solid #e3d4e8;
+      border-radius: 50%;
+      box-shadow: 0 7px 18px rgba(63, 41, 66, 0.18);
+    }
+
+    .acao span:last-child {
+      padding: 3px 5px;
+      background: rgba(255, 249, 246, 0.96);
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(63, 41, 66, 0.08);
+    }
+
+    .resultado-status {
+      display: grid;
+      width: 76px;
+      height: 76px;
+      place-items: center;
+      margin: 12px auto 16px;
+      color: var(--branco);
+      background: var(--verde);
+      border-radius: 50%;
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    .resultado-status.ouro {
+      background: var(--ouro);
+    }
+
+    .resultado-status.erro {
+      background: var(--erro);
+    }
+
+    .texto-centro {
+      text-align: center;
+    }
+
+    .texto-centro h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .texto-centro p {
+      margin: 0;
+      color: var(--texto-fraco);
+      font-size: 14px;
+    }
+
+    @media (min-width: 600px) {
+      body {
+        padding: 24px 0;
+      }
+
+      .app {
+        min-height: calc(100vh - 48px);
+        border-radius: 24px;
+        box-shadow: 0 24px 70px rgba(63, 41, 66, 0.16);
+      }
+    }
+
+    @media (max-width: 340px) {
+      main {
+        padding-right: 10px;
+        padding-left: 10px;
+      }
+
+      .topo {
+        padding-right: 12px;
+        padding-left: 12px;
+      }
+
+      .grade-resumo {
+        gap: 6px;
+      }
+
+      .resumo span,
+      .nav-item,
+      .acao {
+        font-size: 9px;
+      }
+
+      .cartao.linha {
+        grid-template-columns: 1fr;
+      }
+
+      .cartao.linha .etiqueta {
+        width: fit-content;
+      }
+
+      .ação {
+        width: 72px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topo">
+      <div class="barra-marca">
+        <div class="marca">
+          <span class="marca-simbolo" aria-hidden="true">C</span>
+          <span>Controla</span>
+        </div>
+        <button class="toggle-rede" type="button" id="botao-rede" aria-pressed="false">
+          <span class="ponto-rede" aria-hidden="true"></span>
+          <span id="texto-rede">Online</span>
+        </button>
+      </div>
+      <h1 class="saudacao">Olá, Anona Presentes</h1>
+      <p class="apoio" id="apoio-topo">Teste os caminhos principais com dados de exemplo.</p>
+    </header>
+
+    <p class="aviso-sync" id="aviso-sync">Sem internet: as próximas ações ficam salvas neste aparelho.</p>
+
+    <main>
+      <section class="tela ativa" id="tela-home" aria-labelledby="titulo-home">
+        <div class="grade-resumo" aria-label="Resumo do dia">
+          <div class="resumo">
+            <strong>3</strong>
+            <span>produtos<br>acabando</span>
+          </div>
+          <div class="resumo">
+            <strong>4</strong>
+            <span>envios<br>abertos</span>
+          </div>
+          <div class="resumo">
+            <strong>2</strong>
+            <span>acertos<br>pendentes</span>
+          </div>
+        </div>
+
+        <div class="faixa">
+          <span class="sinal">Atenção</span>
+          <h2 id="titulo-home">3 produtos precisam de reposição</h2>
+          <p>Confira o que está acabando antes da próxima compra.</p>
+          <button class="botao-principal" type="button" data-route="estoque">Ver reposição</button>
+        </div>
+
+        <div class="faixa verde" id="ultimo-resultado" hidden>
+          <span class="sinal">Última simulação</span>
+          <h2 id="ultimo-titulo">Ação registrada</h2>
+          <p id="ultimo-texto">O efeito da ação aparece aqui.</p>
+        </div>
+
+        <section class="secao" aria-labelledby="titulo-produtos">
+          <div class="cabecalho-secao">
+            <h2 class="titulo-secao" id="titulo-produtos">Produtos acabando</h2>
+            <button class="link-discreto" type="button" data-route="estoque">Ver todos</button>
+          </div>
+          <div class="lista">
+            <article class="cartao linha">
+              <div>
+                <strong>Caneca Flores</strong>
+                <span class="detalhe">2 no estoque próprio · mínimo 5</span>
+              </div>
+              <span class="etiqueta">Abaixo do mínimo</span>
+            </article>
+            <article class="cartao linha">
+              <div>
+                <strong>Kit Presente Lavanda</strong>
+                <span class="detalhe">0 no estoque próprio · mínimo 3</span>
+              </div>
+              <span class="etiqueta">Sem estoque</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="secao" aria-labelledby="titulo-pendências">
+          <div class="cabecalho-secao">
+            <h2 class="titulo-secao" id="titulo-pendências">Pendências com parceiros</h2>
+          </div>
+          <div class="lista">
+            <article class="cartao linha">
+              <div>
+                <strong>Salão Bella</strong>
+                <span class="detalhe">1 venda para acertar</span>
+              </div>
+              <button class="link-discreto" type="button" data-route="parceiros">Ver</button>
+            </article>
+            <article class="cartao linha">
+              <div>
+                <strong>Loja da Ana</strong>
+                <span class="detalhe">Sem atualização há 12 dias</span>
+              </div>
+              <button class="link-discreto" type="button" data-route="parceiros">Ver</button>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="tela" id="tela-estoque" aria-labelledby="titulo-estoque">
+        <div class="cabecalho-tela">
+          <h2 id="titulo-estoque">Estoque</h2>
+          <p>Compare o que está com você e o que esta em cada Ponto Parceiro.</p>
+        </div>
+        <div class="lista">
+          <article class="cartao">
+            <h3>Caneca Flores</h3>
+            <div class="quadro-detalhes">
+              <div class="linha-detalhe"><span>Estoque próprio</span><strong>2</strong></div>
+              <div class="linha-detalhe"><span>Salão Bella</span><strong>4</strong></div>
+              <div class="linha-detalhe"><span>Loja da Ana</span><strong>1</strong></div>
+            </div>
+            <div class="efeito alerta">Precisa comprar: estoque próprio abaixo do mínimo 5.</div>
+          </article>
+          <article class="cartao">
+            <h3>Kit Presente Lavanda</h3>
+            <div class="quadro-detalhes">
+              <div class="linha-detalhe"><span>Estoque próprio</span><strong>0</strong></div>
+              <div class="linha-detalhe"><span>Salão Bella</span><strong>2</strong></div>
+              <div class="linha-detalhe"><span>Loja da Ana</span><strong>0</strong></div>
+            </div>
+            <div class="efeito alerta">Sem estoque próprio. Pode registrar compra ou devolução.</div>
+          </article>
+          <article class="cartao">
+            <h3>Vela Baunilha</h3>
+            <div class="quadro-detalhes">
+              <div class="linha-detalhe"><span>Estoque próprio</span><strong>4</strong></div>
+              <div class="linha-detalhe"><span>Salão Bella</span><strong>3</strong></div>
+              <div class="linha-detalhe"><span>Loja da Ana</span><strong>2</strong></div>
+            </div>
+            <div class="efeito">Saldo distribuido visível sem misturar os locais.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="tela" id="tela-parceiros" aria-labelledby="titulo-parceiros">
+        <div class="cabecalho-tela">
+          <h2 id="titulo-parceiros">Pontos Parceiros</h2>
+          <p>Veja mercadorias enviadas, vendas informadas e devoluções.</p>
+        </div>
+        <div class="lista">
+          <article class="cartao">
+            <h3>Salão Bella</h3>
+            <span class="detalhe">Responsável: Carla · 1 venda para acertar</span>
+            <div class="quadro-detalhes">
+              <div class="linha-detalhe"><span>Caneca Flores no parceiro</span><strong>4</strong></div>
+              <div class="linha-detalhe"><span>Kit Lavanda no parceiro</span><strong>2</strong></div>
+              <div class="linha-detalhe"><span>Valor a conferir</span><strong>R$ 119,70</strong></div>
+            </div>
+            <div class="linha-botoes">
+              <button class="botao-secundario" type="button" data-flow="venda" data-variant="parceiro">Registrar venda</button>
+              <button class="botao-fantasma" type="button" data-flow="devolucao">Registrar devolução</button>
+            </div>
+          </article>
+          <article class="cartao">
+            <h3>Loja da Ana</h3>
+            <span class="detalhe">Sem atualização há 12 dias</span>
+            <div class="quadro-detalhes">
+              <div class="linha-detalhe"><span>Caneca Flores no parceiro</span><strong>1</strong></div>
+              <div class="linha-detalhe"><span>Vela Baunilha no parceiro</span><strong>2</strong></div>
+              <div class="linha-detalhe"><span>Situação</span><strong>Conferir</strong></div>
+            </div>
+            <button class="botao-principal" type="button" data-flow="envio">Registrar novo envio</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="tela" id="tela-acertos" aria-labelledby="titulo-acertos">
+        <div class="cabecalho-tela">
+          <h2 id="titulo-acertos">Acertos</h2>
+          <p>Confira vendas pendentes e registre pagamentos sem apagar o histórico.</p>
+        </div>
+        <div class="lista">
+          <article class="cartao">
+            <h3>Salão Bella</h3>
+            <span class="detalhe">Venda pendente: 3 Canecas Flores</span>
+            <div class="quadro-detalhes">
+              <div class="linha-detalhe"><span>Valor calculado</span><strong>R$ 119,70</strong></div>
+              <div class="linha-detalhe"><span>Valor acordado</span><strong>R$ 110,00</strong></div>
+              <div class="linha-detalhe"><span>Pagamento de agora</span><strong>R$ 60,00</strong></div>
+            </div>
+            <button class="botao-principal" type="button" data-flow="acerto">Registrar acerto parcial</button>
+          </article>
+          <article class="cartao">
+            <h3>Loja da Ana</h3>
+            <span class="detalhe">2 Velas Baunilha aguardando acerto</span>
+            <div class="quadro-detalhes">
+              <div class="linha-detalhe"><span>Valor calculado</span><strong>R$ 59,80</strong></div>
+              <div class="linha-detalhe"><span>Valor acordado</span><strong>R$ 59,80</strong></div>
+              <div class="linha-detalhe"><span>Pagamento de agora</span><strong>R$ 59,80</strong></div>
+            </div>
+            <button class="botao-secundario" type="button" data-flow="acerto" data-variant="total">Registrar pagamento total</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="tela" id="tela-fluxo" aria-live="polite">
+        <button class="voltar" type="button" data-route="home">‹ Voltar</button>
+        <div class="cabecalho-tela">
+          <h2 id="fluxo-titulo">Registrar</h2>
+          <p id="fluxo-subtitulo">Confira os dados antes de salvar a simulação.</p>
+        </div>
+        <div id="fluxo-opcoes"></div>
+        <article class="cartao" id="fluxo-cartao"></article>
+      </section>
+
+      <section class="tela" id="tela-resultado" aria-live="polite">
+        <div class="resultado-status" id="resultado-icone">✓</div>
+        <div class="texto-centro">
+          <h2 id="resultado-titulo">Sincronizado</h2>
+          <p id="resultado-texto">A simulação foi concluida.</p>
+        </div>
+        <div class="faixa verde" id="resultado-efeito">
+          <span class="sinal">Efeito</span>
+          <h2 id="resultado-acao">Movimento registrado</h2>
+          <p id="resultado-detalhe">O efeito aparece aqui.</p>
+        </div>
+        <div class="linha-botoes">
+          <button class="botao-principal" type="button" data-route="home">Voltar para Inicio</button>
+          <button class="botao-fantasma" type="button" id="botao-repetir">Repetir este fluxo</button>
+        </div>
+      </section>
+    </main>
+
+    <button class="menu-radial-fundo" type="button" id="fundo-menu" tabindex="-1" aria-hidden="true" aria-label="Fechar ações"></button>
+    <nav class="navegação" aria-label="Navegação principal">
+      <button class="nav-item ativo" type="button" data-route="home">
+        <span class="nav-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 10.5 9-7.5 9 7.5"></path><path d="M5.5 9v11h13V9"></path><path d="M9.5 20v-6h5v6"></path></svg></span>
+        <span>Inicio</span>
+      </button>
+      <button class="nav-item" type="button" data-route="estoque">
+        <span class="nav-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 7 8-4 8 4-8 4-8-4Z"></path><path d="M4 7v10l8 4 8-4V7"></path><path d="M12 11v10"></path></svg></span>
+        <span>Estoque</span>
+      </button>
+      <div class="dial" id="dial">
+        <button class="nav-item registrar" type="button" id="botao-registrar" aria-expanded="false" aria-haspopup="menu" aria-controls="menu-ações">
+          <span class="registrar-circulo" aria-hidden="true">+</span>
+          <span>Registrar</span>
+        </button>
+        <div class="acoes" id="menu-acoes" role="menu" aria-label="Ações de registro" aria-hidden="true">
+          <button class="acao" style="--x: -116px; --y: -28px;" type="button" role="menuitem" data-flow="compra">
+            <span class="acao-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 8h12l1 13H5L6 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg></span>
+            <span>Compra</span>
+          </button>
+          <button class="acao" style="--x: -62px; --y: -86px;" type="button" role="menuitem" data-flow="envio">
+            <span class="acao-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7h11v10H3V7Z"></path><path d="M14 10h4l3 3v4h-7v-7Z"></path><circle cx="7" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg></span>
+            <span>Envio</span>
+          </button>
+          <button class="acao" style="--x: 62px; --y: -86px;" type="button" role="menuitem" data-flow="venda">
+            <span class="acao-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4V5Z"></path><path d="m8 12 2.5 2.5L16 9"></path></svg></span>
+            <span>Venda</span>
+          </button>
+          <button class="acao" style="--x: 116px; --y: -28px;" type="button" role="menuitem" data-flow="devolucao">
+            <span class="acao-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 7 3 12l5 5"></path><path d="M4 12h9a7 7 0 0 1 7 7"></path></svg></span>
+            <span>Devolução</span>
+          </button>
+        </div>
+      </div>
+      <button class="nav-item" type="button" data-route="parceiros">
+        <span class="nav-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 19c.4-3.2 2.2-5 5.5-5s5.1 1.8 5.5 5"></path><circle cx="17.5" cy="9" r="2.5"></circle><path d="M15.5 14.5c3.2-.6 5.1.9 5.5 3.8"></path></svg></span>
+        <span>Parceiros</span>
+      </button>
+      <button class="nav-item" type="button" data-route="acertos">
+        <span class="nav-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"></path><path d="M9 8h6M9 12h6"></path></svg></span>
+        <span>Acertos</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    const estado = {
+      online: true,
+      fluxoAtual: 'compra',
+      varianteAtual: 'padrão'
+    };
+
+    const fluxos = {
+      compra: {
+        titulo: 'Registrar compra',
+        subtitulo: 'Entrada de mercadoria no estoque próprio.',
+        opcoes: [],
+        variantes: {
+          padrão: {
+            etiqueta: 'Compra',
+            dados: [
+              ['Produto', 'Caneca Flores'],
+              ['Fornecedor', 'Atacado Jardim'],
+              ['Quantidade', '12 unidades'],
+              ['Custo unitário', 'R$ 18,00'],
+              ['Destino', 'Estoque próprio']
+            ],
+            efeito: 'Aumenta o estoque próprio de Caneca Flores de 2 para 14 unidades.',
+            apoio: 'A compra preserva fornecedor, custo e data. Depois ela gera movimento de entrada no estoque próprio.',
+            resultado: 'Compra registrada'
+          }
+        }
+      },
+      envio: {
+        titulo: 'Registrar envio',
+        subtitulo: 'Mercadoria sai do estoque próprio e vai para um Ponto Parceiro.',
+        opcoes: [],
+        variantes: {
+          padrão: {
+            etiqueta: 'Envio',
+            dados: [
+              ['Ponto Parceiro', 'Loja da Ana'],
+              ['Produto', 'Vela Baunilha'],
+              ['Quantidade', '2 unidades'],
+              ['Origem', 'Estoque próprio'],
+              ['Destino', 'Loja da Ana']
+            ],
+            efeito: 'Reduz o estoque próprio de Vela Baunilha de 4 para 2 e aumenta a Loja da Ana de 2 para 4.',
+            apoio: 'Envio não é venda. A mercadoria continua acompanhada até vender, voltar ou ser ajustada.',
+            resultado: 'Envio registrado'
+          }
+        }
+      },
+      venda: {
+        titulo: 'Registrar venda',
+        subtitulo: 'Venda direta sai do estoque próprio; venda do parceiro cria acerto.',
+        opcoes: [
+          ['parceiro', 'Parceiro'],
+          ['direta', 'Direta'],
+          ['divergência', 'Divergência']
+        ],
+        variantes: {
+          parceiro: {
+            etiqueta: 'Venda em parceiro',
+            dados: [
+              ['Canal', 'Ponto Parceiro'],
+              ['Parceiro', 'Salão Bella'],
+              ['Produto', 'Caneca Flores'],
+              ['Quantidade', '3 unidades'],
+              ['Preço usado', 'R$ 39,90']
+            ],
+            efeito: 'Reduz o estoque do Salão Bella de 4 para 1 e cria R$ 119,70 para acerto.',
+            apoio: 'Venda informada não significa pagamento recebido. O acerto vem depois.',
+            resultado: 'Venda registrada'
+          },
+          direta: {
+            etiqueta: 'Venda direta',
+            dados: [
+              ['Canal', 'Venda direta'],
+              ['Origem', 'Estoque próprio'],
+              ['Produto', 'Vela Baunilha'],
+              ['Quantidade', '1 unidade'],
+              ['Preço usado', 'R$ 29,90']
+            ],
+            efeito: 'Reduz o estoque próprio de Vela Baunilha de 4 para 3 e não cria acerto com parceiro.',
+            apoio: 'Venda direta e venda de parceiro ficam separadas para não misturar pendências.',
+            resultado: 'Venda direta registrada'
+          },
+          divergência: {
+            etiqueta: 'Última unidade',
+            dados: [
+              ['Canal', 'Ponto Parceiro'],
+              ['Parceiro', 'Loja da Ana'],
+              ['Produto', 'Caneca Flores'],
+              ['Quantidade', '1 unidade'],
+              ['Situação', 'Outro aparelho também vendeu offline']
+            ],
+            efeito: 'Preserva as duas vendas, deixa o saldo para conferencia e abre uma divergência.',
+            apoio: 'O sistema não apaga uma venda que pode ter acontecido. A dona revisa e corrige com ajuste ou estorno.',
+            resultado: 'Venda precisa revisar',
+            conflito: true
+          }
+        }
+      },
+      devolucao: {
+        titulo: 'Registrar devolução',
+        subtitulo: 'Mercadoria volta do Ponto Parceiro para o estoque próprio.',
+        opcoes: [],
+        variantes: {
+          padrão: {
+            etiqueta: 'Devolução',
+            dados: [
+              ['Ponto Parceiro', 'Salão Bella'],
+              ['Produto', 'Kit Presente Lavanda'],
+              ['Quantidade', '1 unidade'],
+              ['Origem', 'Salão Bella'],
+              ['Destino', 'Estoque próprio']
+            ],
+            efeito: 'Reduz o Salão Bella de 2 para 1 e aumenta o estoque próprio de 0 para 1.',
+            apoio: 'Devolução não é venda cancelada. Ela é uma movimentação de volta.',
+            resultado: 'Devolução registrada'
+          }
+        }
+      },
+      acerto: {
+        titulo: 'Registrar acerto',
+        subtitulo: 'Pagamento fica ligado às vendas que originaram a pendência.',
+        opcoes: [
+          ['parcial', 'Parcial'],
+          ['total', 'Total']
+        ],
+        variantes: {
+          parcial: {
+            etiqueta: 'Acerto parcial',
+            dados: [
+              ['Parceiro', 'Salão Bella'],
+              ['Venda considerada', '3 Canecas Flores'],
+              ['Valor calculado', 'R$ 119,70'],
+              ['Valor acordado', 'R$ 110,00'],
+              ['Pagamento agora', 'R$ 60,00']
+            ],
+            efeito: 'Mantem R$ 50,00 em aberto e preserva a diferenca entre calculado e acordado.',
+            apoio: 'Pagamento parcial não apaga a venda. O histórico continua vinculado ao acerto.',
+            resultado: 'Acerto parcial registrado'
+          },
+          total: {
+            etiqueta: 'Pagamento total',
+            dados: [
+              ['Parceiro', 'Loja da Ana'],
+              ['Venda considerada', '2 Velas Baunilha'],
+              ['Valor calculado', 'R$ 59,80'],
+              ['Valor acordado', 'R$ 59,80'],
+              ['Pagamento agora', 'R$ 59,80']
+            ],
+            efeito: 'Fecha o acerto da Loja da Ana e mantem as vendas vinculadas ao pagamento.',
+            apoio: 'Mesmo quitado, o acerto continua no histórico para consulta.',
+            resultado: 'Acerto pago'
+          }
+        }
+      }
+    };
+
+    const telas = document.querySelectorAll('.tela');
+    const navItens = document.querySelectorAll('.nav-item[data-route]');
+    const dial = document.querySelector('#dial');
+    const botaoRegistrar = document.querySelector('#botao-registrar');
+    const menuAcoes = document.querySelector('#menu-acoes');
+    const fundoMenu = document.querySelector('#fundo-menu');
+    const botaoRede = document.querySelector('#botao-rede');
+    const textoRede = document.querySelector('#texto-rede');
+    const avisoSync = document.querySelector('#aviso-sync');
+    const ultimoResultado = document.querySelector('#ultimo-resultado');
+    const ultimoTitulo = document.querySelector('#ultimo-titulo');
+    const ultimoTexto = document.querySelector('#ultimo-texto');
+
+    function fecharMenu() {
+      dial.classList.remove('aberto');
+      botaoRegistrar.setAttribute('aria-expanded', 'false');
+      menuAcoes.setAttribute('aria-hidden', 'true');
+      fundoMenu.classList.remove('visível');
+      fundoMenu.setAttribute('aria-hidden', 'true');
+    }
+
+    function alternarMenu() {
+      const aberto = !dial.classList.contains('aberto');
+      dial.classList.toggle('aberto', aberto);
+      botaoRegistrar.setAttribute('aria-expanded', String(aberto));
+      menuAcoes.setAttribute('aria-hidden', String(!aberto));
+      fundoMenu.classList.toggle('visível', aberto);
+      fundoMenu.setAttribute('aria-hidden', String(!aberto));
+    }
+
+    function mostrarTela(nome) {
+      telas.forEach((tela) => tela.classList.toggle('ativa', tela.id === `tela-${nome}`));
+      navItens.forEach((item) => item.classList.toggle('ativo', item.dataset.route === nome));
+      fecharMenu();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderizarFluxo(tipo, variante = 'padrão') {
+      estado.fluxoAtual = tipo;
+      estado.varianteAtual = variante;
+
+      const fluxo = fluxos[tipo];
+      const dados = fluxo.variantes[variante] || fluxo.variantes.padrão || Object.values(fluxo.variantes)[0];
+      document.querySelector('#fluxo-titulo').textContent = fluxo.titulo;
+      document.querySelector('#fluxo-subtitulo').textContent = fluxo.subtitulo;
+
+      const opcoes = document.querySelector('#fluxo-opcoes');
+      opcoes.innerHTML = '';
+      if (fluxo.opcoes.length) {
+        const abas = document.createElement('div');
+        abas.className = 'abas';
+        fluxo.opcoes.forEach(([id, rotulo]) => {
+          const botao = document.createElement('button');
+          botao.type = 'button';
+          botao.className = `aba${id === variante ? ' ativa' : ''}`;
+          botao.textContent = rotulo;
+          botao.addEventListener('click', () => renderizarFluxo(tipo, id));
+          abas.appendChild(botao);
+        });
+        opcoes.appendChild(abas);
+      }
+
+      const linhas = dados.dados.map(([rotulo, valor]) => `
+        <div class="linha-detalhe">
+          <span>${rotulo}</span>
+          <strong>${valor}</strong>
+        </div>
+      `).join('');
+
+      document.querySelector('#fluxo-cartao').innerHTML = `
+        <span class="etiqueta azul">${dados.etiqueta}</span>
+        <div class="quadro-detalhes">${linhas}</div>
+        <div class="efeito${dados.conflito ? ' alerta' : ''}">${dados.efeito}</div>
+        <p class="detalhe" style="margin-top: 10px;">${dados.apoio}</p>
+        <button class="botao-principal" type="button" id="confirmar-fluxo">Salvar simulação</button>
+      `;
+
+      document.querySelector('#confirmar-fluxo').addEventListener('click', confirmarFluxo);
+      mostrarTela('fluxo');
+    }
+
+    function confirmarFluxo() {
+      const dados = fluxos[estado.fluxoAtual].variantes[estado.varianteAtual];
+      let status = 'Sincronizado';
+      let texto = 'A ação foi aceita pelo banco central nesta simulação.';
+      let classe = '';
+      let icone = '✓';
+
+      if (dados.conflito) {
+        status = 'Precisa revisar';
+        texto = 'O fato foi preservado, mas existe divergência para conferencia.';
+        classe = 'erro';
+        icone = '!';
+      } else if (!estado.online) {
+        status = 'Salvo neste aparelho';
+        texto = 'Quando a internet voltar, a fila tenta sincronizar sem duplicar.';
+        classe = 'ouro';
+        icone = '…';
+      }
+
+      const resultadoIcone = document.querySelector('#resultado-icone');
+      resultadoIcone.className = `resultado-status ${classe}`.trim();
+      resultadoIcone.textContent = icone;
+      document.querySelector('#resultado-titulo').textContent = status;
+      document.querySelector('#resultado-texto').textContent = texto;
+      document.querySelector('#resultado-acao').textContent = dados.resultado;
+      document.querySelector('#resultado-detalhe').textContent = dados.efeito;
+
+      ultimoResultado.hidden = false;
+      ultimoTitulo.textContent = dados.resultado;
+      ultimoTexto.textContent = `${status}: ${dados.efeito}`;
+
+      mostrarTela('resultado');
+    }
+
+    function alternarRede() {
+      estado.online = !estado.online;
+      botaoRede.classList.toggle('offline', !estado.online);
+      botaoRede.setAttribute('aria-pressed', String(!estado.online));
+      textoRede.textContent = estado.online ? 'Online' : 'Sem internet';
+      avisoSync.classList.toggle('visível', !estado.online);
+    }
+
+    document.addEventListener('click', (event) => {
+      const rota = event.target.closest('[data-route]');
+      if (rota) {
+        mostrarTela(rota.dataset.route);
+        return;
+      }
+
+      const fluxo = event.target.closest('[data-flow]');
+      if (fluxo) {
+        const tipo = fluxo.dataset.flow;
+        const variante = fluxo.dataset.variant || Object.keys(fluxos[tipo].variantes)[0];
+        renderizarFluxo(tipo, variante);
+      }
+    });
+
+    botaoRegistrar.addEventListener('click', (event) => {
+      event.stopPropagation();
+      alternarMenu();
+    });
+    fundoMenu.addEventListener('click', fecharMenu);
+    botaoRede.addEventListener('click', alternarRede);
+    document.querySelector('#botao-repetir').addEventListener('click', () => {
+      renderizarFluxo(estado.fluxoAtual, estado.varianteAtual);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') fecharMenu();
+    });
+  </script>
+</body>
+</html>
