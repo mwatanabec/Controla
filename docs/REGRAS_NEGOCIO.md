@@ -40,6 +40,10 @@ Estados e situações possíveis incluem:
 - Enviar mercadoria a um parceiro não representa venda.
 - Quantidades vendidas, devolvidas, perdidas ou ajustadas não devem ser confundidas.
 - Ajustes manuais precisam de registro para não apagar o histórico.
+- Venda ou envio comum sem saldo suficiente deve ser rejeitado.
+- Saldo negativo só pode ser preservado quando resultar de operações offline concorrentes; nesse caso, vira divergência visível e estoque crítico na Home.
+- Enquanto houver divergência aberta, novas vendas e envios do mesmo produto e localização ficam bloqueados.
+- Owner ou admin resolve a divergência por ajuste, estorno ou confirmação rastreável; a resolução nunca altera o evento original.
 
 ## Pontos Parceiros e envios
 
@@ -62,6 +66,9 @@ Estados e situações possíveis incluem:
 - A devolução reduz o estoque do parceiro e aumenta o estoque próprio.
 - Perda ou avaria deve ser registrada separadamente de venda e devolução.
 - Mercadoria perdida ou avariada não retorna automaticamente ao estoque disponível.
+- Se a devolução ocorrer depois de a venda ter entrado em um acerto, ela gera ajuste vinculado ao item do acerto.
+- Acerto aberto ou parcialmente pago tem a pendência reduzida pelo ajuste.
+- Acerto já pago preserva o pagamento e gera crédito ou diferença para o próximo acerto do mesmo parceiro.
 
 ## Acertos
 
@@ -72,6 +79,13 @@ Estados e situações possíveis incluem:
 - O sistema calcula o valor pendente a partir das vendas, mas o valor acordado é editável.
 - Valor calculado e valor acordado devem ser armazenados separadamente.
 - Quando houver diferença, o usuário pode registrar uma justificativa.
+- Uma venda pode ser dividida entre vários acertos por quantidade.
+- A soma da quantidade considerada nos acertos nunca pode ultrapassar a quantidade vendida.
+- O restante não considerado continua disponível para outro acerto.
+- Os valores calculados dos itens usam o preço histórico da venda.
+- O valor acordado do acerto é distribuído entre os itens proporcionalmente ao valor calculado, com o resíduo de centavos no último item.
+- Devoluções, estornos e correções geram ajustes rastreáveis, sem editar ou apagar a venda e o acerto originais.
+- Pagamento acima do valor acordado exige confirmação explícita e conflito rastreável.
 
 ## Reposição
 
@@ -88,12 +102,16 @@ Estados e situações possíveis incluem:
 - Uma operação pendente não pode ser apresentada como confirmada na nuvem.
 - A interface deve distinguir dados locais, sincronização em andamento, confirmação no servidor e conflito que exige revisão.
 - A repetição da mesma operação durante a sincronização não pode duplicar compra, envio, venda, devolução, perda, ajuste ou acerto.
+- A fila deve distinguir aguardando dependência, nova tentativa, falha temporária e processamento interrompido.
 - A sincronização deve ocorrer quando a conexão voltar com o app aberto, quando o app for reaberto e quando o usuário solicitar manualmente.
 - A sincronização em segundo plano pode ser usada quando suportada, mas não deve ser a única forma de enviar pendências.
 - Conflitos entre aparelhos não podem apagar ou sobrescrever silenciosamente os eventos registrados.
 - Quando duas operações concorrentes gerarem divergência, o histórico deve ser preservado e a situação deve ser encaminhada para conferência ou ajuste rastreável.
 - Primeiro acesso, recuperação de senha, gestão de usuários, licença e administração da plataforma exigem internet.
 - Dados ainda não sincronizados podem ser perdidos se o armazenamento do navegador for apagado; o app deve avisar enquanto existirem pendências locais.
+- O aparelho mantém os últimos 180 dias ou 10.000 operações, o que for maior, para consulta offline.
+- Dados mais antigos exigem internet; produtos ativos, parceiros, preços, saldos, acertos pendentes, conflitos e fila local são obrigatórios para continuar lançando vendas.
+- Quando o aparelho ficar sem espaço, dados opcionais são limpos primeiro; se a fila não puder ser persistida com segurança, novos lançamentos offline ficam bloqueados.
 
 ## Acessos
 

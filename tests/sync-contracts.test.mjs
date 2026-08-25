@@ -1,0 +1,3 @@
+import test from 'node:test'; import assert from 'node:assert/strict'; import {readFile} from 'node:fs/promises';
+const file=n=>readFile(new URL(`../contracts/sync/v1/${n}`,import.meta.url),'utf8').then(JSON.parse);
+test('contratos v1 preservam envelope, fila e fotografia',async()=>{const [m,c,r,s]=await Promise.all(['manifest.json','command-envelope.schema.json','sync-response.schema.json','snapshot.schema.json'].map(file)); assert.equal(m.contract_version,'v1'); for(const x of ['command_id','dependencies','payload']) assert.ok(c.required.includes(x)); for(const x of ['waiting_dependency','retry_wait','failed_transient']) assert.ok(r.properties.status.enum.includes(x)); assert.equal(s.properties.mode.const,'snapshot_required');});

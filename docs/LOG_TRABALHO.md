@@ -911,3 +911,202 @@ Criar um protótipo funcional e navegável, com dados mockados, para testar a co
 ### Próximo passo recomendado
 
 Abrir `prototipo/fluxos-v1.html`, percorrer os fluxos pelo botão Registrar e pela barra inferior, testar o alternador Online/Sem internet e registrar ajustes pontuais de fluxo antes de iniciar qualquer implementação técnica.
+
+## 2026-08-25 — Lote 6: reorganização da tela de Estoque
+
+### Objetivo do lote
+
+Reduzir a poluição visual da tela de Estoque para comportar vários produtos e permitir consulta rápida ou investigação detalhada sem misturar o estoque próprio com os Pontos Parceiros.
+
+### Arquivos lidos
+
+- `AGENTS.md`
+- `README.md`
+- `docs/CONTEXTO_PROJETO_MARIA_CONTROLA.md`
+- `docs/DECISOES.md`
+- `docs/REGRAS_NEGOCIO.md`
+- `docs/FLUXOS_V1.md`
+- `docs/LOG_TRABALHO.md`
+- `prototipo/fluxos-v1.html`
+
+### Arquivos criados ou alterados
+
+- Alterado `prototipo/fluxos-v1.html`.
+- Alterado `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Reorganizada a tela para abrir em lista curta, com foto ilustrativa, nome, status por bolinha, estoque próprio, total nos Pontos Parceiros e estoque total.
+- Adicionados busca e filtros por Todos, Baixo estoque, Em pontos e Sem estoque.
+- Adicionada alternância entre Lista e Detalhes.
+- Adicionado bottom sheet com a distribuição do produto em cada Ponto Parceiro.
+- Adicionado menu de três pontos com ações de produto representadas no protótipo.
+- Mantidos os dados mockados da Anona Presentes e os fluxos existentes sem backend.
+
+### Decisões registradas
+
+- A lista curta é a visualização padrão da tela Estoque.
+- O detalhamento por Ponto Parceiro fica sob demanda, ao tocar no total em pontos ou ao escolher a visão Detalhes.
+- O termo de interface permanece `Pontos Parceiros`.
+- Os três pontos representam ações do produto, começando por editar produto, registrar compra e ajustar estoque.
+
+### Validação realizada
+
+- JavaScript embutido validado com `new Function`.
+- `git diff --check` executado sem erros.
+- Conferida a presença dos controles de filtro, busca, alternância de visualização, detalhe por produto e menu de ações.
+
+### Pendências
+
+- Substituir as miniaturas ilustrativas por fotos reais quando os ativos dos produtos estiverem disponíveis.
+- Validar a hierarquia visual com a owner em largura de celular.
+
+### Próximo passo recomendado
+
+Abrir `prototipo/fluxos-v1.html`, entrar em Estoque, testar os filtros, a busca, a visão Detalhes, os três pontos e o bottom sheet de cada produto.
+
+## 2026-08-25 — Lote 7: reorganização das telas de Parceiros e Acertos
+
+### Objetivo do lote
+
+Aplicar a mesma lógica de consulta compacta da tela Estoque nas telas Pontos Parceiros e Acertos, sem usar fotos, para facilitar a leitura quando houver vários parceiros e pendências.
+
+### Arquivos lidos
+
+- `AGENTS.md`
+- `docs/FLUXOS_V1.md`
+- `docs/REGRAS_NEGOCIO.md`
+- `docs/LOG_TRABALHO.md`
+- `prototipo/fluxos-v1.html`
+
+### Arquivos criados ou alterados
+
+- Alterado `prototipo/fluxos-v1.html`.
+- Alterado `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Reorganizada a tela Pontos Parceiros em lista curta, com nome, situação, mercadorias no ponto, valor a conferir e busca.
+- Adicionados filtros por Todos, Com pendência e Sem atualização nos parceiros.
+- Adicionada alternância entre Lista e Detalhes nos parceiros.
+- Adicionada folha inferior com mercadorias e situação de cada Ponto Parceiro.
+- Reorganizada a tela Acertos em lista curta, com parceiro, situação do pagamento, valor acordado, valor já pago e busca.
+- Adicionados filtros por Todos, Em aberto, Parcial e Pagos nos acertos.
+- Adicionada alternância entre Lista e Detalhes nos acertos.
+- Mantidos os botões existentes de registrar venda, envio, devolução e pagamento dentro da visão detalhada.
+- Adicionados menus de três pontos para ações de parceiro e acerto.
+
+### Decisões registradas
+
+- Parceiros e Acertos não usam foto; o nome e a situação são o sinal principal de identificação.
+- A lista curta é a visualização padrão nas duas telas.
+- A visão detalhada fica sob demanda e concentra os números e ações operacionais.
+- O termo `Pontos Parceiros` permanece na interface.
+
+### Validação realizada
+
+- JavaScript embutido validado com `new Function`.
+- `git diff --check` executado sem erros.
+- Conferida a presença dos filtros, busca, alternância de visualização, menus e folhas de detalhe das duas telas.
+
+### Pendências
+
+- Validar a hierarquia visual das três telas em largura de celular.
+- Decidir em lote futuro quais ações dos menus devem abrir fluxos completos de edição ou histórico.
+
+### Próximo passo recomendado
+
+Abrir `prototipo/fluxos-v1.html`, navegar por Pontos Parceiros e Acertos, testar filtros, busca, visão Detalhes, menus e folhas inferiores.
+
+## 2026-08-25 — Lote 8: fechamento das regras antes do SQL
+
+### Objetivo do lote
+
+Incorporar as decisões da owner sobre acertos divididos, devoluções posteriores, estoque negativo offline, estados da fila, recuperação de processamento, retenção do histórico e dados locais antes de iniciar migrations SQL.
+
+### Arquivos lidos
+
+- `AGENTS.md`
+- `README.md`
+- `docs/ROADMAP.md`
+- `docs/MODELO_DADOS.md`
+- `docs/SINCRONIZACAO_OFFLINE.md`
+- `docs/REGRAS_NEGOCIO.md`
+- `docs/DECISOES.md`
+- `docs/LOG_TRABALHO.md`
+
+### Arquivos criados ou alterados
+
+- Alterado `docs/MODELO_DADOS.md`.
+- Alterado `docs/SINCRONIZACAO_OFFLINE.md`.
+- Alterado `docs/REGRAS_NEGOCIO.md`.
+- Alterado `docs/DECISOES.md`.
+- Alterado `README.md`.
+- Alterado `docs/ROADMAP.md`.
+- Alterado `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Definida a alocação de uma venda entre vários acertos por quantidade, com limite de integridade e distribuição proporcional do valor acordado.
+- Criada a entidade lógica `settlement_item_adjustments` para devoluções, estornos e correções sem apagar histórico.
+- Definido o tratamento de devolução em acerto aberto, parcial ou já pago.
+- Separada a rejeição de estoque insuficiente comum do conflito de saldo negativo causado por operações offline concorrentes.
+- Definido bloqueio por produto e localização enquanto houver conflito aberto, com resolução por owner ou admin.
+- Incluídos `waiting_dependency`, `retry_wait` e `failed_transient`, além de prazo de processamento e recuperação de comandos interrompidos.
+- Definida retenção mínima de 180 dias para `change_log` e exigência de fotografia completa quando o cursor estiver fora da janela.
+- Definida a janela local de 180 dias ou 10.000 operações, dados obrigatórios para continuidade offline e comportamento para armazenamento cheio.
+- Marcados o modelo de dados e o protocolo offline como aprovados para o próximo lote técnico.
+
+### Decisões registradas
+
+- Registrada a decisão D-018 sobre integridade de acertos, conflitos e dados offline.
+- D-012 e D-014 foram detalhadas com as novas regras operacionais.
+
+### Validação realizada
+
+- Conferida a presença das regras nos quatro documentos de produto, dados e sincronização.
+- Removida a duplicidade do estado `retry_wait` na tabela de estados visíveis.
+- Conferida a coerência entre `MODELO_DADOS.md`, `SINCRONIZACAO_OFFLINE.md`, `REGRAS_NEGOCIO.md` e `DECISOES.md`.
+
+### Pendências
+
+- Definir nomes físicos finais, tipos SQL, índices, funções transacionais e políticas RLS no próximo lote.
+- Manter fora deste lote as decisões comerciais ainda listadas como pendentes.
+
+### Próximo passo recomendado
+
+Iniciar o lote técnico de migrations SQL iniciais, políticas RLS, funções transacionais de estoque/acerto e contratos versionados de sincronização.
+
+## 2026-08-25 — Lote 9: base técnica SQL da V1
+
+### Objetivo do lote
+
+Criar a primeira base técnica versionada da V1, sem banco remoto, credenciais, instalação ou mudança no protótipo visual.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/ROADMAP.md`, `docs/DECISOES.md`, `docs/REGRAS_NEGOCIO.md`
+- `docs/MODELO_DADOS.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/LOG_TRABALHO.md` e `docs/ARQUITETURA.md`
+
+### Arquivos criados ou alterados
+
+- Criadas quatro migrations em `supabase/migrations/`.
+- Criados contratos JSON versionados em `contracts/sync/v1/`.
+- Criados testes estruturais em `tests/`.
+- Alterados `README.md`, `docs/ROADMAP.md` e este log.
+
+### O que foi feito
+
+- Criadas estruturas de negócio, catálogo, estoque, operações, acertos, créditos, fila idempotente, conflitos e feed de mudanças.
+- Definidas funções para saldo, alocação limitada de vendas, ajuste posterior de acerto, recuperação de processamento e retenção de 180 dias.
+- Habilitada RLS e removida escrita direta das tabelas expostas; operações críticas passam por funções controladas.
+- Versionados os envelopes, respostas e fotografia completa de sincronização V1.
+
+### Pendências
+
+- Aplicar e executar testes de integração das migrations somente em ambiente local de banco autorizado em lote futuro.
+- Definir autenticação por nome de usuário e limites comerciais antes desses respectivos lotes.
+
+### Próximo passo recomendado
+
+Criar ambiente local Supabase/PostgreSQL e testes transacionais reais para validar concorrência, RLS e os fluxos críticos contra o banco.

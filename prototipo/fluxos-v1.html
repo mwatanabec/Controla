@@ -484,6 +484,691 @@
       border-color: #ead9aa;
     }
 
+    .estoque-busca {
+      position: relative;
+      margin-bottom: 9px;
+    }
+
+    .estoque-busca input {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 13px 0 40px;
+      color: var(--carvao);
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: var(--raio);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    .estoque-busca::before {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      color: var(--texto-fraco);
+      content: "⌕";
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .estoque-filtros {
+      display: flex;
+      gap: 6px;
+      margin: 0 -2px 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .estoque-filtros::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filtro-estoque {
+      min-height: 36px;
+      padding: 0 12px;
+      color: var(--texto-fraco);
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 780;
+      white-space: nowrap;
+    }
+
+    .filtro-estoque.ativo {
+      color: var(--branco);
+      background: var(--ameixa);
+      border-color: var(--ameixa);
+    }
+
+    .estoque-barra {
+      display: flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .estoque-barra small {
+      color: var(--texto-fraco);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .controle-visao {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 3px;
+      padding: 3px;
+      background: var(--lavanda-clara);
+      border-radius: 7px;
+    }
+
+    .botao-visao {
+      min-height: 34px;
+      padding: 0 9px;
+      color: var(--texto-fraco);
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .botao-visao.ativo {
+      color: var(--ameixa);
+      background: var(--branco);
+      box-shadow: 0 2px 6px rgba(63, 41, 66, 0.08);
+    }
+
+    .produto-item {
+      position: relative;
+      padding: 11px;
+    }
+
+    .produto-item.oculto,
+    .produto-detalhado.oculto {
+      display: none;
+    }
+
+    .produto-cabecalho {
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .produto-foto {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      color: var(--ameixa-escura);
+      background: var(--pessego);
+      border: 1px solid rgba(91, 58, 94, 0.12);
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 860;
+      letter-spacing: 0.04em;
+    }
+
+    .produto-foto.lavanda {
+      color: #684c71;
+      background: #e8dff1;
+    }
+
+    .produto-foto.baunilha {
+      color: #80572f;
+      background: #f4e3bd;
+    }
+
+    .produto-identidade {
+      min-width: 0;
+    }
+
+    .produto-identidade strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .status-produto {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--texto-fraco);
+      font-size: 11px;
+      font-weight: 760;
+    }
+
+    .status-ponto {
+      width: 8px;
+      height: 8px;
+      background: var(--verde);
+      border-radius: 50%;
+    }
+
+    .status-ponto.alerta {
+      background: var(--ouro);
+    }
+
+    .status-ponto.sem-estoque {
+      background: var(--erro);
+    }
+
+    .produto-menu-area {
+      position: relative;
+      align-self: start;
+    }
+
+    .botao-menu {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      color: var(--texto-fraco);
+      border-radius: 50%;
+      font-size: 19px;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .botao-menu:hover,
+    .botao-menu:focus-visible {
+      color: var(--ameixa);
+      background: var(--lavanda-clara);
+    }
+
+    .menu-produto {
+      position: absolute;
+      z-index: 5;
+      top: 39px;
+      right: 0;
+      width: 170px;
+      padding: 5px;
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+    }
+
+    .menu-produto[hidden] {
+      display: none;
+    }
+
+    .acao-menu {
+      width: 100%;
+      min-height: 38px;
+      padding: 0 9px;
+      color: var(--carvao);
+      text-align: left;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .acao-menu:hover,
+    .acao-menu:focus-visible {
+      color: var(--ameixa);
+      background: var(--lavanda-clara);
+    }
+
+    .produto-numeros {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .numero-estoque {
+      min-width: 0;
+      min-height: 57px;
+      padding: 9px;
+      background: #fffdfc;
+      border: 1px solid var(--linha);
+      border-radius: 6px;
+    }
+
+    button.numero-estoque {
+      width: 100%;
+      color: inherit;
+      text-align: left;
+    }
+
+    .numero-estoque.clicavel:hover,
+    .numero-estoque.clicavel:focus-visible {
+      background: var(--lavanda-clara);
+      border-color: #d9c8df;
+    }
+
+    .numero-estoque span,
+    .numero-estoque strong {
+      display: block;
+    }
+
+    .numero-estoque span {
+      color: var(--texto-fraco);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .numero-estoque strong {
+      margin-top: 3px;
+      color: var(--ameixa-escura);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .produto-total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+      color: var(--texto-fraco);
+      font-size: 12px;
+    }
+
+    .produto-total strong {
+      color: var(--carvao);
+      font-size: 13px;
+    }
+
+    .estoque-detalhado {
+      display: none;
+      gap: 10px;
+    }
+
+    .tela-estoque[data-view="detalhado"] .estoque-lista {
+      display: none;
+    }
+
+    .tela-estoque[data-view="detalhado"] .estoque-detalhado {
+      display: grid;
+    }
+
+    .produto-detalhado {
+      padding: 13px;
+    }
+
+    .produto-detalhado .produto-cabecalho {
+      grid-template-columns: 46px minmax(0, 1fr);
+    }
+
+    .produto-detalhado .quadro-detalhes {
+      margin-top: 10px;
+    }
+
+    .estoque-vazio {
+      display: none;
+      padding: 20px 14px;
+      color: var(--texto-fraco);
+      background: var(--branco);
+      border: 1px dashed var(--linha);
+      border-radius: var(--raio);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .estoque-vazio.visivel {
+      display: block;
+    }
+
+    .estoque-aviso {
+      display: none;
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      color: var(--verde);
+      background: var(--verde-claro);
+      border: 1px solid #c9e6dc;
+      border-radius: var(--raio);
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .estoque-aviso.visivel {
+      display: block;
+    }
+
+    .estoque-modal {
+      position: fixed;
+      z-index: 35;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(46, 42, 47, 0.34);
+    }
+
+    .estoque-modal[hidden] {
+      display: none;
+    }
+
+    .estoque-folha {
+      width: 100%;
+      max-width: 430px;
+      max-height: 82vh;
+      padding: 10px 16px 24px;
+      overflow-y: auto;
+      background: var(--creme);
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -12px 30px rgba(63, 41, 66, 0.2);
+    }
+
+    .estoque-folha-cabecalho {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .estoque-folha-cabecalho h3 {
+      margin: 0 0 3px;
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .estoque-folha-cabecalho p {
+      margin: 0;
+      color: var(--texto-fraco);
+      font-size: 13px;
+    }
+
+    .botao-fechar {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      place-items: center;
+      color: var(--texto-fraco);
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: 50%;
+      font-size: 18px;
+    }
+
+    body.modal-aberto {
+      overflow: hidden;
+    }
+
+    .consulta-busca {
+      position: relative;
+      margin-bottom: 9px;
+    }
+
+    .consulta-busca input {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 13px 0 40px;
+      color: var(--carvao);
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: var(--raio);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    .consulta-busca::before {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      color: var(--texto-fraco);
+      content: "⌕";
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .consulta-filtros {
+      display: flex;
+      gap: 6px;
+      margin: 0 -2px 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .consulta-filtros::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filtro-consulta {
+      min-height: 36px;
+      padding: 0 12px;
+      color: var(--texto-fraco);
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 780;
+      white-space: nowrap;
+    }
+
+    .filtro-consulta.ativo {
+      color: var(--branco);
+      background: var(--ameixa);
+      border-color: var(--ameixa);
+    }
+
+    .consulta-item {
+      position: relative;
+      padding: 11px;
+    }
+
+    .consulta-item.oculto,
+    .consulta-detalhado [data-name].oculto {
+      display: none;
+    }
+
+    .consulta-cabecalho {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .consulta-identidade {
+      min-width: 0;
+    }
+
+    .consulta-identidade strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .consulta-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--texto-fraco);
+      font-size: 11px;
+      font-weight: 760;
+    }
+
+    .consulta-status-ponto {
+      width: 8px;
+      height: 8px;
+      background: var(--verde);
+      border-radius: 50%;
+    }
+
+    .consulta-status-ponto.alerta {
+      background: var(--ouro);
+    }
+
+    .consulta-status-ponto.erro {
+      background: var(--erro);
+    }
+
+    .consulta-menu-area {
+      position: relative;
+    }
+
+    .consulta-menu {
+      position: absolute;
+      z-index: 5;
+      top: 39px;
+      right: 0;
+      width: 174px;
+      padding: 5px;
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+    }
+
+    .consulta-menu[hidden] {
+      display: none;
+    }
+
+    .consulta-menu-acao {
+      width: 100%;
+      min-height: 38px;
+      padding: 0 9px;
+      color: var(--carvao);
+      text-align: left;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .consulta-menu-acao:hover,
+    .consulta-menu-acao:focus-visible {
+      color: var(--ameixa);
+      background: var(--lavanda-clara);
+    }
+
+    .consulta-resumos {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .consulta-resumo {
+      min-width: 0;
+      min-height: 55px;
+      padding: 9px;
+      background: #fffdfc;
+      border: 1px solid var(--linha);
+      border-radius: 6px;
+    }
+
+    .consulta-resumo span,
+    .consulta-resumo strong {
+      display: block;
+    }
+
+    .consulta-resumo span {
+      color: var(--texto-fraco);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .consulta-resumo strong {
+      margin-top: 3px;
+      color: var(--ameixa-escura);
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .consulta-total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+      color: var(--texto-fraco);
+      font-size: 12px;
+    }
+
+    .consulta-total strong {
+      color: var(--carvao);
+      font-size: 13px;
+    }
+
+    .consulta-lista-vazia {
+      display: none;
+      padding: 20px 14px;
+      color: var(--texto-fraco);
+      background: var(--branco);
+      border: 1px dashed var(--linha);
+      border-radius: var(--raio);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .consulta-lista-vazia.visivel {
+      display: block;
+    }
+
+    .consulta-detalhado {
+      display: none;
+      gap: 10px;
+    }
+
+    .tela-consulta[data-view="detalhado"] .consulta-lista {
+      display: none;
+    }
+
+    .tela-consulta[data-view="detalhado"] .consulta-detalhado {
+      display: grid;
+    }
+
+    .consulta-detalhado .cartao {
+      padding: 13px;
+    }
+
+    .consulta-detalhado .quadro-detalhes {
+      margin-top: 10px;
+    }
+
+    .consulta-modal {
+      position: fixed;
+      z-index: 35;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(46, 42, 47, 0.34);
+    }
+
+    .consulta-modal[hidden] {
+      display: none;
+    }
+
+    .consulta-folha {
+      width: 100%;
+      max-width: 430px;
+      max-height: 82vh;
+      padding: 10px 16px 24px;
+      overflow-y: auto;
+      background: var(--creme);
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -12px 30px rgba(63, 41, 66, 0.2);
+    }
+
+    .consulta-folha-cabecalho {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .consulta-folha-cabecalho h3 {
+      margin: 0 0 3px;
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .consulta-folha-cabecalho p {
+      margin: 0;
+      color: var(--texto-fraco);
+      font-size: 13px;
+    }
+
     .menu-radial-fundo {
       position: fixed;
       z-index: 18;
@@ -830,54 +1515,258 @@
         </section>
       </section>
 
-      <section class="tela" id="tela-estoque" aria-labelledby="titulo-estoque">
+      <section class="tela tela-estoque" id="tela-estoque" data-view="lista" aria-labelledby="titulo-estoque">
         <div class="cabecalho-tela">
           <h2 id="titulo-estoque">Estoque</h2>
-          <p>Compare o que está com você e o que esta em cada Ponto Parceiro.</p>
+          <p>Veja rapidamente o que está com você e nos Pontos Parceiros.</p>
         </div>
-        <div class="lista">
-          <article class="cartao">
-            <h3>Caneca Flores</h3>
+
+        <div class="estoque-aviso" id="estoque-aviso" role="status"></div>
+
+        <div class="estoque-busca">
+          <input id="estoque-busca" type="search" placeholder="Buscar produto" aria-label="Buscar produto no estoque">
+        </div>
+
+        <div class="estoque-filtros" role="group" aria-label="Filtrar estoque">
+          <button class="filtro-estoque ativo" type="button" data-estoque-filtro="todos">Todos</button>
+          <button class="filtro-estoque" type="button" data-estoque-filtro="baixo">Baixo estoque</button>
+          <button class="filtro-estoque" type="button" data-estoque-filtro="em-pontos">Em pontos</button>
+          <button class="filtro-estoque" type="button" data-estoque-filtro="sem-estoque">Sem estoque</button>
+        </div>
+
+        <div class="estoque-barra">
+          <small id="estoque-contagem">3 produtos</small>
+          <div class="controle-visao" role="group" aria-label="Escolher visualização">
+            <button class="botao-visao ativo" type="button" data-estoque-vista="lista" aria-pressed="true">Lista</button>
+            <button class="botao-visao" type="button" data-estoque-vista="detalhado" aria-pressed="false">Detalhes</button>
+          </div>
+        </div>
+
+        <div class="lista estoque-lista" id="estoque-lista">
+          <article class="cartao produto-item" data-product-id="caneca" data-name="caneca flores" data-status="baixo" data-partners="true">
+            <div class="produto-cabecalho">
+              <span class="produto-foto" aria-label="Foto ilustrativa da Caneca Flores">CF</span>
+              <div class="produto-identidade">
+                <strong>Caneca Flores</strong>
+                <span class="status-produto"><span class="status-ponto alerta" aria-hidden="true"></span>Baixo estoque</span>
+              </div>
+              <div class="produto-menu-area">
+                <button class="botao-menu" type="button" data-produto-menu="caneca" aria-label="Ações da Caneca Flores" aria-expanded="false">...</button>
+                <div class="menu-produto" data-menu="caneca" hidden>
+                  <button class="acao-menu" type="button" data-stock-action="Editar produto">Editar produto</button>
+                  <button class="acao-menu" type="button" data-stock-action="Registrar compra">Registrar compra</button>
+                  <button class="acao-menu" type="button" data-stock-action="Ajustar estoque">Ajustar estoque</button>
+                </div>
+              </div>
+            </div>
+            <div class="produto-numeros">
+              <div class="numero-estoque"><span>Meu estoque</span><strong>2 un.</strong></div>
+              <button class="numero-estoque clicavel" type="button" data-estoque-detalhe="caneca"><span>Em Pontos Parceiros</span><strong>5 un. &gt;</strong></button>
+            </div>
+            <div class="produto-total"><span>Estoque total</span><strong>7 unidades</strong></div>
+          </article>
+
+          <article class="cartao produto-item" data-product-id="kit" data-name="kit presente lavanda" data-status="sem-estoque" data-partners="true">
+            <div class="produto-cabecalho">
+              <span class="produto-foto lavanda" aria-label="Foto ilustrativa do Kit Presente Lavanda">KL</span>
+              <div class="produto-identidade">
+                <strong>Kit Presente Lavanda</strong>
+                <span class="status-produto"><span class="status-ponto sem-estoque" aria-hidden="true"></span>Sem estoque próprio</span>
+              </div>
+              <div class="produto-menu-area">
+                <button class="botao-menu" type="button" data-produto-menu="kit" aria-label="Ações do Kit Presente Lavanda" aria-expanded="false">...</button>
+                <div class="menu-produto" data-menu="kit" hidden>
+                  <button class="acao-menu" type="button" data-stock-action="Editar produto">Editar produto</button>
+                  <button class="acao-menu" type="button" data-stock-action="Registrar compra">Registrar compra</button>
+                  <button class="acao-menu" type="button" data-stock-action="Ajustar estoque">Ajustar estoque</button>
+                </div>
+              </div>
+            </div>
+            <div class="produto-numeros">
+              <div class="numero-estoque"><span>Meu estoque</span><strong>0 un.</strong></div>
+              <button class="numero-estoque clicavel" type="button" data-estoque-detalhe="kit"><span>Em Pontos Parceiros</span><strong>2 un. &gt;</strong></button>
+            </div>
+            <div class="produto-total"><span>Estoque total</span><strong>2 unidades</strong></div>
+          </article>
+
+          <article class="cartao produto-item" data-product-id="vela" data-name="vela baunilha" data-status="ok" data-partners="true">
+            <div class="produto-cabecalho">
+              <span class="produto-foto baunilha" aria-label="Foto ilustrativa da Vela Baunilha">VB</span>
+              <div class="produto-identidade">
+                <strong>Vela Baunilha</strong>
+                <span class="status-produto"><span class="status-ponto" aria-hidden="true"></span>Estoque em dia</span>
+              </div>
+              <div class="produto-menu-area">
+                <button class="botao-menu" type="button" data-produto-menu="vela" aria-label="Ações da Vela Baunilha" aria-expanded="false">...</button>
+                <div class="menu-produto" data-menu="vela" hidden>
+                  <button class="acao-menu" type="button" data-stock-action="Editar produto">Editar produto</button>
+                  <button class="acao-menu" type="button" data-stock-action="Registrar compra">Registrar compra</button>
+                  <button class="acao-menu" type="button" data-stock-action="Ajustar estoque">Ajustar estoque</button>
+                </div>
+              </div>
+            </div>
+            <div class="produto-numeros">
+              <div class="numero-estoque"><span>Meu estoque</span><strong>4 un.</strong></div>
+              <button class="numero-estoque clicavel" type="button" data-estoque-detalhe="vela"><span>Em Pontos Parceiros</span><strong>5 un. &gt;</strong></button>
+            </div>
+            <div class="produto-total"><span>Estoque total</span><strong>9 unidades</strong></div>
+          </article>
+        </div>
+
+        <p class="estoque-vazio" id="estoque-vazio">Nenhum produto encontrado com esse filtro.</p>
+
+        <div class="estoque-detalhado" id="estoque-detalhado">
+          <article class="cartao produto-detalhado" data-product-id="caneca" data-name="caneca flores" data-status="baixo" data-partners="true">
+            <div class="produto-cabecalho">
+              <span class="produto-foto" aria-hidden="true">CF</span>
+              <div class="produto-identidade">
+                <strong>Caneca Flores</strong>
+                <span class="status-produto"><span class="status-ponto alerta" aria-hidden="true"></span>Baixo estoque</span>
+              </div>
+            </div>
             <div class="quadro-detalhes">
-              <div class="linha-detalhe"><span>Estoque próprio</span><strong>2</strong></div>
-              <div class="linha-detalhe"><span>Salão Bella</span><strong>4</strong></div>
-              <div class="linha-detalhe"><span>Loja da Ana</span><strong>1</strong></div>
+              <div class="linha-detalhe"><span>Meu estoque</span><strong>2 unidades</strong></div>
+              <div class="linha-detalhe"><span>Salão Bella</span><strong>4 unidades</strong></div>
+              <div class="linha-detalhe"><span>Loja da Ana</span><strong>1 unidade</strong></div>
+              <div class="linha-detalhe"><span>Estoque total</span><strong>7 unidades</strong></div>
             </div>
             <div class="efeito alerta">Precisa comprar: estoque próprio abaixo do mínimo 5.</div>
           </article>
-          <article class="cartao">
-            <h3>Kit Presente Lavanda</h3>
+
+          <article class="cartao produto-detalhado" data-product-id="kit" data-name="kit presente lavanda" data-status="sem-estoque" data-partners="true">
+            <div class="produto-cabecalho">
+              <span class="produto-foto lavanda" aria-hidden="true">KL</span>
+              <div class="produto-identidade">
+                <strong>Kit Presente Lavanda</strong>
+                <span class="status-produto"><span class="status-ponto sem-estoque" aria-hidden="true"></span>Sem estoque próprio</span>
+              </div>
+            </div>
             <div class="quadro-detalhes">
-              <div class="linha-detalhe"><span>Estoque próprio</span><strong>0</strong></div>
-              <div class="linha-detalhe"><span>Salão Bella</span><strong>2</strong></div>
-              <div class="linha-detalhe"><span>Loja da Ana</span><strong>0</strong></div>
+              <div class="linha-detalhe"><span>Meu estoque</span><strong>0 unidades</strong></div>
+              <div class="linha-detalhe"><span>Salão Bella</span><strong>2 unidades</strong></div>
+              <div class="linha-detalhe"><span>Loja da Ana</span><strong>0 unidades</strong></div>
+              <div class="linha-detalhe"><span>Estoque total</span><strong>2 unidades</strong></div>
             </div>
             <div class="efeito alerta">Sem estoque próprio. Pode registrar compra ou devolução.</div>
           </article>
-          <article class="cartao">
-            <h3>Vela Baunilha</h3>
-            <div class="quadro-detalhes">
-              <div class="linha-detalhe"><span>Estoque próprio</span><strong>4</strong></div>
-              <div class="linha-detalhe"><span>Salão Bella</span><strong>3</strong></div>
-              <div class="linha-detalhe"><span>Loja da Ana</span><strong>2</strong></div>
+
+          <article class="cartao produto-detalhado" data-product-id="vela" data-name="vela baunilha" data-status="ok" data-partners="true">
+            <div class="produto-cabecalho">
+              <span class="produto-foto baunilha" aria-hidden="true">VB</span>
+              <div class="produto-identidade">
+                <strong>Vela Baunilha</strong>
+                <span class="status-produto"><span class="status-ponto" aria-hidden="true"></span>Estoque em dia</span>
+              </div>
             </div>
-            <div class="efeito">Saldo distribuido visível sem misturar os locais.</div>
+            <div class="quadro-detalhes">
+              <div class="linha-detalhe"><span>Meu estoque</span><strong>4 unidades</strong></div>
+              <div class="linha-detalhe"><span>Salão Bella</span><strong>3 unidades</strong></div>
+              <div class="linha-detalhe"><span>Loja da Ana</span><strong>2 unidades</strong></div>
+              <div class="linha-detalhe"><span>Estoque total</span><strong>9 unidades</strong></div>
+            </div>
+            <div class="efeito">Saldo distribuído visível sem misturar os locais.</div>
           </article>
         </div>
       </section>
 
-      <section class="tela" id="tela-parceiros" aria-labelledby="titulo-parceiros">
+      <div class="estoque-modal" id="estoque-modal" hidden aria-hidden="true">
+        <div class="estoque-folha" role="dialog" aria-modal="true" aria-labelledby="estoque-modal-titulo">
+          <div class="estoque-folha-cabecalho">
+            <div>
+              <h3 id="estoque-modal-titulo">Estoque nos Pontos Parceiros</h3>
+              <p id="estoque-modal-subtitulo">Confira onde estão as unidades.</p>
+            </div>
+            <button class="botao-fechar" type="button" id="fechar-estoque-modal" aria-label="Fechar detalhe">X</button>
+          </div>
+          <div class="quadro-detalhes" id="estoque-modal-conteudo"></div>
+        </div>
+      </div>
+
+      <section class="tela tela-consulta" id="tela-parceiros" data-view="lista" aria-labelledby="titulo-parceiros">
         <div class="cabecalho-tela">
           <h2 id="titulo-parceiros">Pontos Parceiros</h2>
-          <p>Veja mercadorias enviadas, vendas informadas e devoluções.</p>
+          <p>Veja o que está em cada ponto e o que precisa conferir.</p>
         </div>
-        <div class="lista">
-          <article class="cartao">
-            <h3>Salão Bella</h3>
-            <span class="detalhe">Responsável: Carla · 1 venda para acertar</span>
+
+        <div class="estoque-aviso" id="parceiros-aviso" role="status"></div>
+
+        <div class="consulta-busca">
+          <input id="parceiros-busca" type="search" placeholder="Buscar Ponto Parceiro" aria-label="Buscar Ponto Parceiro">
+        </div>
+
+        <div class="consulta-filtros" role="group" aria-label="Filtrar Pontos Parceiros">
+          <button class="filtro-consulta ativo" type="button" data-parceiro-filtro="todos">Todos</button>
+          <button class="filtro-consulta" type="button" data-parceiro-filtro="pendencia">Com pendência</button>
+          <button class="filtro-consulta" type="button" data-parceiro-filtro="atencao">Sem atualização</button>
+        </div>
+
+        <div class="estoque-barra">
+          <small id="parceiros-contagem">2 Pontos Parceiros</small>
+          <div class="controle-visao" role="group" aria-label="Escolher visualização dos parceiros">
+            <button class="botao-visao ativo" type="button" data-parceiro-vista="lista" aria-pressed="true">Lista</button>
+            <button class="botao-visao" type="button" data-parceiro-vista="detalhado" aria-pressed="false">Detalhes</button>
+          </div>
+        </div>
+
+        <div class="lista consulta-lista" id="parceiros-lista">
+          <article class="cartao consulta-item" data-parceiro-id="salao" data-name="salão bella" data-status="pendencia">
+            <div class="consulta-cabecalho">
+              <div class="consulta-identidade">
+                <strong>Salão Bella</strong>
+                <span class="consulta-status"><span class="consulta-status-ponto alerta" aria-hidden="true"></span>1 venda para acertar</span>
+              </div>
+              <div class="consulta-menu-area">
+                <button class="botao-menu" type="button" data-consulta-menu="salao" aria-label="Ações do Salão Bella" aria-expanded="false">...</button>
+                <div class="consulta-menu" data-consulta-menu-lista="salao" hidden>
+                  <button class="consulta-menu-acao" type="button" data-consulta-action="Registrar venda">Registrar venda</button>
+                  <button class="consulta-menu-acao" type="button" data-consulta-action="Registrar envio">Registrar envio</button>
+                  <button class="consulta-menu-acao" type="button" data-consulta-action="Editar parceiro">Editar parceiro</button>
+                </div>
+              </div>
+            </div>
+            <div class="consulta-resumos">
+              <div class="consulta-resumo"><span>Mercadorias no ponto</span><strong>6 un.</strong></div>
+              <div class="consulta-resumo"><span>Valor a conferir</span><strong>R$ 119,70</strong></div>
+            </div>
+            <div class="consulta-total"><span>Responsável: Carla</span><button class="link-discreto" type="button" data-parceiro-detalhe="salao">Ver detalhes</button></div>
+          </article>
+
+          <article class="cartao consulta-item" data-parceiro-id="loja" data-name="loja da ana" data-status="atencao">
+            <div class="consulta-cabecalho">
+              <div class="consulta-identidade">
+                <strong>Loja da Ana</strong>
+                <span class="consulta-status"><span class="consulta-status-ponto erro" aria-hidden="true"></span>Sem atualização há 12 dias</span>
+              </div>
+              <div class="consulta-menu-area">
+                <button class="botao-menu" type="button" data-consulta-menu="loja" aria-label="Ações da Loja da Ana" aria-expanded="false">...</button>
+                <div class="consulta-menu" data-consulta-menu-lista="loja" hidden>
+                  <button class="consulta-menu-acao" type="button" data-consulta-action="Registrar envio">Registrar envio</button>
+                  <button class="consulta-menu-acao" type="button" data-consulta-action="Registrar venda">Registrar venda</button>
+                  <button class="consulta-menu-acao" type="button" data-consulta-action="Editar parceiro">Editar parceiro</button>
+                </div>
+              </div>
+            </div>
+            <div class="consulta-resumos">
+              <div class="consulta-resumo"><span>Mercadorias no ponto</span><strong>3 un.</strong></div>
+              <div class="consulta-resumo"><span>Última atualização</span><strong>12 dias</strong></div>
+            </div>
+            <div class="consulta-total"><span>Situação: conferir</span><button class="link-discreto" type="button" data-parceiro-detalhe="loja">Ver detalhes</button></div>
+          </article>
+        </div>
+
+        <p class="consulta-lista-vazia" id="parceiros-vazio">Nenhum Ponto Parceiro encontrado.</p>
+
+        <div class="consulta-detalhado" id="parceiros-detalhado">
+          <article class="cartao" data-parceiro-detalhado="salao" data-name="salão bella" data-status="pendencia">
+            <div class="consulta-cabecalho">
+              <div class="consulta-identidade">
+                <strong>Salão Bella</strong>
+                <span class="consulta-status"><span class="consulta-status-ponto alerta" aria-hidden="true"></span>1 venda para acertar</span>
+              </div>
+            </div>
             <div class="quadro-detalhes">
-              <div class="linha-detalhe"><span>Caneca Flores no parceiro</span><strong>4</strong></div>
-              <div class="linha-detalhe"><span>Kit Lavanda no parceiro</span><strong>2</strong></div>
+              <div class="linha-detalhe"><span>Caneca Flores no parceiro</span><strong>4 unidades</strong></div>
+              <div class="linha-detalhe"><span>Kit Presente Lavanda</span><strong>2 unidades</strong></div>
               <div class="linha-detalhe"><span>Valor a conferir</span><strong>R$ 119,70</strong></div>
             </div>
             <div class="linha-botoes">
@@ -885,12 +1774,17 @@
               <button class="botao-fantasma" type="button" data-flow="devolucao">Registrar devolução</button>
             </div>
           </article>
-          <article class="cartao">
-            <h3>Loja da Ana</h3>
-            <span class="detalhe">Sem atualização há 12 dias</span>
+
+          <article class="cartao" data-parceiro-detalhado="loja" data-name="loja da ana" data-status="atencao">
+            <div class="consulta-cabecalho">
+              <div class="consulta-identidade">
+                <strong>Loja da Ana</strong>
+                <span class="consulta-status"><span class="consulta-status-ponto erro" aria-hidden="true"></span>Sem atualização há 12 dias</span>
+              </div>
+            </div>
             <div class="quadro-detalhes">
-              <div class="linha-detalhe"><span>Caneca Flores no parceiro</span><strong>1</strong></div>
-              <div class="linha-detalhe"><span>Vela Baunilha no parceiro</span><strong>2</strong></div>
+              <div class="linha-detalhe"><span>Caneca Flores no parceiro</span><strong>1 unidade</strong></div>
+              <div class="linha-detalhe"><span>Vela Baunilha no parceiro</span><strong>2 unidades</strong></div>
               <div class="linha-detalhe"><span>Situação</span><strong>Conferir</strong></div>
             </div>
             <button class="botao-principal" type="button" data-flow="envio">Registrar novo envio</button>
@@ -898,34 +1792,141 @@
         </div>
       </section>
 
-      <section class="tela" id="tela-acertos" aria-labelledby="titulo-acertos">
+      <div class="consulta-modal" id="parceiros-modal" hidden aria-hidden="true">
+        <div class="consulta-folha" role="dialog" aria-modal="true" aria-labelledby="parceiros-modal-titulo">
+          <div class="consulta-folha-cabecalho">
+            <div>
+              <h3 id="parceiros-modal-titulo">Salão Bella</h3>
+              <p id="parceiros-modal-subtitulo">Mercadorias e situação do ponto.</p>
+            </div>
+            <button class="botao-fechar" type="button" id="fechar-parceiros-modal" aria-label="Fechar detalhe">X</button>
+          </div>
+          <div class="quadro-detalhes" id="parceiros-modal-conteudo"></div>
+        </div>
+      </div>
+
+      <section class="tela tela-consulta" id="tela-acertos" data-view="lista" aria-labelledby="titulo-acertos">
         <div class="cabecalho-tela">
           <h2 id="titulo-acertos">Acertos</h2>
-          <p>Confira vendas pendentes e registre pagamentos sem apagar o histórico.</p>
+          <p>Veja o que está em aberto e registre pagamentos sem apagar o histórico.</p>
         </div>
-        <div class="lista">
-          <article class="cartao">
-            <h3>Salão Bella</h3>
+
+        <div class="estoque-aviso" id="acertos-aviso" role="status"></div>
+
+        <div class="consulta-busca">
+          <input id="acertos-busca" type="search" placeholder="Buscar parceiro" aria-label="Buscar acerto por parceiro">
+        </div>
+
+        <div class="consulta-filtros" role="group" aria-label="Filtrar acertos">
+          <button class="filtro-consulta ativo" type="button" data-acerto-filtro="todos">Todos</button>
+          <button class="filtro-consulta" type="button" data-acerto-filtro="aberto">Em aberto</button>
+          <button class="filtro-consulta" type="button" data-acerto-filtro="parcial">Parcial</button>
+          <button class="filtro-consulta" type="button" data-acerto-filtro="pago">Pagos</button>
+        </div>
+
+        <div class="estoque-barra">
+          <small id="acertos-contagem">2 acertos</small>
+          <div class="controle-visao" role="group" aria-label="Escolher visualização dos acertos">
+            <button class="botao-visao ativo" type="button" data-acerto-vista="lista" aria-pressed="true">Lista</button>
+            <button class="botao-visao" type="button" data-acerto-vista="detalhado" aria-pressed="false">Detalhes</button>
+          </div>
+        </div>
+
+        <div class="lista consulta-lista" id="acertos-lista">
+          <article class="cartao consulta-item" data-acerto-id="salao" data-name="salão bella" data-status="parcial">
+            <div class="consulta-cabecalho">
+              <div class="consulta-identidade">
+                <strong>Salão Bella</strong>
+                <span class="consulta-status"><span class="consulta-status-ponto alerta" aria-hidden="true"></span>Pagamento parcial</span>
+              </div>
+              <div class="consulta-menu-area">
+                <button class="botao-menu" type="button" data-acerto-menu="salao" aria-label="Ações do acerto do Salão Bella" aria-expanded="false">...</button>
+                <div class="consulta-menu" data-acerto-menu-lista="salao" hidden>
+                  <button class="consulta-menu-acao" type="button" data-acerto-action="Registrar pagamento">Registrar pagamento</button>
+                  <button class="consulta-menu-acao" type="button" data-acerto-action="Ver histórico">Ver histórico</button>
+                </div>
+              </div>
+            </div>
+            <div class="consulta-resumos">
+              <div class="consulta-resumo"><span>Valor acordado</span><strong>R$ 110,00</strong></div>
+              <div class="consulta-resumo"><span>Já pago</span><strong>R$ 60,00</strong></div>
+            </div>
+            <div class="consulta-total"><span>Venda: 3 Canecas Flores</span><button class="link-discreto" type="button" data-acerto-detalhe="salao">Ver detalhes</button></div>
+          </article>
+
+          <article class="cartao consulta-item" data-acerto-id="loja" data-name="loja da ana" data-status="aberto">
+            <div class="consulta-cabecalho">
+              <div class="consulta-identidade">
+                <strong>Loja da Ana</strong>
+                <span class="consulta-status"><span class="consulta-status-ponto erro" aria-hidden="true"></span>Pagamento em aberto</span>
+              </div>
+              <div class="consulta-menu-area">
+                <button class="botao-menu" type="button" data-acerto-menu="loja" aria-label="Ações do acerto da Loja da Ana" aria-expanded="false">...</button>
+                <div class="consulta-menu" data-acerto-menu-lista="loja" hidden>
+                  <button class="consulta-menu-acao" type="button" data-acerto-action="Registrar pagamento">Registrar pagamento</button>
+                  <button class="consulta-menu-acao" type="button" data-acerto-action="Ver histórico">Ver histórico</button>
+                </div>
+              </div>
+            </div>
+            <div class="consulta-resumos">
+              <div class="consulta-resumo"><span>Valor acordado</span><strong>R$ 59,80</strong></div>
+              <div class="consulta-resumo"><span>Já pago</span><strong>R$ 0,00</strong></div>
+            </div>
+            <div class="consulta-total"><span>Venda: 2 Velas Baunilha</span><button class="link-discreto" type="button" data-acerto-detalhe="loja">Ver detalhes</button></div>
+          </article>
+        </div>
+
+        <p class="consulta-lista-vazia" id="acertos-vazio">Nenhum acerto encontrado.</p>
+
+        <div class="consulta-detalhado" id="acertos-detalhado">
+          <article class="cartao" data-acerto-detalhado="salao" data-name="salão bella" data-status="parcial">
+            <div class="consulta-cabecalho">
+              <div class="consulta-identidade">
+                <strong>Salão Bella</strong>
+                <span class="consulta-status"><span class="consulta-status-ponto alerta" aria-hidden="true"></span>Pagamento parcial</span>
+              </div>
+            </div>
             <span class="detalhe">Venda pendente: 3 Canecas Flores</span>
             <div class="quadro-detalhes">
               <div class="linha-detalhe"><span>Valor calculado</span><strong>R$ 119,70</strong></div>
               <div class="linha-detalhe"><span>Valor acordado</span><strong>R$ 110,00</strong></div>
-              <div class="linha-detalhe"><span>Pagamento de agora</span><strong>R$ 60,00</strong></div>
+              <div class="linha-detalhe"><span>Já pago</span><strong>R$ 60,00</strong></div>
+              <div class="linha-detalhe"><span>Falta acertar</span><strong>R$ 50,00</strong></div>
             </div>
             <button class="botao-principal" type="button" data-flow="acerto">Registrar acerto parcial</button>
           </article>
-          <article class="cartao">
-            <h3>Loja da Ana</h3>
+
+          <article class="cartao" data-acerto-detalhado="loja" data-name="loja da ana" data-status="aberto">
+            <div class="consulta-cabecalho">
+              <div class="consulta-identidade">
+                <strong>Loja da Ana</strong>
+                <span class="consulta-status"><span class="consulta-status-ponto erro" aria-hidden="true"></span>Pagamento em aberto</span>
+              </div>
+            </div>
             <span class="detalhe">2 Velas Baunilha aguardando acerto</span>
             <div class="quadro-detalhes">
               <div class="linha-detalhe"><span>Valor calculado</span><strong>R$ 59,80</strong></div>
               <div class="linha-detalhe"><span>Valor acordado</span><strong>R$ 59,80</strong></div>
-              <div class="linha-detalhe"><span>Pagamento de agora</span><strong>R$ 59,80</strong></div>
+              <div class="linha-detalhe"><span>Já pago</span><strong>R$ 0,00</strong></div>
+              <div class="linha-detalhe"><span>Falta acertar</span><strong>R$ 59,80</strong></div>
             </div>
             <button class="botao-secundario" type="button" data-flow="acerto" data-variant="total">Registrar pagamento total</button>
           </article>
         </div>
       </section>
+
+      <div class="consulta-modal" id="acertos-modal" hidden aria-hidden="true">
+        <div class="consulta-folha" role="dialog" aria-modal="true" aria-labelledby="acertos-modal-titulo">
+          <div class="consulta-folha-cabecalho">
+            <div>
+              <h3 id="acertos-modal-titulo">Salão Bella</h3>
+              <p id="acertos-modal-subtitulo">Resumo do acerto.</p>
+            </div>
+            <button class="botao-fechar" type="button" id="fechar-acertos-modal" aria-label="Fechar detalhe">X</button>
+          </div>
+          <div class="quadro-detalhes" id="acertos-modal-conteudo"></div>
+        </div>
+      </div>
 
       <section class="tela" id="tela-fluxo" aria-live="polite">
         <button class="voltar" type="button" data-route="home">‹ Voltar</button>
@@ -1169,6 +2170,213 @@
     const ultimoResultado = document.querySelector('#ultimo-resultado');
     const ultimoTitulo = document.querySelector('#ultimo-titulo');
     const ultimoTexto = document.querySelector('#ultimo-texto');
+    const telaEstoque = document.querySelector('#tela-estoque');
+    const estoqueBusca = document.querySelector('#estoque-busca');
+    const estoqueContagem = document.querySelector('#estoque-contagem');
+    const estoqueVazio = document.querySelector('#estoque-vazio');
+    const estoqueAviso = document.querySelector('#estoque-aviso');
+    const estoqueModal = document.querySelector('#estoque-modal');
+    const estoqueModalTitulo = document.querySelector('#estoque-modal-titulo');
+    const estoqueModalSubtitulo = document.querySelector('#estoque-modal-subtitulo');
+    const estoqueModalConteudo = document.querySelector('#estoque-modal-conteudo');
+    let estoqueFiltroAtual = 'todos';
+    let parceiroFiltroAtual = 'todos';
+    let acertoFiltroAtual = 'todos';
+
+    const dadosParceiros = {
+      salao: {
+        nome: 'Salão Bella',
+        subtitulo: 'Responsável: Carla',
+        linhas: [
+          ['Caneca Flores no parceiro', '4 unidades'],
+          ['Kit Presente Lavanda', '2 unidades'],
+          ['Valor a conferir', 'R$ 119,70']
+        ]
+      },
+      loja: {
+        nome: 'Loja da Ana',
+        subtitulo: 'Sem atualização há 12 dias',
+        linhas: [
+          ['Caneca Flores no parceiro', '1 unidade'],
+          ['Vela Baunilha no parceiro', '2 unidades'],
+          ['Situação', 'Conferir']
+        ]
+      }
+    };
+
+    const dadosAcertos = {
+      salao: {
+        nome: 'Salão Bella',
+        subtitulo: 'Pagamento parcial',
+        linhas: [
+          ['Valor calculado', 'R$ 119,70'],
+          ['Valor acordado', 'R$ 110,00'],
+          ['Já pago', 'R$ 60,00'],
+          ['Falta acertar', 'R$ 50,00']
+        ]
+      },
+      loja: {
+        nome: 'Loja da Ana',
+        subtitulo: 'Pagamento em aberto',
+        linhas: [
+          ['Valor calculado', 'R$ 59,80'],
+          ['Valor acordado', 'R$ 59,80'],
+          ['Já pago', 'R$ 0,00'],
+          ['Falta acertar', 'R$ 59,80']
+        ]
+      }
+    };
+
+    const dadosEstoque = {
+      caneca: {
+        nome: 'Caneca Flores',
+        proprio: 2,
+        parceiros: [
+          ['Salão Bella', 4],
+          ['Loja da Ana', 1]
+        ]
+      },
+      kit: {
+        nome: 'Kit Presente Lavanda',
+        proprio: 0,
+        parceiros: [
+          ['Salão Bella', 2],
+          ['Loja da Ana', 0]
+        ]
+      },
+      vela: {
+        nome: 'Vela Baunilha',
+        proprio: 4,
+        parceiros: [
+          ['Salão Bella', 3],
+          ['Loja da Ana', 2]
+        ]
+      }
+    };
+
+    function produtoPassaNoFiltro(produto) {
+      const busca = estoqueBusca.value.trim().toLocaleLowerCase();
+      const nomeBate = !busca || produto.dataset.name.includes(busca);
+      let filtroBate = true;
+
+      if (estoqueFiltroAtual === 'baixo') filtroBate = produto.dataset.status === 'baixo';
+      if (estoqueFiltroAtual === 'sem-estoque') filtroBate = produto.dataset.status === 'sem-estoque';
+      if (estoqueFiltroAtual === 'em-pontos') filtroBate = produto.dataset.partners === 'true';
+
+      return nomeBate && filtroBate;
+    }
+
+    function aplicarEstoqueFiltros() {
+      const produtosLista = [...document.querySelectorAll('.produto-item')];
+      const produtosDetalhados = [...document.querySelectorAll('.produto-detalhado')];
+      const visiveis = produtosLista.filter(produtoPassaNoFiltro);
+
+      produtosLista.forEach((produto) => produto.classList.toggle('oculto', !produtoPassaNoFiltro(produto)));
+      produtosDetalhados.forEach((produto) => produto.classList.toggle('oculto', !produtoPassaNoFiltro(produto)));
+      estoqueContagem.textContent = `${visiveis.length} ${visiveis.length === 1 ? 'produto' : 'produtos'}`;
+      estoqueVazio.classList.toggle('visivel', visiveis.length === 0);
+    }
+
+    function trocarVistaEstoque(vista) {
+      telaEstoque.dataset.view = vista;
+      document.querySelectorAll('[data-estoque-vista]').forEach((botao) => {
+        const ativo = botao.dataset.estoqueVista === vista;
+        botao.classList.toggle('ativo', ativo);
+        botao.setAttribute('aria-pressed', String(ativo));
+      });
+      aplicarEstoqueFiltros();
+    }
+
+    function fecharMenusProduto() {
+      document.querySelectorAll('[data-produto-menu]').forEach((botao) => botao.setAttribute('aria-expanded', 'false'));
+      document.querySelectorAll('.menu-produto').forEach((menu) => { menu.hidden = true; });
+    }
+
+    function abrirDetalheEstoque(id) {
+      const produto = dadosEstoque[id];
+      if (!produto) return;
+
+      const totalParceiros = produto.parceiros.reduce((total, [, quantidade]) => total + quantidade, 0);
+      estoqueModalTitulo.textContent = produto.nome;
+      estoqueModalSubtitulo.textContent = `${totalParceiros} unidades em Pontos Parceiros`;
+      estoqueModalConteudo.innerHTML = `
+        <div class="linha-detalhe"><span>Meu estoque</span><strong>${produto.proprio} unidades</strong></div>
+        ${produto.parceiros.map(([nome, quantidade]) => `
+          <div class="linha-detalhe"><span>${nome}</span><strong>${quantidade} ${quantidade === 1 ? 'unidade' : 'unidades'}</strong></div>
+        `).join('')}
+        <div class="linha-detalhe"><span>Estoque total</span><strong>${produto.proprio + totalParceiros} unidades</strong></div>
+      `;
+      estoqueModal.hidden = false;
+      estoqueModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-aberto');
+    }
+
+    function fecharDetalheEstoque() {
+      estoqueModal.hidden = true;
+      estoqueModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-aberto');
+    }
+
+    function mostrarAvisoEstoque(texto) {
+      mostrarAvisoTela(document.querySelector('#tela-estoque'), texto);
+    }
+
+    function mostrarAvisoTela(tela, texto) {
+      const aviso = tela.querySelector('.estoque-aviso');
+      if (!aviso) return;
+      aviso.textContent = texto;
+      aviso.classList.add('visivel');
+      window.setTimeout(() => aviso.classList.remove('visivel'), 2600);
+    }
+
+    function produtoConsultaPassaNoFiltro(item, filtro, busca) {
+      const nomeBate = !busca || item.dataset.name.includes(busca);
+      const filtroBate = filtro === 'todos' || item.dataset.status === filtro;
+      return nomeBate && filtroBate;
+    }
+
+    function atualizarConsulta({ busca, filtro, lista, detalhado, contagem, vazio, plural }) {
+      const textoBusca = busca.value.trim().toLocaleLowerCase();
+      const itensLista = [...lista.querySelectorAll('[data-name]')];
+      const itensDetalhados = [...detalhado.querySelectorAll('[data-name]')];
+      const visiveis = itensLista.filter((item) => produtoConsultaPassaNoFiltro(item, filtro, textoBusca));
+
+      itensLista.forEach((item) => item.classList.toggle('oculto', !produtoConsultaPassaNoFiltro(item, filtro, textoBusca)));
+      itensDetalhados.forEach((item) => item.classList.toggle('oculto', !produtoConsultaPassaNoFiltro(item, filtro, textoBusca)));
+      contagem.textContent = `${visiveis.length} ${visiveis.length === 1 ? plural.singular : plural.plural}`;
+      vazio.classList.toggle('visivel', visiveis.length === 0);
+    }
+
+    function trocarVistaConsulta(tela, botoes, vista) {
+      tela.dataset.view = vista;
+      botoes.forEach((botao) => {
+        const ativo = botao.dataset.parceiroVista === vista || botao.dataset.acertoVista === vista;
+        botao.classList.toggle('ativo', ativo);
+        botao.setAttribute('aria-pressed', String(ativo));
+      });
+    }
+
+    function fecharMenusConsulta() {
+      document.querySelectorAll('[data-consulta-menu], [data-acerto-menu]').forEach((botao) => botao.setAttribute('aria-expanded', 'false'));
+      document.querySelectorAll('.consulta-menu').forEach((menu) => { menu.hidden = true; });
+    }
+
+    function abrirFolhaConsulta({ modal, titulo, subtitulo, conteudo, linhas }) {
+      modal.querySelector('[id$="-modal-titulo"]').textContent = titulo;
+      modal.querySelector('[id$="-modal-subtitulo"]').textContent = subtitulo;
+      conteudo.innerHTML = linhas.map(([rotulo, valor]) => `
+        <div class="linha-detalhe"><span>${rotulo}</span><strong>${valor}</strong></div>
+      `).join('');
+      modal.hidden = false;
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-aberto');
+    }
+
+    function fecharFolhaConsulta(modal) {
+      modal.hidden = true;
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-aberto');
+    }
 
     function fecharMenu() {
       dial.classList.remove('aberto');
@@ -1295,6 +2503,195 @@
       }
     });
 
+    document.querySelectorAll('[data-estoque-filtro]').forEach((botao) => {
+      botao.addEventListener('click', () => {
+        estoqueFiltroAtual = botao.dataset.estoqueFiltro;
+        document.querySelectorAll('[data-estoque-filtro]').forEach((item) => item.classList.toggle('ativo', item === botao));
+        aplicarEstoqueFiltros();
+      });
+    });
+
+    document.querySelectorAll('[data-estoque-vista]').forEach((botao) => {
+      botao.addEventListener('click', () => trocarVistaEstoque(botao.dataset.estoqueVista));
+    });
+
+    estoqueBusca.addEventListener('input', aplicarEstoqueFiltros);
+
+    document.addEventListener('click', (event) => {
+      const menuBotao = event.target.closest('[data-produto-menu]');
+      if (menuBotao) {
+        const menu = document.querySelector(`[data-menu="${menuBotao.dataset.produtoMenu}"]`);
+        const abrir = menu.hidden;
+        fecharMenusProduto();
+        menu.hidden = !abrir;
+        menuBotao.setAttribute('aria-expanded', String(abrir));
+        return;
+      }
+
+      const acaoProduto = event.target.closest('[data-stock-action]');
+      if (acaoProduto) {
+        mostrarAvisoEstoque(`${acaoProduto.dataset.stockAction} ficará disponível neste fluxo.`);
+        fecharMenusProduto();
+        return;
+      }
+
+      const detalhe = event.target.closest('[data-estoque-detalhe]');
+      if (detalhe) {
+        abrirDetalheEstoque(detalhe.dataset.estoqueDetalhe);
+        return;
+      }
+
+      if (!event.target.closest('.produto-menu-area')) fecharMenusProduto();
+    });
+
+    const parceirosBusca = document.querySelector('#parceiros-busca');
+    const parceirosLista = document.querySelector('#parceiros-lista');
+    const parceirosDetalhado = document.querySelector('#parceiros-detalhado');
+    const parceirosContagem = document.querySelector('#parceiros-contagem');
+    const parceirosVazio = document.querySelector('#parceiros-vazio');
+    const parceirosModal = document.querySelector('#parceiros-modal');
+
+    const acertosBusca = document.querySelector('#acertos-busca');
+    const acertosLista = document.querySelector('#acertos-lista');
+    const acertosDetalhado = document.querySelector('#acertos-detalhado');
+    const acertosContagem = document.querySelector('#acertos-contagem');
+    const acertosVazio = document.querySelector('#acertos-vazio');
+    const acertosModal = document.querySelector('#acertos-modal');
+
+    function atualizarParceiros() {
+      atualizarConsulta({
+        busca: parceirosBusca,
+        filtro: parceiroFiltroAtual,
+        lista: parceirosLista,
+        detalhado: parceirosDetalhado,
+        contagem: parceirosContagem,
+        vazio: parceirosVazio,
+        plural: { singular: 'Ponto Parceiro', plural: 'Pontos Parceiros' }
+      });
+    }
+
+    function atualizarAcertos() {
+      atualizarConsulta({
+        busca: acertosBusca,
+        filtro: acertoFiltroAtual,
+        lista: acertosLista,
+        detalhado: acertosDetalhado,
+        contagem: acertosContagem,
+        vazio: acertosVazio,
+        plural: { singular: 'acerto', plural: 'acertos' }
+      });
+    }
+
+    document.querySelectorAll('[data-parceiro-filtro]').forEach((botao) => {
+      botao.addEventListener('click', () => {
+        parceiroFiltroAtual = botao.dataset.parceiroFiltro;
+        document.querySelectorAll('[data-parceiro-filtro]').forEach((item) => item.classList.toggle('ativo', item === botao));
+        atualizarParceiros();
+      });
+    });
+
+    document.querySelectorAll('[data-acerto-filtro]').forEach((botao) => {
+      botao.addEventListener('click', () => {
+        acertoFiltroAtual = botao.dataset.acertoFiltro;
+        document.querySelectorAll('[data-acerto-filtro]').forEach((item) => item.classList.toggle('ativo', item === botao));
+        atualizarAcertos();
+      });
+    });
+
+    parceirosBusca.addEventListener('input', atualizarParceiros);
+    acertosBusca.addEventListener('input', atualizarAcertos);
+
+    document.querySelectorAll('[data-parceiro-vista]').forEach((botao) => {
+      botao.addEventListener('click', () => {
+        trocarVistaConsulta(document.querySelector('#tela-parceiros'), document.querySelectorAll('[data-parceiro-vista]'), botao.dataset.parceiroVista);
+        atualizarParceiros();
+      });
+    });
+
+    document.querySelectorAll('[data-acerto-vista]').forEach((botao) => {
+      botao.addEventListener('click', () => {
+        trocarVistaConsulta(document.querySelector('#tela-acertos'), document.querySelectorAll('[data-acerto-vista]'), botao.dataset.acertoVista);
+        atualizarAcertos();
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      const parceiroMenuBotao = event.target.closest('[data-consulta-menu]');
+      if (parceiroMenuBotao) {
+        const menu = document.querySelector(`[data-consulta-menu-lista="${parceiroMenuBotao.dataset.consultaMenu}"]`);
+        const abrir = menu.hidden;
+        fecharMenusConsulta();
+        menu.hidden = !abrir;
+        parceiroMenuBotao.setAttribute('aria-expanded', String(abrir));
+        return;
+      }
+
+      const acertoMenuBotao = event.target.closest('[data-acerto-menu]');
+      if (acertoMenuBotao) {
+        const menu = document.querySelector(`[data-acerto-menu-lista="${acertoMenuBotao.dataset.acertoMenu}"]`);
+        const abrir = menu.hidden;
+        fecharMenusConsulta();
+        menu.hidden = !abrir;
+        acertoMenuBotao.setAttribute('aria-expanded', String(abrir));
+        return;
+      }
+
+      const consultaAction = event.target.closest('[data-consulta-action]');
+      if (consultaAction) {
+        mostrarAvisoTela(consultaAction.closest('.tela'), `${consultaAction.dataset.consultaAction} ficará disponível neste fluxo.`);
+        fecharMenusConsulta();
+        return;
+      }
+
+      const acertoAction = event.target.closest('[data-acerto-action]');
+      if (acertoAction) {
+        mostrarAvisoTela(acertoAction.closest('.tela'), `${acertoAction.dataset.acertoAction} ficará disponível neste fluxo.`);
+        fecharMenusConsulta();
+        return;
+      }
+
+      const parceiroDetalhe = event.target.closest('[data-parceiro-detalhe]');
+      if (parceiroDetalhe) {
+        const dados = dadosParceiros[parceiroDetalhe.dataset.parceiroDetalhe];
+        abrirFolhaConsulta({
+          modal: parceirosModal,
+          titulo: dados.nome,
+          subtitulo: dados.subtitulo,
+          conteudo: document.querySelector('#parceiros-modal-conteudo'),
+          linhas: dados.linhas
+        });
+        return;
+      }
+
+      const acertoDetalhe = event.target.closest('[data-acerto-detalhe]');
+      if (acertoDetalhe) {
+        const dados = dadosAcertos[acertoDetalhe.dataset.acertoDetalhe];
+        abrirFolhaConsulta({
+          modal: acertosModal,
+          titulo: dados.nome,
+          subtitulo: dados.subtitulo,
+          conteudo: document.querySelector('#acertos-modal-conteudo'),
+          linhas: dados.linhas
+        });
+        return;
+      }
+
+      if (!event.target.closest('.consulta-menu-area')) fecharMenusConsulta();
+    });
+
+    document.querySelector('#fechar-estoque-modal').addEventListener('click', fecharDetalheEstoque);
+    estoqueModal.addEventListener('click', (event) => {
+      if (event.target === estoqueModal) fecharDetalheEstoque();
+    });
+    document.querySelector('#fechar-parceiros-modal').addEventListener('click', () => fecharFolhaConsulta(parceirosModal));
+    document.querySelector('#fechar-acertos-modal').addEventListener('click', () => fecharFolhaConsulta(acertosModal));
+    parceirosModal.addEventListener('click', (event) => {
+      if (event.target === parceirosModal) fecharFolhaConsulta(parceirosModal);
+    });
+    acertosModal.addEventListener('click', (event) => {
+      if (event.target === acertosModal) fecharFolhaConsulta(acertosModal);
+    });
+
     botaoRegistrar.addEventListener('click', (event) => {
       event.stopPropagation();
       alternarMenu();
@@ -1305,8 +2702,19 @@
       renderizarFluxo(estado.fluxoAtual, estado.varianteAtual);
     });
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') fecharMenu();
+      if (event.key === 'Escape') {
+        fecharMenu();
+        fecharDetalheEstoque();
+        fecharFolhaConsulta(parceirosModal);
+        fecharFolhaConsulta(acertosModal);
+        fecharMenusProduto();
+        fecharMenusConsulta();
+      }
     });
+
+    aplicarEstoqueFiltros();
+    atualizarParceiros();
+    atualizarAcertos();
   </script>
 </body>
 </html>

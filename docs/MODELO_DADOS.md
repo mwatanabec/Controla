@@ -1,6 +1,6 @@
 # Modelo de dados da V1 — Maria Controla
 
-**Status:** proposta detalhada em revisão. Este documento ainda não cria tabelas nem migrações SQL.
+**Status:** aprovado para o lote de implementação do esquema. Este documento ainda não cria tabelas nem migrações SQL.
 
 ## 1. Objetivo
 
@@ -73,6 +73,7 @@ erDiagram
     PARTNER_POINTS ||--o{ SETTLEMENTS : acerta
     SETTLEMENTS ||--|{ SETTLEMENT_ITEMS : inclui
     SALE_ITEMS ||--o{ SETTLEMENT_ITEMS : referencia
+    SETTLEMENT_ITEMS ||--o{ SETTLEMENT_ITEM_ADJUSTMENTS : corrige
     SETTLEMENTS ||--o{ SETTLEMENT_PAYMENTS : recebe
 
     PRODUCTS ||--o{ STOCK_MOVEMENTS : movimenta
@@ -423,7 +424,13 @@ Regras:
 - combinação única de produto e localização;
 - alteração ocorre na mesma transação que cria o movimento;
 - o saldo pode ser recalculado pela soma de `stock_movements`;
-- saldo negativo é permitido somente para preservar um fato offline concorrente e deve gerar conflito visível.
+- saldo negativo é rejeitado em venda ou envio comum quando não existe uma divergência concorrente;
+- saldo negativo só é gravado para preservar fatos offline concorrentes aceitos como conflito;
+- quando negativo, o saldo recebe sinalização de conflito aberto e aparece como estoque crítico na Home;
+- novas vendas e envios do mesmo produto e localização ficam bloqueados enquanto o conflito estiver aberto;
+- vendas, envios e operações de outros produtos ou localizações não são bloqueados por esse conflito;
+- somente owner ou admin pode resolver o conflito por ajuste, estorno ou confirmação rastreável;
+- a resolução sempre cria novo evento e não altera o movimento que originou o saldo negativo.
 
 ## 8. Acertos e pagamentos parciais
 
@@ -457,10 +464,36 @@ Campos:
 
 Regras:
 
-- uma venda pode participar de mais de um acerto até que sua quantidade e seu valor estejam integralmente tratados;
-- a soma considerada nunca pode exceder a venda sem gerar conflito;
-- a distribuição de uma diferença do cabeçalho entre itens será automática, mas a regra exata será definida na implementação do fluxo;
+- cada linha representa uma alocação parcial de um `sale_item` naquele acerto;
+- a mesma venda pode ser dividida entre vários acertos, inclusive com quantidades diferentes em cada linha;
+- `quantity_considered` deve ser positiva e a soma das quantidades ativas alocadas nunca pode exceder `sale_items.quantity`;
+- o restante não alocado continua elegível para outro acerto;
+- `calculated_amount_cents` é calculado pela quantidade alocada e pelo valor histórico da venda;
+- o valor acordado do cabeçalho é distribuído entre os itens proporcionalmente ao valor calculado, com o resíduo de centavos atribuído ao último item;
+- a soma dos valores acordados dos itens deve ser igual ao valor acordado do acerto;
+- pagamento não pode ultrapassar o valor acordado sem confirmação explícita e conflito rastreável;
 - o vínculo com a venda nunca é apagado após pagamento.
+
+### `settlement_item_adjustments`
+
+Registra devoluções, estornos ou correções que alteram a quantidade e o valor de uma linha de acerto sem editar o fato original.
+
+Campos:
+
+- `id`, `business_id`, `settlement_item_id`, `sale_item_id`;
+- `adjustment_type`: return, reversal ou correction;
+- `quantity`, sempre positiva;
+- `calculated_amount_cents`, `agreed_amount_cents`;
+- operação de origem, motivo, `occurred_at` e auditoria.
+
+Regras:
+
+- a soma dos ajustes de quantidade nunca pode exceder a quantidade considerada na linha;
+- uma devolução posterior a um acerto cria ajuste vinculado à devolução, sem apagar venda ou acerto;
+- se o acerto estiver aberto ou parcialmente pago, o ajuste reduz a pendência ainda não paga;
+- se o acerto já estiver pago, o ajuste preserva o pagamento concluído e gera crédito ou diferença para o próximo acerto do mesmo parceiro;
+- um ajuste não devolve automaticamente a quantidade para uma nova alocação financeira;
+- correções são imutáveis e novos ajustes devem ser usados para desfazê-las.
 
 ### `settlement_payments`
 
@@ -496,11 +529,21 @@ Campos:
 - `device_sequence`, crescente dentro da instalação;
 - `command_type`, `payload_version`, `payload`;
 - `occurred_at`, `received_at`, `processed_at`;
-- `status`: received, processing, accepted, conflict ou rejected;
+- `status`: received, processing, waiting_dependency, retry_wait, failed_transient, accepted, conflict ou rejected;
+- `attempt_count`, `last_attempt_at`, `next_attempt_at`;
+- `processing_started_at`, `processing_expires_at`;
+- `last_error_code`, `last_error_message` seguros para diagnóstico;
 - entidade criada ou afetada;
 - código e mensagem segura de resultado.
 
-Regra: receber novamente o mesmo `id` devolve o resultado anterior, sem repetir a operação.
+Regras:
+
+- receber novamente o mesmo `id` devolve o resultado anterior, sem repetir a operação;
+- `processing` possui prazo de processamento e não pode ficar indefinido;
+- se o prazo expirar, o comando registra `processing_interrupted`, volta para `retry_wait` e pode ser retomado com o mesmo `command_id`;
+- falha temporária usa `failed_transient` ou `retry_wait` conforme ainda exista nova tentativa automática;
+- comando dependente fica em `waiting_dependency` até a dependência ser aceita ou resolvida;
+- rejeição definitiva não entra em repetição automática.
 
 ### `sync_conflicts`
 
@@ -529,6 +572,15 @@ Campos:
 
 O aparelho guarda o último `sequence` aplicado e busca apenas mudanças posteriores. Tempo do relógio do celular não será usado como cursor.
 
+Regras de retenção e recuperação:
+
+- o `change_log` operacional será retido por no mínimo 180 dias;
+- eventos e movimentos de estoque permanecem nas tabelas de origem conforme a política de dados do negócio, mesmo quando saírem do feed incremental;
+- se o aparelho pedir uma sequência anterior ao período retido, o servidor não tenta reconstruir uma janela incompleta: exige nova fotografia completa;
+- a fotografia completa inclui catálogo autorizado, parceiros, preços, saldos, acertos pendentes, conflitos e comandos locais ainda não confirmados;
+- mudanças de estoque são publicadas como eventos/movimentos; saldos são projeções e podem acompanhar a fotografia ou uma atualização derivada, mas não substituem os eventos;
+- operações enviadas pelo aparelho mantêm seu comando e evento de origem, mesmo quando a mudança incremental já foi aplicada.
+
 ### `audit_events`
 
 Registra ações administrativas e alterações relevantes que não são movimentos de estoque.
@@ -550,7 +602,7 @@ Não deve armazenar senha, token ou conteúdo sensível desnecessário.
 | Preço padrão | `products` | cópia local |
 | Preço do parceiro | `partner_product_prices` | cópia local |
 | Preço histórico da venda | `sale_items.unit_price_cents` | não substituir |
-| Vendido ainda não tratado em acerto | vendas em parceiro menos itens de acerto | resumo por parceiro |
+| Vendido ainda não tratado em acerto | vendas em parceiro menos alocações ativas de `settlement_items` e ajustes | resumo por parceiro |
 | Valor acordado | `settlements` e `settlement_items` | resumo por parceiro |
 | Valor pago | `settlement_payments` | `settlements.paid_amount_cents` |
 | Pendência de sincronização | caixa local `outbox` | contador visual |
@@ -592,28 +644,30 @@ Não deve armazenar senha, token ou conteúdo sensível desnecessário.
 ### Acerto parcial
 
 1. reúne vendas ainda não totalmente tratadas;
-2. calcula o valor e permite registrar valor acordado diferente;
-3. preserva os itens de venda vinculados;
-4. recebe um ou mais pagamentos;
-5. mantém status partially_paid até completar o valor acordado.
+2. permite dividir cada venda entre uma ou mais linhas de acerto sem exceder sua quantidade;
+3. calcula os valores das linhas e permite registrar valor acordado diferente no cabeçalho;
+4. distribui o valor acordado entre as linhas e preserva os itens de venda vinculados;
+5. recebe um ou mais pagamentos;
+6. mantém status partially_paid até completar o valor acordado;
+7. se houver devolução posterior, cria ajuste de item e trata a diferença conforme o acerto esteja aberto, parcial ou pago.
 
 ### Conflito offline
 
 1. servidor recebe comando idempotente;
 2. preserva o fato operacional válido;
-3. se o resultado gerar saldo negativo ou versão concorrente, cria `sync_conflict`;
-4. Cliente 1 recebe alerta;
-5. resolução cria ajuste, estorno ou confirmação rastreável.
+3. se o resultado gerar saldo negativo concorrente ou versão concorrente, cria `sync_conflict` e marca o comando como `conflict`;
+4. o saldo negativo aparece como crítico e bloqueia novas vendas e envios daquela combinação de produto e localização;
+5. Cliente 1 recebe alerta;
+6. owner ou admin resolve por ajuste, estorno ou confirmação rastreável;
+7. a resolução cria novo evento e mantém o comando e o movimento originais.
 
-## 12. Itens deliberadamente não fechados neste lote
+## 12. Itens deliberadamente fora do lote SQL inicial
 
 - nomes físicos finais, tipos SQL, índices e políticas RLS;
 - unicidade global ou por negócio do nome de usuário;
 - números dos limites comerciais;
 - bloqueio ou tolerância ao exceder dispositivos;
 - valores e forma de cobrança;
-- retenção e exclusão após cancelamento;
-- regra visual de distribuição da diferença de um acerto entre seus itens;
 - anexos e fotos além da estrutura conceitual.
 
 Esses pontos não impedem o modelo lógico. Os que afetam SQL deverão ser resolvidos ou mantidos configuráveis no próximo lote.

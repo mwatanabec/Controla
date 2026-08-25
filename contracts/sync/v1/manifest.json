@@ -1,0 +1,1 @@
+{"contract_version":"v1","payload_versions":{"command_envelope":1,"sync_response":1,"snapshot":1},"schemas":["command-envelope.schema.json","sync-response.schema.json","snapshot.schema.json"]}

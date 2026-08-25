@@ -46,7 +46,7 @@ Lotes operacionais desta etapa:
 
 ## Etapa 2 — Definição técnica proporcional
 
-**Situação:** em andamento. A arquitetura foi aprovada pela owner em 21 de agosto de 2026. O [modelo detalhado dos dados](MODELO_DADOS.md) e o [protocolo de sincronização offline](SINCRONIZACAO_OFFLINE.md) foram preparados e aguardam revisão e aprovação antes de virarem migrations, políticas ou código. Antes da implementação técnica, foi iniciado um protótipo navegável de [fluxos funcionais da V1](FLUXOS_V1.md), com dados mockados, para testar compreensão, ordem das ações e estados offline.
+**Situação:** concluída e aprovada. A arquitetura, o modelo detalhado dos dados, o protocolo offline e os fluxos principais foram aprovados. O Lote 9 transformou o desenho em migrations SQL locais, RLS, funções, contratos e testes estruturais, sem aplicar banco remoto.
 
 **Objetivo:** definir a arquitetura e o banco de dados necessários para construir a V1 funcional, sem antecipar complexidades das evoluções futuras.
 
@@ -61,7 +61,7 @@ Inclui:
 - protótipo funcional mockado para testar Compra, Envio, Venda, Devolução, Acertos, Estoque e Parceiros;
 - riscos, custos e sequência de implementação.
 
-**Critério de conclusão:** arquitetura e modelagem inicial do banco documentadas e aprovadas antes da implementação.
+**Critério de conclusão:** arquitetura, modelagem inicial do banco, protocolo offline e fluxos principais documentados e aprovados antes da implementação técnica.
 
 ## Etapa 3 — V1 funcional para o cliente pagante
 

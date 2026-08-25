@@ -67,7 +67,10 @@ Este documento registra decisões vigentes do Maria Controla. Hipóteses e pergu
 - **Decisão:** a V1 permitirá operação offline para as rotinas principais, com dados locais, fila de comandos pendentes e sincronização com a nuvem quando houver conexão.
 - **Impacto:** o app mostrará claramente o que está apenas no aparelho, o que está sincronizando, o que foi confirmado e o que precisa de revisão. Cada comando terá identificação única para evitar duplicidade.
 - **Limite:** a sincronização com o app completamente fechado não é garantida em todos os navegadores. O sistema sincronizará ao recuperar conexão com o app aberto, ao reabrir o app e por ação manual, além de usar segundo plano quando houver suporte.
+- **Estados:** a fila terá estados para aguardando dependência, nova tentativa, falha temporária e processamento interrompido, além de aceito, conflito e rejeitado.
+- **Recuperação:** comando parado em processamento expira e retorna para nova tentativa usando o mesmo identificador idempotente.
 - **Conflitos:** alterações concorrentes não serão sobrescritas silenciosamente; os eventos serão preservados e divergências serão encaminhadas para conferência ou ajuste rastreável.
+- **Estoque negativo:** operação comum sem saldo é rejeitada. Saldo negativo só é preservado para conflito offline concorrente, aparece como crítico e bloqueia novas vendas/envios daquela combinação de produto e localização até resolução por owner ou admin.
 
 ### D-013 — Catálogo, categorias, preços e reposição
 
@@ -81,6 +84,17 @@ Este documento registra decisões vigentes do Maria Controla. Hipóteses e pergu
 - **Decisão:** o Cliente 1 poderá registrar vendas diretas, além das vendas realizadas nos Pontos Parceiros.
 - **Acertos:** pagamentos parciais serão permitidos. O sistema calculará automaticamente o valor das vendas pendentes, mas o valor acordado no acerto será editável.
 - **Histórico:** o valor calculado e o valor efetivamente acordado serão preservados separadamente. Uma justificativa poderá ser registrada quando houver diferença.
+- **Alocação:** uma venda poderá ser dividida por quantidade entre vários acertos, mas a soma das quantidades consideradas nunca poderá ultrapassar a quantidade vendida.
+- **Devolução posterior:** devolução, estorno ou correção depois do acerto gera ajuste rastreável. Acerto aberto ou parcial tem a pendência reduzida; acerto pago preserva o pagamento e gera crédito ou diferença para o próximo acerto do parceiro.
+- **Distribuição:** o valor acordado será distribuído entre os itens proporcionalmente ao valor calculado, com o resíduo de centavos no último item.
+
+### D-018 — Integridade de acertos, conflitos e dados offline
+
+- **Decisão:** as regras de alocação, ajuste posterior, estoque negativo concorrente e recuperação da fila descritas em D-012 e D-014 são obrigatórias para a V1.
+- **Histórico incremental:** o `change_log` será retido por no mínimo 180 dias. Cursor anterior ao período retido exige nova fotografia completa, sem perder os eventos nas tabelas de origem.
+- **Dados locais:** o aparelho manterá os últimos 180 dias ou 10.000 operações, o que for maior. Dados mais antigos exigirão internet.
+- **Continuidade offline:** produtos ativos, parceiros, preços, saldos, acertos pendentes, conflitos, dependências e fila local são dados obrigatórios. Fotos, histórico antigo e diagnósticos são descartáveis primeiro quando faltar espaço.
+- **Proteção:** se não for possível persistir com segurança um novo comando, o lançamento offline será bloqueado até sincronizar ou liberar espaço.
 
 ### D-015 — Cadastro e identificação do usuário
 

@@ -6,13 +6,13 @@ O produto não pretende ser um ERP, sistema fiscal, PDV ou plataforma financeira
 
 ## Momento atual
 
-Os Lotes 0, 1, 2, 3 e 4 foram aprovados. A etapa do protótipo mobile-first da Home está concluída, incluindo o roteiro de validação. Por decisão da owner do produto, não haverá sessões de validação antecipada como condição para a implementação. A arquitetura da V1 foi aprovada em 21 de agosto de 2026. O modelo detalhado dos dados e o protocolo offline foram preparados para revisão. Em seguida, foi iniciado o Lote 5 para testar telas e fluxos principais da V1 com dados mockados, sem backend, sem banco real e sem instalação de tecnologia.
+Os Lotes 0 a 8 foram concluídos conforme seus escopos. O protótipo mobile-first da Home e dos fluxos principais da V1 está aprovado, incluindo Estoque, Pontos Parceiros e Acertos. Por decisão da owner do produto, não haverá sessões de validação antecipada como condição para a implementação. A arquitetura da V1, o modelo detalhado dos dados e o protocolo offline estão aprovados para o próximo lote técnico. Até aqui, o projeto continua sem backend, banco real ou instalação de tecnologia.
 
 O cliente piloto é a **Anona Presentes**. Esse nome representa o primeiro caso de uso e não o nome do produto.
 
-## Objetivo da próxima etapa
+## Base técnica inicial da V1
 
-Revisar o protótipo navegável dos fluxos principais da V1, usando dados mockados da Anona Presentes para testar compreensão e ordem das ações. Depois dos ajustes de fluxo, revisar e aprovar o modelo detalhado dos dados e o protocolo de sincronização offline. Após essa aprovação, o próximo lote técnico poderá transformar o desenho em migrations SQL, políticas RLS e contratos versionados, ainda respeitando a separação entre arquitetura e implementação.
+O Lote 9 registrou migrations SQL locais, políticas RLS, funções transacionais iniciais, contratos versionados de sincronização e testes estruturais. Nenhuma migration foi aplicada em banco remoto, nem houve instalação, credencial, deploy ou alteração do protótipo visual.
 
 ## Fontes de verdade
 
@@ -21,8 +21,8 @@ Revisar o protótipo navegável dos fluxos principais da V1, usando dados mockad
 3. [Regras de negócio](docs/REGRAS_NEGOCIO.md)
 4. [Roadmap](docs/ROADMAP.md)
 5. [Arquitetura aprovada](docs/ARQUITETURA.md)
-6. [Modelo de dados em revisão](docs/MODELO_DADOS.md)
-7. [Sincronização offline em revisão](docs/SINCRONIZACAO_OFFLINE.md)
+6. [Modelo de dados aprovado para o esquema](docs/MODELO_DADOS.md)
+7. [Sincronização offline aprovada para a base técnica](docs/SINCRONIZACAO_OFFLINE.md)
 8. [Fluxos funcionais da V1](docs/FLUXOS_V1.md)
 9. [Brief da Home](docs/BRIEF_HOME.md)
 10. [Wireframe da Home](docs/WIREFRAME_HOME.md)
