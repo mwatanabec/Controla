@@ -1163,3 +1163,57 @@ Iniciar a implementação da Etapa 3 com a fundação do frontend e converter a 
 ### Próximo passo recomendado
 
 Planejar um lote pequeno para converter a tela Estoque aprovada para React e ligar a navegação da Home, ainda com dados mockados e sem antecipar a integração com o banco.
+
+## 2026-08-31 — Lote 11: tela Estoque em React
+
+### Objetivo do lote
+
+Converter a tela Estoque aprovada para React e ligá-la à Home, preservando a consulta compacta e a separação entre estoque próprio e estoque nos Pontos Parceiros.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `docs/REGRAS_NEGOCIO.md`, `docs/FLUXOS_V1.md` e `docs/LOG_TRABALHO.md`.
+- `prototipo/fluxos-v1.html`.
+- Componentes, estilos, dados e testes existentes em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/AppHeader.tsx` e `app/src/components/StockPage.tsx`.
+- Criados `app/src/data/stock.ts`, `app/src/types/stock.ts` e `app/src/types/navigation.ts`.
+- Alterados `app/src/App.tsx`, `app/src/App.css`, `app/src/App.test.tsx`, `app/src/index.css`, `app/src/components/HomePage.tsx` e `app/src/components/BottomNavigation.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Ligados os acessos `Estoque` e `Ver todos` da Home à nova tela.
+- Adicionada rota local `#estoque`, sem instalar biblioteca de rotas.
+- Implementadas busca e contagem dinâmica de produtos.
+- Implementados filtros por Todos, Baixo estoque, Em pontos e Sem estoque.
+- Implementadas as visões Lista e Detalhes.
+- Preservada a separação entre estoque próprio, quantidades por Ponto Parceiro e estoque total.
+- Implementados menu de ações preparatórias e folha de distribuição por produto.
+- Adicionados fechamento por botão, fundo ou tecla Escape e bloqueio de rolagem durante a folha de detalhe.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- A navegação inicial usa estado React e endereço por fragmento, sem nova dependência.
+- Ações que dependem de fluxos futuros continuam informativas e não alteram os dados mockados.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com oito testes aprovados.
+- `npm run build` executado com sucesso.
+- Dois testes estruturais existentes da base SQL executados com sucesso.
+- Tela Estoque revisada em navegador com lista, saldos, filtros e navegação inferior visíveis.
+
+### Pendências
+
+- Converter Pontos Parceiros e Acertos para React.
+- Implementar formulários reais de cadastro e movimentação.
+- Criar armazenamento local, integração com banco, autenticação e sincronização em lotes próprios.
+
+### Próximo passo recomendado
+
+Planejar um lote pequeno para converter a tela Pontos Parceiros aprovada para React e ligar sua navegação, ainda com dados mockados.
