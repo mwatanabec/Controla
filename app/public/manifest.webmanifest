@@ -1,0 +1,18 @@
+{
+  "name": "Maria Controla",
+  "short_name": "Controla",
+  "description": "Caderneta inteligente de mercadorias.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff9f6",
+  "theme_color": "#5b3a5e",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

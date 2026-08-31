@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Maria Controla">
+  <rect width="512" height="512" rx="120" fill="#5b3a5e"/>
+  <rect x="128" y="116" width="256" height="280" rx="48" fill="#fff9f6"/>
+  <path d="M186 204c0-39 31-70 70-70s70 31 70 70" fill="none" stroke="#f3d7cf" stroke-width="34" stroke-linecap="round"/>
+  <path d="M178 238h156v118H178z" fill="#f3d7cf"/>
+  <path d="m220 296 24 24 52-58" fill="none" stroke="#5b3a5e" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

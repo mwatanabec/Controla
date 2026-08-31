@@ -6,13 +6,31 @@ O produto não pretende ser um ERP, sistema fiscal, PDV ou plataforma financeira
 
 ## Momento atual
 
-Os Lotes 0 a 8 foram concluídos conforme seus escopos. O protótipo mobile-first da Home e dos fluxos principais da V1 está aprovado, incluindo Estoque, Pontos Parceiros e Acertos. Por decisão da owner do produto, não haverá sessões de validação antecipada como condição para a implementação. A arquitetura da V1, o modelo detalhado dos dados e o protocolo offline estão aprovados para o próximo lote técnico. Até aqui, o projeto continua sem backend, banco real ou instalação de tecnologia.
+Os Lotes 0 a 10 foram concluídos conforme seus escopos. O protótipo mobile-first da Home e dos fluxos principais da V1 está aprovado, incluindo Estoque, Pontos Parceiros e Acertos. A Etapa 3 está em andamento com a fundação da PWA em React, TypeScript e Vite e com a Home aprovada já convertida para componentes próprios. O projeto continua sem backend ativo, banco real, autenticação, credenciais ou deploy.
 
 O cliente piloto é a **Anona Presentes**. Esse nome representa o primeiro caso de uso e não o nome do produto.
 
 ## Base técnica inicial da V1
 
-O Lote 9 registrou migrations SQL locais, políticas RLS, funções transacionais iniciais, contratos versionados de sincronização e testes estruturais. Nenhuma migration foi aplicada em banco remoto, nem houve instalação, credencial, deploy ou alteração do protótipo visual.
+O Lote 9 registrou migrations SQL locais, políticas RLS, funções transacionais iniciais, contratos versionados de sincronização e testes estruturais. O Lote 10 criou o frontend em `app/`, configurou a estrutura inicial da PWA e implementou a Home com dados mockados da Anona Presentes. Nenhuma migration foi aplicada em banco remoto e não houve credencial ou deploy.
+
+## Frontend local
+
+Requisitos: Node.js compatível com o Vite e npm.
+
+```powershell
+cd app
+npm install
+npm run dev
+```
+
+Validações disponíveis:
+
+```powershell
+npm run lint
+npm run test
+npm run build
+```
 
 ## Fontes de verdade
 

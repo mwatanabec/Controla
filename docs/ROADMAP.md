@@ -65,6 +65,8 @@ Inclui:
 
 ## Etapa 3 — V1 funcional para o cliente pagante
 
+**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Backend, autenticação, banco ativo e sincronização ainda não foram conectados.
+
 **Objetivo:** entregar um produto pronto para uso que permita ao cliente pagante controlar manualmente o ciclo de mercadorias.
 
 Escopo da V1:
@@ -80,6 +82,11 @@ Escopo da V1:
 - operação offline das rotinas principais e sincronização posterior.
 
 **Critério de conclusão:** o cliente consegue rastrear o que entrou, onde está, o que vendeu, o que voltou e o que falta acertar.
+
+Lotes técnicos desta etapa:
+
+1. **Concluído — Lote 10:** fundação da PWA, componentes próprios, Home mobile-first, dados mockados e validações automatizadas;
+2. **Próximos lotes:** telas e rotinas funcionais, armazenamento local, integração com o banco, autenticação e sincronização.
 
 ## Etapa 4 — Apresentação do produto e fila de melhorias
 

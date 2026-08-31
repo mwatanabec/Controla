@@ -1110,3 +1110,56 @@ Criar a primeira base técnica versionada da V1, sem banco remoto, credenciais, 
 ### Próximo passo recomendado
 
 Criar ambiente local Supabase/PostgreSQL e testes transacionais reais para validar concorrência, RLS e os fluxos críticos contra o banco.
+
+## 2026-08-31 — Lote 10: fundação da PWA e Home em React
+
+### Objetivo do lote
+
+Iniciar a implementação da Etapa 3 com a fundação do frontend e converter a Home aprovada para React, TypeScript e Vite, mantendo dados mockados e sem conectar backend.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/CONTEXTO_PROJETO_MARIA_CONTROLA.md`, `docs/DECISOES.md` e `docs/REGRAS_NEGOCIO.md`.
+- `docs/ROADMAP.md`, `docs/ARQUITETURA.md`, `docs/MODELO_DADOS.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/FLUXOS_V1.md` e `docs/LOG_TRABALHO.md`.
+- `prototipo/home.html` e a estrutura de `prototipo/fluxos-v1.html`.
+
+### Arquivos criados ou alterados
+
+- Criada a aplicação frontend em `app/`, incluindo configurações, código React, estilos, dados mockados, ativos da PWA e testes.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Os protótipos aprovados foram preservados sem alteração.
+
+### O que foi feito
+
+- Configurados React, TypeScript, Vite, ESLint e Vitest.
+- Implementada a Home aprovada com componentes próprios, sem biblioteca visual.
+- Separados os dados mockados da Anona Presentes dos componentes da interface.
+- Mantidos resumo de atenção, reposição, produtos acabando, pendências com parceiros, atividades recentes e navegação inferior.
+- Implementado o menu radial de Compra, Envio, Venda e Devolução como navegação preparatória, sem criar operações reais.
+- Adicionados manifesto, ícone e service worker inicial para a fundação da PWA.
+- Adicionadas mensagens explícitas nas áreas reservadas aos próximos lotes.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- A interface da V1 será construída inicialmente com componentes próprios, sem biblioteca de componentes.
+- O HTML aprovado permanece como referência visual e não foi substituído ou removido.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com três testes aprovados.
+- `npm run build` executado com sucesso.
+- Home revisada em navegador, preservando a hierarquia visual e a navegação do protótipo aprovado.
+- Instalação concluída sem vulnerabilidades conhecidas reportadas pelo npm neste lote.
+
+### Pendências
+
+- Implementar as demais telas e os formulários dos fluxos aprovados.
+- Criar armazenamento local e fila offline.
+- Validar as migrations em Supabase/PostgreSQL local quando o ambiente estiver disponível.
+- Implementar autenticação, licença, integração com o banco e sincronização em lotes próprios.
+
+### Próximo passo recomendado
+
+Planejar um lote pequeno para converter a tela Estoque aprovada para React e ligar a navegação da Home, ainda com dados mockados e sem antecipar a integração com o banco.
