@@ -1,8 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import App from './App'
+import { deleteLocalDatabase, listOutboxCommands } from './services/localDatabase'
 
-afterEach(() => {
+afterEach(async () => {
   window.history.replaceState(null, '', '/')
+  await deleteLocalDatabase()
 })
 
 describe('Home', () => {
@@ -294,22 +296,34 @@ describe('Registrar compra', () => {
     openPurchase()
 
     fireEvent.change(screen.getByLabelText('Fornecedor'), { target: { value: '' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent('Informe o fornecedor da compra.')
     expect(screen.getByRole('heading', { name: 'Registrar compra' })).toBeInTheDocument()
   })
 
-  it('confirma a simulação sem apresentar o dado como persistido', () => {
+  it('salva a compra na outbox local sem apresentá-la como sincronizada', async () => {
     openPurchase()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
-    expect(screen.getByRole('heading', { name: 'Compra simulada' })).toBeInTheDocument()
-    expect(screen.getByText('A conferência foi concluída. Nenhum dado foi salvo no banco.')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Compra salva na demonstração' })).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho')).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho. Ainda não foi enviada ao banco central.')).toBeInTheDocument()
     expect(screen.getByText(/Aumentaria o estoque próprio de Caneca Flores/)).toHaveTextContent(
       'de 2 para 14 unidades',
     )
+
+    const commands = await listOutboxCommands()
+    expect(commands).toHaveLength(1)
+    expect(commands[0].command_type).toBe('purchase.confirm')
+    expect(commands[0].payload).toMatchObject({
+      product_name: 'Caneca Flores',
+      supplier_name: 'Atacado Jardim',
+      quantity: 12,
+      unit_cost_cents: 1800,
+      demo_mode: true,
+    })
 
     fireEvent.click(screen.getByRole('button', { name: 'Repetir esta compra' }))
     expect(screen.getByRole('heading', { name: 'Registrar compra' })).toBeInTheDocument()

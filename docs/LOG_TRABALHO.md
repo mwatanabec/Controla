@@ -1660,3 +1660,57 @@ Criar a fundação versionada do banco local e da fila de comandos offline, comp
 ### Próximo passo recomendado
 
 Definir se a próxima integração usará um modo de demonstração local explicitamente identificado ou se começará pela autenticação e pelo contexto real de negócio, usuário e aparelho.
+
+## 2026-09-01 — Lote 20: Compra conectada à outbox local
+
+### Objetivo do lote
+
+Criar uma identidade temporária e explícita para a demonstração local e fazer o formulário de Compra gravar um comando pendente no IndexedDB, sem apresentar a operação como sincronizada.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/DECISOES.md`, `docs/ARQUITETURA.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Contratos, tipos, serviços, formulário de Compra, estilos e testes relevantes em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criado `app/src/services/demoIdentity.ts`.
+- Alterados `app/src/services/localDatabase.ts`, `app/src/services/localDatabase.test.ts`, `app/src/components/PurchasePage.tsx`, `app/src/types/purchase.ts`, `app/src/App.css` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/DECISOES.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Criados identificadores fictícios e estáveis para negócio e usuário no modo de demonstração.
+- Criado um identificador UUID do aparelho na primeira utilização e preservado no armazenamento `local_meta`.
+- Adicionado ao serviço local o recurso atômico de consultar ou criar um metadado persistente.
+- Conectada a confirmação de Compra ao comando `purchase.confirm` da outbox.
+- Incluídos no comando produto, fornecedor, quantidade, custo unitário em centavos, data, destino e identificador próprio da compra.
+- Mantida a sequência crescente por aparelho já criada no lote anterior.
+- Alterado o retorno visual para `Salvo neste aparelho`, deixando explícito que a operação ainda não foi enviada ao banco central.
+- Bloqueada a conclusão visual quando a gravação local falha, preservando o formulário para nova tentativa.
+- Mantidos os demais fluxos como simulações, sem ampliar o escopo deste lote.
+
+### Decisões registradas
+
+- A identidade fictícia é exclusiva da demonstração e será substituída pela identidade autenticada antes do uso real.
+- O identificador do aparelho é persistente no IndexedDB; negócio e usuário usam identificadores fixos e claramente reservados ao modo de demonstração.
+- Uma Compra só aparece como concluída quando seu comando foi persistido com sucesso na outbox.
+- `queued` continua sendo exibido como `Salvo neste aparelho`, sem alegar sincronização inexistente.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta testes aprovados em dois arquivos.
+- `npm run build` executado com sucesso.
+- Persistência do identificador do aparelho, identidade fictícia, conteúdo do comando de Compra e estado visual pendente cobertos por testes automatizados.
+
+### Pendências
+
+- Conectar Envio, Venda, Devolução e pagamento de Acerto à outbox local.
+- Criar projeções locais para refletir os comandos pendentes nas consultas e saldos mockados.
+- Substituir a identidade de demonstração pela autenticação e pelo contexto real antes da integração remota.
+- Implementar processamento da fila, banco central e sincronização.
+
+### Próximo passo recomendado
+
+Conectar o formulário de Envio à outbox local usando a mesma identidade de demonstração, preservando a validação de saldo e deixando explícito que a transferência está salva somente no aparelho.

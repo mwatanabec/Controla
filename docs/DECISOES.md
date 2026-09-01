@@ -113,6 +113,12 @@ Este documento registra decisões vigentes do Maria Controla. Hipóteses e pergu
 - **Decisão:** a direção inicial de comunicação será **“consignado com controle de estoque”**.
 - **Impacto:** a frase orienta a apresentação comercial sem reduzir o produto apenas a estoque ou transformá-lo em ERP.
 
+### D-019 — Identidade temporária da demonstração local
+
+- **Decisão:** enquanto autenticação e contexto real do negócio não estiverem conectados, a demonstração local usará identificadores fixos e explicitamente fictícios para negócio e usuário, além de um identificador de aparelho criado uma vez e preservado no IndexedDB.
+- **Impacto:** os fluxos podem exercitar a outbox e a sequência offline antes da autenticação, sem apresentar os lançamentos como sincronizados ou pertencentes a uma conta real.
+- **Limite:** essa identidade existe somente para desenvolvimento e demonstração. Ela deverá ser substituída pelo contexto autenticado antes de uso real ou integração com o banco central.
+
 ## Hipóteses e decisões pendentes
 
 - Limites comerciais de usuários, dispositivos e pontos parceiros.

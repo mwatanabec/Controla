@@ -141,6 +141,28 @@ export async function enqueueLocalCommand(input: EnqueueCommandInput) {
   }
 }
 
+export async function getOrCreateLocalMetaValue<T>(key: string, createValue: () => T) {
+  const database = await openLocalDatabase()
+  const transaction = database.transaction('local_meta', 'readwrite')
+  const completion = transactionComplete(transaction)
+  const metaStore = transaction.objectStore('local_meta')
+
+  try {
+    const currentRecord = (await requestResult(metaStore.get(key))) as LocalMetaRecord | undefined
+    if (currentRecord) {
+      await completion
+      return currentRecord.value as T
+    }
+
+    const value = createValue()
+    metaStore.add({ key, value, updated_at: new Date().toISOString() } satisfies LocalMetaRecord)
+    await completion
+    return value
+  } finally {
+    database.close()
+  }
+}
+
 export async function listOutboxCommands() {
   const database = await openLocalDatabase()
   const transaction = database.transaction('outbox', 'readonly')

@@ -1,6 +1,8 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { initialPurchaseDraft } from '../data/purchase'
 import { stockProducts } from '../data/stock'
+import { demoProductIds, getDemoIdentity } from '../services/demoIdentity'
+import { enqueueLocalCommand, syncStatusLabel } from '../services/localDatabase'
 import type { PurchaseDraft, PurchaseResult } from '../types/purchase'
 
 type PurchasePageProps = {
@@ -37,8 +39,8 @@ function PurchaseConfirmation({
       </div>
       <div className="texto-centro">
         <span className="etiqueta-simulacao">Dados mockados</span>
-        <h2>Compra simulada</h2>
-        <p>A conferência foi concluída. Nenhum dado foi salvo no banco.</p>
+        <h2>Compra salva na demonstração</h2>
+        <p>{syncStatusLabel(result.syncStatus)}. Ainda não foi enviada ao banco central.</p>
       </div>
 
       <article className="cartao resultado-resumo" aria-label="Resumo da compra simulada">
@@ -66,6 +68,11 @@ function PurchaseConfirmation({
         </div>
       </article>
 
+      <div className="estado-sync-local" role="status">
+        <strong>{syncStatusLabel(result.syncStatus)}</strong>
+        <span>Comando local {result.commandId.slice(0, 8)}</span>
+      </div>
+
       <div className="efeito">
         Aumentaria o estoque próprio de {result.productName} de {result.previousQuantity} para {result.nextQuantity}{' '}
         unidades.
@@ -87,6 +94,7 @@ export function PurchasePage({ onBack }: PurchasePageProps) {
   const [draft, setDraft] = useState<PurchaseDraft>(initialPurchaseDraft)
   const [error, setError] = useState('')
   const [result, setResult] = useState<PurchaseResult | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
 
   const selectedProduct = useMemo(
     () => stockProducts.find((product) => product.id === draft.productId) ?? stockProducts[0],
@@ -100,7 +108,7 @@ export function PurchasePage({ onBack }: PurchasePageProps) {
     setError('')
   }
 
-  function submitPurchase(event: FormEvent<HTMLFormElement>) {
+  async function submitPurchase(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const unitCost = parseCost(draft.unitCost)
 
@@ -121,15 +129,42 @@ export function PurchasePage({ onBack }: PurchasePageProps) {
       return
     }
 
-    setResult({
-      productName: selectedProduct.name,
-      supplier: draft.supplier.trim(),
-      quantity,
-      unitCost,
-      date: draft.date,
-      previousQuantity: selectedProduct.ownQuantity,
-      nextQuantity: selectedProduct.ownQuantity + quantity,
-    })
+    setIsSaving(true)
+    try {
+      const identity = await getDemoIdentity()
+      const command = await enqueueLocalCommand({
+        ...identity,
+        commandType: 'purchase.confirm',
+        occurredAt: `${draft.date}T12:00:00.000Z`,
+        payload: {
+          purchase_id: crypto.randomUUID(),
+          product_id: demoProductIds[selectedProduct.id],
+          product_name: selectedProduct.name,
+          supplier_name: draft.supplier.trim(),
+          quantity,
+          unit_cost_cents: Math.round(unitCost * 100),
+          occurred_date: draft.date,
+          destination: 'own_stock',
+          demo_mode: true,
+        },
+      })
+
+      setResult({
+        commandId: command.command_id,
+        syncStatus: 'queued',
+        productName: selectedProduct.name,
+        supplier: draft.supplier.trim(),
+        quantity,
+        unitCost,
+        date: draft.date,
+        previousQuantity: selectedProduct.ownQuantity,
+        nextQuantity: selectedProduct.ownQuantity + quantity,
+      })
+    } catch {
+      setError('Não foi possível salvar neste aparelho. Tente novamente antes de sair da tela.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   if (result) {
@@ -217,8 +252,8 @@ export function PurchasePage({ onBack }: PurchasePageProps) {
           </p>
         ) : null}
 
-        <button className="botao-principal" type="submit">
-          Salvar simulação
+        <button className="botao-principal" type="submit" disabled={isSaving}>
+          {isSaving ? 'Salvando neste aparelho...' : 'Salvar neste aparelho'}
         </button>
       </form>
     </main>

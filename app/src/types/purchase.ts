@@ -7,6 +7,8 @@ export type PurchaseDraft = {
 }
 
 export type PurchaseResult = {
+  commandId: string
+  syncStatus: 'queued'
   productName: string
   supplier: string
   quantity: number

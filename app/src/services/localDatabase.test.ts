@@ -9,6 +9,7 @@ import {
   openLocalDatabase,
   syncStatusLabel,
 } from './localDatabase'
+import { DEMO_BUSINESS_ID, DEMO_USER_ID, getDemoIdentity } from './demoIdentity'
 
 const identity = {
   businessId: '10000000-0000-4000-8000-000000000001',
@@ -77,5 +78,16 @@ describe('banco local', () => {
     expect(syncStatusLabel('queued')).toBe('Salvo neste aparelho')
     expect(syncStatusLabel('conflict')).toBe('Precisa revisar')
     expect(syncStatusLabel('rejected')).toBe('Não foi enviado')
+  })
+
+  it('reutiliza a identidade do aparelho no modo demonstração', async () => {
+    const first = await getDemoIdentity()
+    const second = await getDemoIdentity()
+
+    expect(first.businessId).toBe(DEMO_BUSINESS_ID)
+    expect(first.userId).toBe(DEMO_USER_ID)
+    expect(first.deviceId).toBe(second.deviceId)
+    expect(first.deviceId).toMatch(/^[0-9a-f-]{36}$/)
+    expect(first.mode).toBe('demo')
   })
 })
