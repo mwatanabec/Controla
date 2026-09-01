@@ -314,6 +314,7 @@ describe('Acertos', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Acertos' }))
     fireEvent.click(screen.getByRole('button', { name: 'Ações do acerto de Salão Bella' }))
     fireEvent.click(screen.getByRole('menuitem', { name: 'Registrar pagamento' }))
+    await screen.findByRole('heading', { name: 'Registrar pagamento' })
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
     await screen.findByRole('heading', { name: 'Pagamento parcial salvo' })
 
@@ -665,15 +666,16 @@ describe('Registrar devolução', () => {
 })
 
 describe('Registrar pagamento de acerto', () => {
-  function openPayment() {
+  async function openPayment() {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: 'Acertos' }))
     fireEvent.click(screen.getByRole('button', { name: 'Ações do acerto de Salão Bella' }))
     fireEvent.click(screen.getByRole('menuitem', { name: 'Registrar pagamento' }))
+    await screen.findByRole('heading', { name: 'Registrar pagamento' })
   }
 
-  it('abre pela ação do acerto preservando os valores separados', () => {
-    openPayment()
+  it('abre pela ação do acerto preservando os valores separados', async () => {
+    await openPayment()
 
     expect(screen.getByRole('heading', { name: 'Registrar pagamento' })).toBeInTheDocument()
     expect(screen.getByLabelText('Acerto do parceiro')).toHaveValue('salao')
@@ -683,8 +685,8 @@ describe('Registrar pagamento de acerto', () => {
     expect(screen.getByLabelText('Pagamento agora')).toHaveValue('25,00')
   })
 
-  it('calcula pagamento parcial e total sem apagar a venda', () => {
-    openPayment()
+  it('calcula pagamento parcial e total sem apagar a venda', async () => {
+    await openPayment()
 
     expect(screen.getByText(/Saldo antes/)).toHaveTextContent(/Depois deste pagamento:.*25,00/)
     fireEvent.click(screen.getByRole('button', { name: 'Total' }))
@@ -694,8 +696,8 @@ describe('Registrar pagamento de acerto', () => {
     expect(screen.getByText('A venda continua vinculada ao acerto mesmo depois do pagamento.')).toBeInTheDocument()
   })
 
-  it('troca o acerto e recalcula pelos valores do parceiro', () => {
-    openPayment()
+  it('troca o acerto e recalcula pelos valores do parceiro', async () => {
+    await openPayment()
 
     fireEvent.change(screen.getByLabelText('Acerto do parceiro'), { target: { value: 'loja' } })
 
@@ -704,8 +706,8 @@ describe('Registrar pagamento de acerto', () => {
     expect(screen.getByText(/Saldo antes/)).toHaveTextContent(/59,80.*29,90/)
   })
 
-  it('impede pagamento acima do saldo acordado', () => {
-    openPayment()
+  it('impede pagamento acima do saldo acordado', async () => {
+    await openPayment()
 
     fireEvent.change(screen.getByLabelText('Pagamento agora'), { target: { value: '51,00' } })
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
@@ -713,18 +715,18 @@ describe('Registrar pagamento de acerto', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/O pagamento supera o saldo de.*50,00 deste acerto/)
   })
 
-  it('abre pelo detalhe do acerto correspondente', () => {
+  it('abre pelo detalhe do acerto correspondente', async () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: 'Acertos' }))
     fireEvent.click(screen.getByRole('button', { name: 'Detalhes' }))
     fireEvent.click(screen.getByRole('button', { name: 'Registrar pagamento total' }))
 
-    expect(screen.getByRole('heading', { name: 'Registrar pagamento' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Registrar pagamento' })).toBeInTheDocument()
     expect(screen.getByLabelText('Acerto do parceiro')).toHaveValue('loja')
   })
 
   it('salva pagamento parcial sem apagar o histórico', async () => {
-    openPayment()
+    await openPayment()
 
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
@@ -749,5 +751,14 @@ describe('Registrar pagamento de acerto', () => {
       difference_reason: 'Valor combinado com o parceiro',
       demo_mode: true,
     })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Repetir este pagamento' }))
+    expect(screen.getByText('R$ 85,00')).toBeInTheDocument()
+    expect(screen.getByLabelText('Pagamento agora')).toHaveValue('12,50')
+
+    fireEvent.change(screen.getByLabelText('Pagamento agora'), { target: { value: '26,00' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
+    expect(screen.getByRole('alert')).toHaveTextContent(/O pagamento supera o saldo de.*25,00 deste acerto/)
+    expect(await listOutboxCommands()).toHaveLength(1)
   })
 })

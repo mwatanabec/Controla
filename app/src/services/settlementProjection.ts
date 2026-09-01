@@ -3,6 +3,7 @@ import { settlements } from '../data/settlements'
 import { demoSettlementIds } from './demoIdentity'
 import { listOutboxCommands } from './localDatabase'
 import type { Settlement } from '../types/settlement'
+import type { SettlementPaymentSource } from '../types/settlementPayment'
 import type { LocalOutboxCommand, SyncCommandStatus } from '../types/sync'
 
 const projectableStatuses = new Set<SyncCommandStatus>([
@@ -25,18 +26,50 @@ function formatCents(value: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value / 100)
 }
 
-export function projectSettlements(baseSettlements: Settlement[], commands: LocalOutboxCommand[]) {
+function paymentCommandsFor(settlementId: string, commands: LocalOutboxCommand[]) {
+  return commands.filter((command) => {
+    if (command.command_type !== 'settlement.payment' || !projectableStatuses.has(command.status)) return false
+    const commandSettlementId = command.payload.settlement_id
+    return typeof commandSettlementId === 'string' && settlementKeyByDemoId.get(commandSettlementId) === settlementId
+  })
+}
+
+export function projectSettlementPaymentSources(
+  baseSources: SettlementPaymentSource[],
+  commands: LocalOutboxCommand[],
+) {
   let appliedPaymentCount = 0
+  const sources = baseSources.map((source) => {
+    const paymentCommands = paymentCommandsFor(source.id, commands)
+    if (paymentCommands.length === 0) return { ...source }
+
+    appliedPaymentCount += paymentCommands.length
+    const latestPayload = paymentCommands.at(-1)?.payload
+    const calculatedCents = cents(latestPayload?.calculated_amount_cents) ?? Math.round(source.calculatedValue * 100)
+    const agreedCents = cents(latestPayload?.agreed_amount_cents) ?? Math.round(source.agreedValue * 100)
+    const paidCents =
+      Math.round(source.paidValue * 100) +
+      paymentCommands.reduce((total, command) => total + (cents(command.payload.amount_cents) ?? 0), 0)
+
+    return {
+      ...source,
+      calculatedValue: calculatedCents / 100,
+      agreedValue: agreedCents / 100,
+      paidValue: paidCents / 100,
+    }
+  })
+
+  return { sources, appliedPaymentCount }
+}
+
+export function projectSettlements(baseSettlements: Settlement[], commands: LocalOutboxCommand[]) {
+  const sourceProjection = projectSettlementPaymentSources(settlementPaymentSources, commands)
 
   const projected = baseSettlements.map((settlement) => {
-    const source = settlementPaymentSources.find((item) => item.id === settlement.id)
+    const source = sourceProjection.sources.find((item) => item.id === settlement.id)
     if (!source) return { ...settlement }
 
-    const paymentCommands = commands.filter((command) => {
-      if (command.command_type !== 'settlement.payment' || !projectableStatuses.has(command.status)) return false
-      const settlementId = command.payload.settlement_id
-      return typeof settlementId === 'string' && settlementKeyByDemoId.get(settlementId) === settlement.id
-    })
+    const paymentCommands = paymentCommandsFor(settlement.id, commands)
     if (paymentCommands.length === 0) {
       return {
         ...settlement,
@@ -45,17 +78,9 @@ export function projectSettlements(baseSettlements: Settlement[], commands: Loca
       }
     }
 
-    appliedPaymentCount += paymentCommands.length
-    const basePaidCents = Math.round(source.paidValue * 100)
-    const calculatedCents =
-      cents(paymentCommands.at(-1)?.payload.calculated_amount_cents) ?? Math.round(source.calculatedValue * 100)
-    const agreedCents =
-      cents(paymentCommands.at(-1)?.payload.agreed_amount_cents) ?? Math.round(source.agreedValue * 100)
-    const addedPaidCents = paymentCommands.reduce(
-      (total, command) => total + (cents(command.payload.amount_cents) ?? 0),
-      0,
-    )
-    const paidCents = basePaidCents + addedPaidCents
+    const calculatedCents = Math.round(source.calculatedValue * 100)
+    const agreedCents = Math.round(source.agreedValue * 100)
+    const paidCents = Math.round(source.paidValue * 100)
     const remainingCents = Math.max(0, agreedCents - paidCents)
     const status = remainingCents === 0 ? 'paid' : paidCents > 0 ? 'partial' : 'open'
     const statusLabel =
@@ -80,9 +105,13 @@ export function projectSettlements(baseSettlements: Settlement[], commands: Loca
     } satisfies Settlement
   })
 
-  return { settlements: projected, appliedPaymentCount }
+  return { settlements: projected, appliedPaymentCount: sourceProjection.appliedPaymentCount }
 }
 
 export async function loadProjectedSettlements() {
   return projectSettlements(settlements, await listOutboxCommands())
+}
+
+export async function loadProjectedSettlementPaymentSources() {
+  return projectSettlementPaymentSources(settlementPaymentSources, await listOutboxCommands())
 }

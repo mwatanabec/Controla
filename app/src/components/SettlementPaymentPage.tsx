@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { settlementPaymentSources } from '../data/settlementPayment'
+import { useEstimatedSettlements } from '../hooks/useEstimatedSettlements'
 import { demoPartnerIds, demoSettlementIds, getDemoIdentity } from '../services/demoIdentity'
 import { enqueueLocalCommand, syncStatusLabel } from '../services/localDatabase'
 import type {
@@ -12,6 +12,11 @@ import type {
 type SettlementPaymentPageProps = {
   initialSettlementId?: string
   onBack: () => void
+}
+
+type SettlementPaymentFormProps = SettlementPaymentPageProps & {
+  sources: SettlementPaymentSource[]
+  refreshSettlements: () => Promise<boolean>
 }
 
 function parseCurrency(value: string) {
@@ -118,17 +123,22 @@ function PaymentConfirmation({
   )
 }
 
-export function SettlementPaymentPage({ initialSettlementId, onBack }: SettlementPaymentPageProps) {
+function SettlementPaymentForm({
+  initialSettlementId,
+  onBack,
+  sources,
+  refreshSettlements,
+}: SettlementPaymentFormProps) {
   const initialSource =
-    settlementPaymentSources.find((source) => source.id === initialSettlementId) ?? settlementPaymentSources[0]
+    sources.find((source) => source.id === initialSettlementId) ?? sources[0]
   const [draft, setDraft] = useState<SettlementPaymentDraft>(() => draftForSource(initialSource))
   const [error, setError] = useState('')
   const [result, setResult] = useState<SettlementPaymentResult | null>(null)
   const [isSaving, setIsSaving] = useState(false)
 
   const selectedSource = useMemo(
-    () => settlementPaymentSources.find((source) => source.id === draft.settlementId) ?? settlementPaymentSources[0],
-    [draft.settlementId],
+    () => sources.find((source) => source.id === draft.settlementId) ?? sources[0],
+    [draft.settlementId, sources],
   )
   const agreedValue = parseCurrency(draft.agreedValue)
   const paymentValue = parseCurrency(draft.paymentValue)
@@ -141,7 +151,7 @@ export function SettlementPaymentPage({ initialSettlementId, onBack }: Settlemen
   }
 
   function selectSource(settlementId: string) {
-    const source = settlementPaymentSources.find((item) => item.id === settlementId) ?? settlementPaymentSources[0]
+    const source = sources.find((item) => item.id === settlementId) ?? sources[0]
     setDraft(draftForSource(source))
     setError('')
   }
@@ -203,6 +213,8 @@ export function SettlementPaymentPage({ initialSettlementId, onBack }: Settlemen
         },
       })
 
+      await refreshSettlements()
+
       setResult({
         commandId: command.command_id,
         syncStatus: 'queued',
@@ -226,7 +238,18 @@ export function SettlementPaymentPage({ initialSettlementId, onBack }: Settlemen
   }
 
   if (result) {
-    return <PaymentConfirmation result={result} onBack={onBack} onRepeat={() => setResult(null)} />
+    return (
+      <PaymentConfirmation
+        result={result}
+        onBack={onBack}
+        onRepeat={() => {
+          const refreshedSource = sources.find((source) => source.id === draft.settlementId) ?? sources[0]
+          setDraft(draftForSource(refreshedSource))
+          setError('')
+          setResult(null)
+        }}
+      />
+    )
   }
 
   return (
@@ -244,7 +267,7 @@ export function SettlementPaymentPage({ initialSettlementId, onBack }: Settlemen
         <label className="campo-formulario">
           <span>Acerto do parceiro</span>
           <select value={draft.settlementId} onChange={(event) => selectSource(event.target.value)}>
-            {settlementPaymentSources.map((source) => (
+            {sources.map((source) => (
               <option value={source.id} key={source.id}>
                 {source.partnerName} · {source.saleLabel}
               </option>
@@ -334,4 +357,39 @@ export function SettlementPaymentPage({ initialSettlementId, onBack }: Settlemen
       </form>
     </main>
   )
+}
+
+export function SettlementPaymentPage(props: SettlementPaymentPageProps) {
+  const { sources, status, refresh } = useEstimatedSettlements()
+
+  if (status === 'loading') {
+    return (
+      <main className="conteudo-fluxo">
+        <button className="botao-voltar" type="button" onClick={props.onBack}>
+          ‹ Voltar
+        </button>
+        <div className="cabecalho-tela">
+          <span className="etiqueta-simulacao">Dados mockados</span>
+          <h2>Conferindo acerto</h2>
+          <p>Incluindo os pagamentos salvos neste aparelho.</p>
+        </div>
+      </main>
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <main className="conteudo-fluxo">
+        <button className="botao-voltar" type="button" onClick={props.onBack}>
+          ‹ Voltar
+        </button>
+        <div className="cabecalho-tela">
+          <h2>Não foi possível conferir o acerto</h2>
+          <p>Volte e tente novamente antes de registrar outro pagamento.</p>
+        </div>
+      </main>
+    )
+  }
+
+  return <SettlementPaymentForm {...props} sources={sources} refreshSettlements={refresh} />
 }

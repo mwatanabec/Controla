@@ -2138,3 +2138,56 @@ Aplicar pagamentos pendentes da outbox aos Acertos mockados, recalculando valor 
 ### Próximo passo recomendado
 
 Reutilizar a projeção de Acertos no formulário de pagamento, bloqueando novos pagamentos quando o saldo estimado já foi consumido por comandos pendentes no mesmo aparelho.
+
+## 2026-09-01 — Lote 29: saldo estimado no formulário de pagamento
+
+### Objetivo do lote
+
+Fazer o formulário de pagamento abrir e repetir com os valores projetados do Acerto, impedindo que comandos consecutivos no mesmo aparelho ultrapassem o saldo local restante.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/MODELO_DADOS.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Serviço de projeção, componente, dados, tipos e testes de pagamento de Acerto em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criado `app/src/hooks/useEstimatedSettlements.ts`.
+- Alterados `app/src/services/settlementProjection.ts`, `app/src/components/SettlementPaymentPage.tsx` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Extraída uma projeção numérica reutilizável dos Acertos para o formulário e para a consulta.
+- Criado hook de carregamento e recarga dos valores financeiros estimados.
+- Adicionada etapa curta de conferência local antes de exibir o formulário.
+- Bloqueado o formulário quando a outbox não pode ser lida com segurança.
+- Inicializados valor acordado, já pago, pagamento sugerido e saldo restante a partir da projeção.
+- Recarregada a projeção após persistir um pagamento.
+- Ao repetir, o formulário passa a usar o valor já pago incluindo o comando anterior.
+- Mantidas as validações existentes e o bloqueio de pagamento acima do saldo estimado.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- O formulário financeiro não é liberado antes de a leitura dos pagamentos locais terminar.
+- Falha de leitura bloqueia novo pagamento em vez de usar silenciosamente valores antigos.
+- Pagamento excedente continua fora do fluxo comum e não foi flexibilizado.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta e oito testes aprovados em cinco arquivos.
+- `npm run build` executado com sucesso.
+- Após pagamento local de R$ 25,00, a repetição parte de R$ 85,00 pagos, sugere R$ 12,50 e bloqueia um novo pagamento de R$ 26,00 contra saldo restante de R$ 25,00.
+
+### Pendências
+
+- Criar visão consolidada das operações ainda salvas somente no aparelho.
+- Refinar Compra repetida para mostrar o estoque estimado acumulado no próprio formulário.
+- Projetar Venda em parceiro como nova pendência financeira somente após a regra de abertura e alocação transacional.
+- Implementar autenticação, banco central e sincronização.
+
+### Próximo passo recomendado
+
+Criar uma visão simples de pendências locais com quantidade total, tipo de operação, horário, estado visível e acesso pela Home, sem expor payload técnico ou permitir exclusão destrutiva.
