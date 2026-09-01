@@ -1,15 +1,48 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import App from './App'
+import { authenticateDemo, clearAuthSession, demoLoginCredentials } from './services/authSession'
 import { deleteLocalDatabase, listOutboxCommands } from './services/localDatabase'
+
+beforeEach(() => {
+  authenticateDemo(demoLoginCredentials)
+})
 
 afterEach(async () => {
   window.history.replaceState(null, '', '/')
+  clearAuthSession()
   await deleteLocalDatabase()
 })
 
 async function waitForEstimatedStock() {
   await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar neste aparelho' })).toBeEnabled())
 }
+
+describe('Acesso', () => {
+  it('separa o acesso pela combinação de empresa, usuário e senha', () => {
+    clearAuthSession()
+    render(<App />)
+
+    expect(screen.getByRole('heading', { name: 'Entre no seu negócio' })).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Empresa'), { target: { value: 'chinelo' } })
+    fireEvent.change(screen.getByLabelText('Usuário'), { target: { value: 'maria.maria' } })
+    fireEvent.change(screen.getByLabelText('Senha'), { target: { value: 'demonstracao' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Entrar' }))
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Empresa, usuário ou senha não conferem.')
+    fireEvent.change(screen.getByLabelText('Empresa'), { target: { value: 'anona' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Entrar' }))
+
+    expect(screen.getByRole('heading', { name: 'Olá, Anona Presentes' })).toBeInTheDocument()
+  })
+
+  it('encerra a sessão local sem apagar os lançamentos do aparelho', () => {
+    render(<App />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Sair' }))
+
+    expect(screen.getByRole('heading', { name: 'Entre no seu negócio' })).toBeInTheDocument()
+  })
+})
 
 describe('Home', () => {
   it('mostra os dados mockados do negócio piloto', () => {

@@ -4,6 +4,7 @@ import { AppHeader } from './components/AppHeader'
 import { BottomNavigation } from './components/BottomNavigation'
 import { HomePage } from './components/HomePage'
 import { LocalPendingPage } from './components/LocalPendingPage'
+import { LoginPage } from './components/LoginPage'
 import { PartnerPage } from './components/PartnerPage'
 import { PurchasePage } from './components/PurchasePage'
 import { ReturnPage } from './components/ReturnPage'
@@ -12,6 +13,8 @@ import { SettlementPage } from './components/SettlementPage'
 import { SettlementPaymentPage } from './components/SettlementPaymentPage'
 import { ShippingPage } from './components/ShippingPage'
 import { StockPage } from './components/StockPage'
+import { clearAuthSession, readAuthSession } from './services/authSession'
+import type { AuthSession } from './types/auth'
 import type { AppRoute } from './types/navigation'
 
 function routeFromAddress(): AppRoute {
@@ -28,6 +31,7 @@ function routeFromAddress(): AppRoute {
 }
 
 export default function App() {
+  const [session, setSession] = useState<AuthSession | null>(readAuthSession)
   const [route, setRoute] = useState<AppRoute>(routeFromAddress)
   const [notice, setNotice] = useState('')
   const [shippingPartnerId, setShippingPartnerId] = useState('')
@@ -102,9 +106,24 @@ export default function App() {
     navigate('settlement-payment')
   }
 
+  function signOut() {
+    clearAuthSession()
+    window.history.replaceState(null, '', window.location.pathname)
+    setRoute('home')
+    setSession(null)
+  }
+
+  if (!session) {
+    return (
+      <div className="app app-acesso">
+        <LoginPage onAuthenticated={setSession} />
+      </div>
+    )
+  }
+
   return (
     <div className="app">
-      <AppHeader />
+      <AppHeader businessName={session.businessName} onSignOut={signOut} />
       {route === 'home' ? (
         <HomePage
           onUnavailable={showNextLotNotice}

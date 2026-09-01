@@ -2334,3 +2334,55 @@ Registrar a decisão de que o login da V1 identificará primeiro a empresa e dep
 ### Próximo passo recomendado
 
 Planejar o lote técnico de autenticação, começando pelo identificador público da empresa e pela resolução segura da combinação empresa + nome de usuário.
+
+## 2026-09-01 — Lote 33: entrada local por empresa e usuário
+
+### Objetivo do lote
+
+Materializar no frontend a entrada por empresa, nome de usuário e senha, protegendo as telas da demonstração enquanto a autenticação remota ainda não está conectada.
+
+### Arquivos lidos
+
+- `README.md`, `docs/DECISOES.md`, `docs/ARQUITETURA.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- App, cabeçalho, estilos, testes, identidade de demonstração e configuração do frontend em `app/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/LoginPage.tsx`, `app/src/services/authSession.ts` e `app/src/types/auth.ts`.
+- Alterados `app/src/App.tsx`, `app/src/App.css`, `app/src/App.test.tsx` e `app/src/components/AppHeader.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Criada tela mobile-first com os campos Empresa, Usuário e Senha.
+- Protegidas as demais telas quando não existe sessão local válida.
+- Configurado o acesso da demonstração como empresa `anona`, usuário `maria.maria` e senha fictícia `demonstracao`.
+- Normalizados empresa e usuário sem diferenciar maiúsculas e espaços externos.
+- Usada mensagem genérica quando qualquer parte do acesso não confere.
+- Persistida somente a identidade da sessão no navegador; a senha não é armazenada.
+- Adicionada ação Sair, sem apagar a outbox ou outros dados locais.
+- Mantida a identidade fixa da outbox até a conexão segura com a autenticação real.
+
+### Decisões registradas
+
+- Nenhuma nova regra de produto foi criada.
+- As credenciais visíveis são exclusivamente da demonstração local e não representam autenticação real.
+- A demonstração aceita somente a Anona, pois os dados mockados atuais pertencem a esse negócio; uma empresa diferente não pode abrir esses dados.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com sessenta e três testes aprovados em seis arquivos.
+- `npm run build` executado com sucesso.
+- Entrada correta, rejeição de empresa divergente, proteção das telas e encerramento da sessão cobertos por testes automatizados.
+
+### Pendências
+
+- Projetar e implementar a resolução segura de empresa + usuário sem revelar contas existentes.
+- Conectar Supabase Auth e substituir a identidade fixa da outbox pelo contexto autenticado.
+- Integrar a outbox ao banco central e implementar sincronização.
+- Definir comportamento exato ao atingir o limite de dispositivos.
+
+### Próximo passo recomendado
+
+Criar o contrato de backend para resolver empresa + usuário e iniciar a autenticação Supabase sem expor e-mail, existência de negócio ou existência de usuário.

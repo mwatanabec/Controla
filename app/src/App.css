@@ -40,6 +40,96 @@
   letter-spacing: 0.01em;
 }
 
+.sair {
+  position: relative;
+  z-index: 1;
+  min-height: 36px;
+  margin-left: auto;
+  padding: 0 9px;
+  color: #eaddea;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.app-acesso {
+  display: grid;
+  align-items: stretch;
+  background: var(--ameixa);
+}
+
+.acesso {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 28px 18px max(24px, env(safe-area-inset-bottom));
+  background: linear-gradient(165deg, var(--ameixa) 0 35%, var(--creme) 35% 100%);
+}
+
+.acesso-apresentacao {
+  min-height: 220px;
+  color: var(--branco);
+}
+
+.marca-acesso {
+  margin-bottom: 24px;
+}
+
+.etiqueta-acesso {
+  margin: 0 0 6px;
+  color: var(--pessego);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.acesso-apresentacao h1 {
+  margin: 0 0 7px;
+  font-size: 26px;
+  line-height: 1.15;
+}
+
+.acesso-apresentacao > p:last-child {
+  max-width: 330px;
+  margin: 0;
+  color: #eaddea;
+  font-size: 14px;
+}
+
+.formulario-acesso {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  box-shadow: var(--sombra);
+}
+
+.formulario-acesso .botao-principal {
+  margin-top: 2px;
+}
+
+.acesso-demonstracao {
+  display: grid;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 13px 15px;
+  color: var(--ameixa-escura);
+  background: var(--lavanda-clara);
+  border: 1px solid #e1d2e6;
+  border-radius: 14px;
+  font-size: 12px;
+}
+
+.acesso-demonstracao span {
+  line-height: 1.5;
+}
+
+.acesso-demonstracao small {
+  color: var(--texto-fraco);
+}
+
 .marca-simbolo {
   display: grid;
   width: 30px;
