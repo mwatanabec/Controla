@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { partners } from '../data/partners'
 import { initialSaleDraft, productSalePrices } from '../data/sale'
-import { stockProducts } from '../data/stock'
+import { useEstimatedStock } from '../hooks/useEstimatedStock'
 import {
   DEMO_OWN_LOCATION_ID,
   demoPartnerIds,
@@ -117,14 +117,15 @@ export function SalePage({ initialPartnerId, onBack }: SalePageProps) {
   const [error, setError] = useState('')
   const [result, setResult] = useState<SaleResult | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const { products: estimatedProducts, status: stockStatus, refresh: refreshStock } = useEstimatedStock()
 
   const selectedPartner = useMemo(
     () => partners.find((partner) => partner.id === draft.partnerId) ?? partners[0],
     [draft.partnerId],
   )
   const selectedProduct = useMemo(
-    () => stockProducts.find((product) => product.id === draft.productId) ?? stockProducts[0],
-    [draft.productId],
+    () => estimatedProducts.find((product) => product.id === draft.productId) ?? estimatedProducts[0],
+    [draft.productId, estimatedProducts],
   )
   const quantity = Number(draft.quantity)
   const unitPrice = parsePrice(draft.unitPrice)
@@ -209,6 +210,8 @@ export function SalePage({ initialPartnerId, onBack }: SalePageProps) {
         },
       })
 
+      await refreshStock()
+
       setResult({
         commandId: command.command_id,
         syncStatus: 'queued',
@@ -281,7 +284,7 @@ export function SalePage({ initialPartnerId, onBack }: SalePageProps) {
         <label className="campo-formulario">
           <span>Produto</span>
           <select value={draft.productId} onChange={(event) => selectProduct(event.target.value)}>
-            {stockProducts.map((product) => (
+            {estimatedProducts.map((product) => (
               <option value={product.id} key={product.id}>
                 {product.name}
               </option>
@@ -334,14 +337,24 @@ export function SalePage({ initialPartnerId, onBack }: SalePageProps) {
             : 'Venda direta e venda do parceiro ficam separadas para não misturar pendências.'}
         </p>
 
-        {error ? (
+        {stockStatus === 'error' ? (
+          <p className="erro-formulario" role="alert">
+            Não foi possível conferir o saldo salvo neste aparelho. Tente abrir o formulário novamente.
+          </p>
+        ) : error ? (
           <p className="erro-formulario" role="alert">
             {error}
           </p>
         ) : null}
 
-        <button className="botao-principal" type="submit" disabled={isSaving}>
-          {isSaving ? 'Salvando neste aparelho...' : 'Salvar neste aparelho'}
+        <button className="botao-principal" type="submit" disabled={isSaving || stockStatus !== 'ready'}>
+          {isSaving
+            ? 'Salvando neste aparelho...'
+            : stockStatus === 'loading'
+              ? 'Conferindo saldo...'
+              : stockStatus === 'error'
+                ? 'Saldo indisponível'
+                : 'Salvar neste aparelho'}
         </button>
       </form>
     </main>

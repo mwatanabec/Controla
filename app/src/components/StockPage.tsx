@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
-import { getPartnerTotal, getStockTotal, stockProducts } from '../data/stock'
-import { listOutboxCommands } from '../services/localDatabase'
-import { projectStockProducts } from '../services/stockProjection'
+import { getPartnerTotal, getStockTotal } from '../data/stock'
+import { useEstimatedStock } from '../hooks/useEstimatedStock'
 import type { StockFilter, StockProduct, StockView } from '../types/stock'
 
 const filters: Array<{ value: StockFilter; label: string }> = [
@@ -223,34 +222,13 @@ function StockDistribution({
 }
 
 export function StockPage({ onOpenPurchase }: { onOpenPurchase: () => void }) {
-  const [products, setProducts] = useState(stockProducts)
-  const [localMovementCount, setLocalMovementCount] = useState(0)
-  const [projectionError, setProjectionError] = useState(false)
+  const { products, localMovementCount, status: projectionStatus } = useEstimatedStock()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<StockFilter>('all')
   const [view, setView] = useState<StockView>('list')
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<StockProduct | null>(null)
   const [notice, setNotice] = useState('')
-
-  useEffect(() => {
-    let active = true
-
-    listOutboxCommands()
-      .then((commands) => {
-        if (!active) return
-        const projection = projectStockProducts(stockProducts, commands)
-        setProducts(projection.products)
-        setLocalMovementCount(projection.appliedCommandCount)
-      })
-      .catch(() => {
-        if (active) setProjectionError(true)
-      })
-
-    return () => {
-      active = false
-    }
-  }, [])
 
   const visibleProducts = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase('pt-BR')
@@ -306,7 +284,7 @@ export function StockPage({ onOpenPurchase }: { onOpenPurchase: () => void }) {
         </div>
       ) : null}
 
-      {projectionError ? (
+      {projectionStatus === 'error' ? (
         <div className="estoque-aviso alerta visivel" role="alert">
           Não foi possível incluir agora as movimentações salvas neste aparelho.
         </div>

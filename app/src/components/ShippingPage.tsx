@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { partners } from '../data/partners'
 import { initialShippingDraft } from '../data/shipping'
-import { stockProducts } from '../data/stock'
+import { useEstimatedStock } from '../hooks/useEstimatedStock'
 import {
   DEMO_OWN_LOCATION_ID,
   demoPartnerIds,
@@ -95,14 +95,15 @@ export function ShippingPage({ initialPartnerId, onBack }: ShippingPageProps) {
   const [error, setError] = useState('')
   const [result, setResult] = useState<ShippingResult | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const { products: estimatedProducts, status: stockStatus, refresh: refreshStock } = useEstimatedStock()
 
   const selectedPartner = useMemo(
     () => partners.find((partner) => partner.id === draft.partnerId) ?? partners[0],
     [draft.partnerId],
   )
   const selectedProduct = useMemo(
-    () => stockProducts.find((product) => product.id === draft.productId) ?? stockProducts[0],
-    [draft.productId],
+    () => estimatedProducts.find((product) => product.id === draft.productId) ?? estimatedProducts[0],
+    [draft.productId, estimatedProducts],
   )
   const quantity = Number(draft.quantity)
   const validQuantity = Number.isInteger(quantity) && quantity > 0 ? quantity : 0
@@ -154,6 +155,8 @@ export function ShippingPage({ initialPartnerId, onBack }: ShippingPageProps) {
         },
       })
 
+      await refreshStock()
+
       setResult({
         commandId: command.command_id,
         syncStatus: 'queued',
@@ -203,7 +206,7 @@ export function ShippingPage({ initialPartnerId, onBack }: ShippingPageProps) {
         <label className="campo-formulario">
           <span>Produto</span>
           <select value={draft.productId} onChange={(event) => updateDraft('productId', event.target.value)}>
-            {stockProducts.map((product) => (
+            {estimatedProducts.map((product) => (
               <option value={product.id} key={product.id}>
                 {product.name} · {product.ownQuantity} no estoque próprio
               </option>
@@ -250,14 +253,24 @@ export function ShippingPage({ initialPartnerId, onBack }: ShippingPageProps) {
         </div>
         <p className="alerta-conceitual">Envio não é venda. A mercadoria continua sob acompanhamento.</p>
 
-        {error ? (
+        {stockStatus === 'error' ? (
+          <p className="erro-formulario" role="alert">
+            Não foi possível conferir o saldo salvo neste aparelho. Tente abrir o formulário novamente.
+          </p>
+        ) : error ? (
           <p className="erro-formulario" role="alert">
             {error}
           </p>
         ) : null}
 
-        <button className="botao-principal" type="submit" disabled={isSaving}>
-          {isSaving ? 'Salvando neste aparelho...' : 'Salvar neste aparelho'}
+        <button className="botao-principal" type="submit" disabled={isSaving || stockStatus !== 'ready'}>
+          {isSaving
+            ? 'Salvando neste aparelho...'
+            : stockStatus === 'loading'
+              ? 'Conferindo saldo...'
+              : stockStatus === 'error'
+                ? 'Saldo indisponível'
+                : 'Salvar neste aparelho'}
         </button>
       </form>
     </main>

@@ -1,5 +1,7 @@
 import { partners } from '../data/partners'
+import { stockProducts } from '../data/stock'
 import { demoPartnerIds, demoProductIds } from './demoIdentity'
+import { listOutboxCommands } from './localDatabase'
 import type { LocalOutboxCommand, SyncCommandStatus } from '../types/sync'
 import type { StockProduct, StockStatus } from '../types/stock'
 
@@ -136,4 +138,9 @@ export function projectStockProducts(baseProducts: StockProduct[], commands: Loc
       appliedCommandCount > 0 ? products.map((product) => updateProductStatus(product, true)) : products,
     appliedCommandCount,
   }
+}
+
+export async function loadProjectedStockProducts() {
+  const commands = await listOutboxCommands()
+  return projectStockProducts(stockProducts, commands)
 }

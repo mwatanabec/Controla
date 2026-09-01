@@ -1977,3 +1977,57 @@ Aplicar as movimentações físicas pendentes da outbox sobre uma cópia dos dad
 ### Próximo passo recomendado
 
 Criar um carregador reutilizável do estoque estimado e usá-lo em Envio, Venda e Devolução antes da validação e da gravação, para que operações consecutivas no mesmo aparelho respeitem os comandos já pendentes.
+
+## 2026-09-01 — Lote 26: saldo estimado nas validações físicas
+
+### Objetivo do lote
+
+Fazer Envio, Venda e Devolução validarem e calcularem seus efeitos com o estoque estimado, incluindo os comandos físicos já pendentes no aparelho.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Camada de projeção, serviço IndexedDB, tela Estoque, componentes e testes dos três fluxos físicos em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criado `app/src/hooks/useEstimatedStock.ts`.
+- Alterados `app/src/services/stockProjection.ts`, `app/src/components/StockPage.tsx`, `app/src/components/ShippingPage.tsx`, `app/src/components/SalePage.tsx`, `app/src/components/ReturnPage.tsx` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Criado carregador reutilizável que combina a base mockada com a outbox atual.
+- Criado hook compartilhado para estado de carregamento, saldo estimado, quantidade de movimentos locais, erro e recarga.
+- Migrada a tela Estoque para o mesmo carregador usado pelos formulários.
+- Envio passou a validar o estoque próprio estimado.
+- Venda direta passou a validar o estoque próprio estimado; Venda em parceiro passou a validar o saldo estimado daquela localização.
+- Devolução passou a validar o saldo estimado no parceiro.
+- O botão de salvar fica bloqueado durante a conferência local e quando o saldo não pode ser lido com segurança.
+- A projeção é recarregada depois da persistência, permitindo repetir o formulário com o novo saldo local.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- A operação não pode ser confirmada antes de a leitura da outbox terminar.
+- Falha ao conferir o saldo bloqueia o lançamento em vez de usar silenciosamente a base antiga.
+- Compra ficou fora deste lote porque aumenta estoque; seu efeito acumulado no próprio formulário poderá ser refinado em lote posterior.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta e três testes aprovados em três arquivos.
+- `npm run build` executado com sucesso.
+- Um Envio repetido usa o saldo resultante do primeiro comando pendente e bloqueia quantidade superior ao saldo estimado.
+- Testes existentes de saldo, canais de Venda, trajeto de Devolução e persistência continuaram aprovados.
+
+### Pendências
+
+- Projetar mercadorias e atividades pendentes na consulta de Pontos Parceiros.
+- Projetar pagamentos pendentes na consulta de Acertos.
+- Refinar Compra repetida para mostrar o estoque estimado acumulado no formulário.
+- Implementar autenticação, banco central e sincronização.
+
+### Próximo passo recomendado
+
+Aplicar a projeção de estoque já existente à consulta de Pontos Parceiros, substituindo quantidades estáticas por saldos estimados e identificando visualmente as movimentações ainda salvas somente no aparelho.

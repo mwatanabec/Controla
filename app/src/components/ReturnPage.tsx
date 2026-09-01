@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { partners } from '../data/partners'
 import { initialReturnDraft } from '../data/return'
-import { stockProducts } from '../data/stock'
+import { useEstimatedStock } from '../hooks/useEstimatedStock'
 import {
   DEMO_OWN_LOCATION_ID,
   demoPartnerIds,
@@ -95,14 +95,15 @@ export function ReturnPage({ initialPartnerId, onBack }: ReturnPageProps) {
   const [error, setError] = useState('')
   const [result, setResult] = useState<ReturnResult | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const { products: estimatedProducts, status: stockStatus, refresh: refreshStock } = useEstimatedStock()
 
   const selectedPartner = useMemo(
     () => partners.find((partner) => partner.id === draft.partnerId) ?? partners[0],
     [draft.partnerId],
   )
   const selectedProduct = useMemo(
-    () => stockProducts.find((product) => product.id === draft.productId) ?? stockProducts[0],
-    [draft.productId],
+    () => estimatedProducts.find((product) => product.id === draft.productId) ?? estimatedProducts[0],
+    [draft.productId, estimatedProducts],
   )
   const quantity = Number(draft.quantity)
   const validQuantity = Number.isInteger(quantity) && quantity > 0 ? quantity : 0
@@ -154,6 +155,8 @@ export function ReturnPage({ initialPartnerId, onBack }: ReturnPageProps) {
         },
       })
 
+      await refreshStock()
+
       setResult({
         commandId: command.command_id,
         syncStatus: 'queued',
@@ -203,7 +206,7 @@ export function ReturnPage({ initialPartnerId, onBack }: ReturnPageProps) {
         <label className="campo-formulario">
           <span>Produto</span>
           <select value={draft.productId} onChange={(event) => updateDraft('productId', event.target.value)}>
-            {stockProducts.map((product) => {
+            {estimatedProducts.map((product) => {
               const partnerQuantity =
                 product.partners.find((partner) => partner.name === selectedPartner.name)?.quantity ?? 0
               return (
@@ -253,14 +256,24 @@ export function ReturnPage({ initialPartnerId, onBack }: ReturnPageProps) {
         </div>
         <p className="alerta-conceitual">Devolução não é venda cancelada. É uma movimentação de volta.</p>
 
-        {error ? (
+        {stockStatus === 'error' ? (
+          <p className="erro-formulario" role="alert">
+            Não foi possível conferir o saldo salvo neste aparelho. Tente abrir o formulário novamente.
+          </p>
+        ) : error ? (
           <p className="erro-formulario" role="alert">
             {error}
           </p>
         ) : null}
 
-        <button className="botao-principal" type="submit" disabled={isSaving}>
-          {isSaving ? 'Salvando neste aparelho...' : 'Salvar neste aparelho'}
+        <button className="botao-principal" type="submit" disabled={isSaving || stockStatus !== 'ready'}>
+          {isSaving
+            ? 'Salvando neste aparelho...'
+            : stockStatus === 'loading'
+              ? 'Conferindo saldo...'
+              : stockStatus === 'error'
+                ? 'Saldo indisponível'
+                : 'Salvar neste aparelho'}
         </button>
       </form>
     </main>

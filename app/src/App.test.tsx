@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import App from './App'
 import { deleteLocalDatabase, listOutboxCommands } from './services/localDatabase'
 
@@ -6,6 +6,10 @@ afterEach(async () => {
   window.history.replaceState(null, '', '/')
   await deleteLocalDatabase()
 })
+
+async function waitForEstimatedStock() {
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Salvar neste aparelho' })).toBeEnabled())
+}
 
 describe('Home', () => {
   it('mostra os dados mockados do negócio piloto', () => {
@@ -374,11 +378,12 @@ describe('Registrar envio', () => {
     expect(screen.getByText('Envio não é venda. A mercadoria continua sob acompanhamento.')).toBeInTheDocument()
   })
 
-  it('rejeita a simulação quando o estoque próprio é insuficiente', () => {
+  it('rejeita o envio quando o estoque próprio é insuficiente', async () => {
     openShipping()
 
     fireEvent.change(screen.getByLabelText('Produto'), { target: { value: 'kit' } })
     fireEvent.change(screen.getByLabelText('Quantidade'), { target: { value: '1' } })
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent('Estoque insuficiente. Há 0 unidades no estoque próprio.')
@@ -399,6 +404,7 @@ describe('Registrar envio', () => {
   it('salva o envio na outbox local sem transformá-lo em venda', async () => {
     openShipping()
 
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(await screen.findByRole('heading', { name: 'Envio salvo na demonstração' })).toBeInTheDocument()
@@ -421,6 +427,14 @@ describe('Registrar envio', () => {
       quantity: 2,
       demo_mode: true,
     })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Repetir este envio' }))
+    await waitForEstimatedStock()
+    expect(screen.getByText(/O estoque próprio passaria/)).toHaveTextContent('de 2 para 0 unidades')
+
+    fireEvent.change(screen.getByLabelText('Quantidade'), { target: { value: '3' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('Estoque insuficiente. Há 2 unidades no estoque próprio.')
   })
 })
 
@@ -461,6 +475,7 @@ describe('Registrar venda', () => {
     expect(screen.getByText(/O saldo em Estoque próprio passaria/)).toHaveTextContent('de 4 para 3 unidades')
     expect(screen.getByText(/Total da venda/)).toHaveTextContent('Não cria acerto')
 
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(await screen.findByRole('heading', { name: 'Venda direta salva' })).toBeInTheDocument()
@@ -484,11 +499,12 @@ describe('Registrar venda', () => {
     expect(screen.getByText(/O saldo em Salão Bella passaria/)).toHaveTextContent(/Criaria.*105,00 para acerto/)
   })
 
-  it('rejeita venda comum sem saldo suficiente na origem', () => {
+  it('rejeita venda comum sem saldo suficiente na origem', async () => {
     openSale()
 
     fireEvent.click(screen.getByRole('button', { name: 'Venda direta' }))
     fireEvent.change(screen.getByLabelText('Quantidade'), { target: { value: '5' } })
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent(
@@ -503,6 +519,7 @@ describe('Registrar venda', () => {
     fireEvent.click(screen.getByRole('menuitem', { name: 'Registrar venda' }))
 
     expect(screen.getByLabelText('Ponto Parceiro')).toHaveValue('salao')
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(await screen.findByRole('heading', { name: 'Venda no parceiro salva' })).toBeInTheDocument()
@@ -551,10 +568,11 @@ describe('Registrar devolução', () => {
     expect(screen.getByText('Devolução não é venda cancelada. É uma movimentação de volta.')).toBeInTheDocument()
   })
 
-  it('rejeita devolução maior que o saldo disponível no parceiro', () => {
+  it('rejeita devolução maior que o saldo disponível no parceiro', async () => {
     openReturn()
 
     fireEvent.change(screen.getByLabelText('Quantidade'), { target: { value: '3' } })
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent(
@@ -575,6 +593,7 @@ describe('Registrar devolução', () => {
   it('salva a devolução como transferência sem cancelar venda', async () => {
     openReturn()
 
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(await screen.findByRole('heading', { name: 'Devolução salva na demonstração' })).toBeInTheDocument()
