@@ -121,7 +121,7 @@ Campos:
 Regras:
 
 - o e-mail verificado e a senha permanecem sob responsabilidade do Auth;
-- a regra de unicidade global ou por negócio do nome de usuário será definida antes do SQL;
+- o nome de usuário será único dentro de cada negócio, permitindo o mesmo login em empresas diferentes;
 - CPF, data de nascimento e endereço não entram na V1.
 
 ### `business_memberships`
@@ -664,7 +664,6 @@ Não deve armazenar senha, token ou conteúdo sensível desnecessário.
 ## 12. Itens deliberadamente fora do lote SQL inicial
 
 - nomes físicos finais, tipos SQL, índices e políticas RLS;
-- unicidade global ou por negócio do nome de usuário;
 - números dos limites comerciais;
 - bloqueio ou tolerância ao exceder dispositivos;
 - valores e forma de cobrança;

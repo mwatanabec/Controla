@@ -159,7 +159,7 @@ O futuro usuário do Ponto Parceiro não será criado na V1. O Ponto Parceiro j�
 ### Proposta para a V1
 
 - cadastro com nome completo, e-mail, código de verificação, nome de usuário e senha;
-- login por nome de usuário e senha, com e-mail como identidade verificada e meio de recuperação;
+- login por empresa, nome de usuário e senha, com e-mail como identidade verificada e meio de recuperação;
 - contas criadas ou convidadas sob controle da plataforma;
 - recuperação de senha por e-mail;
 - licença vinculada ao negócio;
@@ -170,7 +170,7 @@ O futuro usuário do Ponto Parceiro não será criado na V1. O Ponto Parceiro j�
 
 Antes de uso externo, será necessário configurar um serviço SMTP próprio. O serviço de e-mail padrão do Supabase é destinado a testes e restringe destinatários e volume.
 
-O Supabase autentica senha usando e-mail ou telefone. Para oferecer nome de usuário no login sem expor a relação entre usuário e e-mail, a V1 precisará de uma função segura de autenticação no servidor. A unicidade global do nome de usuário ainda precisa ser confirmada; se a unicidade for apenas dentro do negócio, o login também precisará identificar o negócio.
+O Supabase autentica senha usando e-mail ou telefone. Para oferecer login por empresa e nome de usuário sem expor a relação entre usuário e e-mail, a V1 precisará de uma função segura de autenticação no servidor. O nome de usuário será único dentro de cada negócio, permitindo o mesmo login em empresas diferentes quando o identificador da empresa mudar.
 
 Biometria em PWA é possível por passkeys/WebAuthn: o dispositivo valida biometria, PIN ou chave de segurança, sem enviar a biometria ao Maria Controla. Esse recurso fica fora da V1 e em standby para uma evolução futura; o suporte atual do Supabase a passkeys é experimental e não será requisito de acesso da primeira versão.
 
@@ -313,7 +313,6 @@ Regras aprovadas que o próximo modelo deve representar:
 
 Pendências que não impedem o início do modelo, mas precisam permanecer configuráveis:
 
-- unicidade global ou por negócio do nome de usuário;
 - comportamento exato ao atingir o limite de dispositivos;
 - limites de usuários, dispositivos e Pontos Parceiros por plano;
 - cobrança manual ou automatizada e eventual período de teste;
@@ -330,14 +329,14 @@ Em 21 de agosto de 2026, a owner aprovou:
 5. operação offline nas rotinas principais, com armazenamento local e sincronização posterior;
 6. funções transacionais e histórico de movimentos como fonte de verdade;
 7. isolamento por negócio com RLS;
-8. cadastro com e-mail verificado e login por nome de usuário e senha;
+8. cadastro com e-mail verificado e login por empresa, nome de usuário e senha;
 9. controle de dispositivos como proteção comercial, reconhecendo os limites do navegador;
 10. modelo SaaS com infraestrutura e banco central mantidos pela MarIA Soluções;
 11. acesso inicial por link e instalação da PWA, mantendo Play Store como evolução posterior;
 12. modelagem detalhada do banco local, banco central e protocolo de sincronização como próximo lote;
 13. biometria/passkey fora da V1 e em standby para evolução futura.
 
-O cadastro com e-mail verificado e o login por nome de usuário e senha foram aprovados. A forma segura de resolução do nome de usuário será detalhada no lote de autenticação.
+O cadastro com e-mail verificado e o login por empresa, nome de usuário e senha foram aprovados. A forma segura de resolução da combinação empresa + nome de usuário será detalhada no lote de autenticação.
 
 ## 16. Referências técnicas oficiais
 

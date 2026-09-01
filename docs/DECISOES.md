@@ -96,11 +96,12 @@ Este documento registra decisões vigentes do Maria Controla. Hipóteses e pergu
 - **Continuidade offline:** produtos ativos, parceiros, preços, saldos, acertos pendentes, conflitos, dependências e fila local são dados obrigatórios. Fotos, histórico antigo e diagnósticos são descartáveis primeiro quando faltar espaço.
 - **Proteção:** se não for possível persistir com segurança um novo comando, o lançamento offline será bloqueado até sincronizar ou liberar espaço.
 
-### D-015 — Cadastro e identificação do usuário
+### D-015 — Cadastro, identificação do usuário e empresa no login
 
-- **Decisão:** o cadastro inicial terá e-mail verificado por código, nome completo, nome de usuário e senha. O login deverá aceitar nome de usuário e senha, mantendo e-mail como identidade verificada e alternativa de recuperação.
-- **Impacto:** a implementação segura do login por nome de usuário será definida no lote de autenticação, porque o Supabase usa e-mail ou telefone como identidade de senha.
-- **Evolução:** biometria/passkey fica fora da V1 e em standby para uma evolução futura. Ainda é necessário decidir se o nome de usuário será único em toda a plataforma.
+- **Decisão:** o cadastro inicial terá e-mail verificado por código, nome completo, nome de usuário e senha. O login deverá pedir empresa, nome de usuário e senha, mantendo e-mail como identidade verificada e alternativa de recuperação.
+- **Unicidade:** o nome de usuário será único dentro de cada negócio, não em toda a plataforma. Assim, negócios diferentes podem ter o mesmo login, como `maria.maria`, desde que a empresa informada seja diferente.
+- **Impacto:** a identificação segura do acesso será feita pela combinação empresa + nome de usuário. A implementação segura dessa resolução será definida no lote de autenticação, porque o Supabase usa e-mail ou telefone como identidade de senha.
+- **Evolução:** biometria/passkey fica fora da V1 e em standby para uma evolução futura.
 
 ### D-016 — Suporte inicial
 
@@ -122,7 +123,6 @@ Este documento registra decisões vigentes do Maria Controla. Hipóteses e pergu
 ## Hipóteses e decisões pendentes
 
 - Limites comerciais de usuários, dispositivos e pontos parceiros.
-- Se o nome de usuário será único em toda a plataforma ou combinado com um identificador do negócio.
 - Comportamento exato ao atingir o limite de dispositivos: bloqueio do novo aparelho até liberação ou aviso com tolerância temporária.
 - Valores, franquias, taxa de implantação e forma operacional da cobrança recorrente.
 - Existência e duração de período de teste.

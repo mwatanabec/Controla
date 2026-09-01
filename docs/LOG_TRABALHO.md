@@ -2293,3 +2293,44 @@ Fazer o formulário de Compra calcular seu efeito sobre o saldo estimado e recar
 ### Próximo passo recomendado
 
 Planejar a autenticação e o contexto real de negócio, usuário e aparelho antes de conectar a outbox ao banco central, definindo também a decisão pendente sobre unicidade do nome de usuário.
+
+## 2026-09-01 — Lote 32: decisão de login por empresa
+
+### Objetivo do lote
+
+Registrar a decisão de que o login da V1 identificará primeiro a empresa e depois o usuário, permitindo que o mesmo nome de usuário exista em negócios diferentes.
+
+### Arquivos lidos
+
+- `README.md`, `docs/CONTEXTO_PROJETO_MARIA_CONTROLA.md`, `docs/DECISOES.md`, `docs/ROADMAP.md`.
+- Trechos relacionados em `docs/ARQUITETURA.md`, `docs/MODELO_DADOS.md` e `docs/REGRAS_NEGOCIO.md`.
+
+### Arquivos criados ou alterados
+
+- Alterados `docs/DECISOES.md`, `docs/ARQUITETURA.md`, `docs/MODELO_DADOS.md`, `docs/REGRAS_NEGOCIO.md`, `docs/CONTEXTO_PROJETO_MARIA_CONTROLA.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Atualizada a decisão D-015 para exigir empresa, nome de usuário e senha no login.
+- Registrado que o nome de usuário será único dentro de cada negócio, não globalmente na plataforma.
+- Removida essa dúvida das pendências documentais.
+- Ajustadas arquitetura, modelo de dados, regras de negócio e contexto para refletirem a mesma regra.
+
+### Decisões registradas
+
+- O mesmo nome de usuário poderá existir em empresas diferentes.
+- A combinação empresa + nome de usuário será usada para resolver a identidade de acesso antes da autenticação por senha.
+
+### Validação realizada
+
+- Revisão textual dos documentos alterados.
+
+### Pendências
+
+- Implementar autenticação e substituir a identidade de demonstração.
+- Definir comportamento exato ao atingir limite de dispositivos.
+- Integrar a outbox ao banco central e implementar sincronização.
+
+### Próximo passo recomendado
+
+Planejar o lote técnico de autenticação, começando pelo identificador público da empresa e pela resolução segura da combinação empresa + nome de usuário.

@@ -1304,19 +1304,19 @@ Decisões já registradas:
 - catálogo próprio por negócio, categorias iniciais e categorias livres;
 - estoque mínimo por produto e localização;
 - cadastro com e-mail verificado, nome completo, nome de usuário e senha;
+- login por empresa, nome de usuário e senha, permitindo o mesmo nome de usuário em empresas diferentes;
 - suporte inicial pelo WhatsApp.
 
 Pendências:
 
 1. limites de usuários, dispositivos e Pontos Parceiros por plano;
-2. unicidade do nome de usuário em toda a plataforma ou dentro do negócio;
-3. comportamento exato ao atingir o limite de dispositivos;
-4. valores dos planos e eventual taxa de implantação;
-5. período de teste;
-6. cobrança recorrente manual ou automatizada;
-7. exportação, retenção e exclusão de dados após cancelamento;
-8. condições futuras de instalação exclusiva ou banco dedicado;
-9. publicação na Play Store permanece sem previsão no horizonte próximo.
+2. comportamento exato ao atingir o limite de dispositivos;
+3. valores dos planos e eventual taxa de implantação;
+4. período de teste;
+5. cobrança recorrente manual ou automatizada;
+6. exportação, retenção e exclusão de dados após cancelamento;
+7. condições futuras de instalação exclusiva ou banco dedicado;
+8. publicação na Play Store permanece sem previsão no horizonte próximo.
 
 Biometria/passkey foi retirada da V1 e permanece em standby para evolução futura.
 

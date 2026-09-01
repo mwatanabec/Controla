@@ -117,7 +117,8 @@ Estados e situações possíveis incluem:
 
 - O cliente pagante é o dono dos dados do seu negócio.
 - O cadastro inicial do usuário exige nome completo, e-mail verificado por código, nome de usuário e senha.
-- O login deve aceitar nome de usuário e senha; e-mail permanece como identidade verificada e meio de recuperação.
+- O login deve aceitar empresa, nome de usuário e senha; e-mail permanece como identidade verificada e meio de recuperação.
+- O nome de usuário é único dentro de cada negócio. Negócios diferentes podem ter o mesmo nome de usuário, desde que a empresa informada no login seja diferente.
 - Usuários internos acessam apenas o negócio ao qual pertencem.
 - Um futuro usuário de Ponto Parceiro verá somente as mercadorias e operações relacionadas a ele.
 - O parceiro não deve acessar fornecedores, custos, lucro, estoque total, outros parceiros, plano ou configurações do cliente.
