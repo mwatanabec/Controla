@@ -1922,3 +1922,58 @@ Fazer o pagamento parcial ou total de Acerto gravar um comando pendente no Index
 ### Próximo passo recomendado
 
 Criar uma camada de projeções locais de estoque que aplique Compra, Envio, Venda e Devolução pendentes sobre os dados mockados, sem alterar a fonte-base e sem tratar o resultado como saldo confirmado no servidor.
+
+## 2026-09-01 — Lote 25: projeção local na consulta de Estoque
+
+### Objetivo do lote
+
+Aplicar as movimentações físicas pendentes da outbox sobre uma cópia dos dados mockados na tela Estoque, distinguindo saldo estimado de saldo confirmado e preservando a fonte-base.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Dados, tipos, componente, estilos, serviço IndexedDB e testes de Estoque em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/services/stockProjection.ts` e `app/src/services/stockProjection.test.ts`.
+- Alterados `app/src/components/StockPage.tsx`, `app/src/App.css` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Criada função pura que clona a base mockada antes de calcular saldos locais.
+- Aplicados comandos pendentes de Compra, Envio, Devolução, Venda direta e Venda em Ponto Parceiro.
+- Mantidas transferências balanceadas entre origem e destino na mesma projeção.
+- Ignorados comandos financeiros, rejeitados ou com payload físico desconhecido.
+- Recalculados estado, rótulo e orientação de estoque próprio a partir do saldo estimado.
+- Conectada a tela Estoque à leitura da outbox no IndexedDB.
+- Exibido aviso com a quantidade de movimentações locais incluídas.
+- Alterados rótulos para `Meu estoque estimado` e `Estoque total estimado` enquanto houver movimentos locais.
+- Mantida a base mockada se a leitura falhar, com aviso explícito de que os movimentos do aparelho não puderam ser incluídos.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- A projeção é derivada e imutável; a fonte-base não é reescrita por comandos pendentes.
+- Estados locais ativos e conflito preservado participam da projeção; comandos aceitos ou rejeitados não são aplicados pela outbox.
+- A tela não chama saldo estimado de confirmado.
+- Pagamentos de Acerto não alteram estoque e são ignorados por esta camada.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta e três testes aprovados em três arquivos.
+- `npm run build` executado com sucesso.
+- Sequência de Compra, Envio, Venda e Devolução, imutabilidade da base, exclusão de comandos financeiros/rejeitados e integração visual cobertas por testes automatizados.
+
+### Pendências
+
+- Usar a projeção nas validações dos formulários para impedir consumo repetido do mesmo saldo no aparelho.
+- Projetar saldos e atividades na consulta de Pontos Parceiros.
+- Projetar pagamentos pendentes na consulta de Acertos.
+- Implementar autenticação, banco central e sincronização.
+
+### Próximo passo recomendado
+
+Criar um carregador reutilizável do estoque estimado e usá-lo em Envio, Venda e Devolução antes da validação e da gravação, para que operações consecutivas no mesmo aparelho respeitem os comandos já pendentes.

@@ -113,6 +113,23 @@ describe('Estoque', () => {
 
     expect(screen.getByRole('heading', { name: 'Registrar compra' })).toBeInTheDocument()
   })
+
+  it('mostra como estimado o saldo de uma compra salva no aparelho', async () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir ações de registro' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Compra' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
+    await screen.findByRole('heading', { name: 'Compra salva na demonstração' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Voltar para Início' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Estoque' }))
+
+    expect(await screen.findByText('Saldo estimado inclui 1 movimentação salva neste aparelho.')).toBeInTheDocument()
+    const canecaCard = screen.getByText('Caneca Flores').closest('article')
+    expect(canecaCard).toHaveTextContent('Meu estoque estimado')
+    expect(canecaCard).toHaveTextContent('14 un.')
+    expect(canecaCard).toHaveTextContent('Estoque em dia')
+  })
 })
 
 describe('Pontos Parceiros', () => {

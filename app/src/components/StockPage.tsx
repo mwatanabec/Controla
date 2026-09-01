@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { getPartnerTotal, getStockTotal, stockProducts } from '../data/stock'
+import { listOutboxCommands } from '../services/localDatabase'
+import { projectStockProducts } from '../services/stockProjection'
 import type { StockFilter, StockProduct, StockView } from '../types/stock'
 
 const filters: Array<{ value: StockFilter; label: string }> = [
@@ -43,12 +45,14 @@ function StockListCard({
   onToggleMenu,
   onAction,
   onOpenDistribution,
+  estimated,
 }: {
   product: StockProduct
   openMenuId: string | null
   onToggleMenu: (productId: string) => void
   onAction: (action: string) => void
   onOpenDistribution: (product: StockProduct) => void
+  estimated: boolean
 }) {
   const partnerTotal = getPartnerTotal(product)
   const isMenuOpen = openMenuId === product.id
@@ -93,7 +97,7 @@ function StockListCard({
       </div>
       <div className="produto-numeros">
         <div className="numero-estoque">
-          <span>Meu estoque</span>
+          <span>{estimated ? 'Meu estoque estimado' : 'Meu estoque'}</span>
           <strong>{product.ownQuantity} un.</strong>
         </div>
         <button
@@ -107,14 +111,14 @@ function StockListCard({
         </button>
       </div>
       <div className="produto-total">
-        <span>Estoque total</span>
+        <span>{estimated ? 'Estoque total estimado' : 'Estoque total'}</span>
         <strong>{quantityLabel(getStockTotal(product))}</strong>
       </div>
     </article>
   )
 }
 
-function StockDetailsCard({ product }: { product: StockProduct }) {
+function StockDetailsCard({ product, estimated }: { product: StockProduct; estimated: boolean }) {
   return (
     <article className="cartao produto-detalhado">
       <div className="produto-cabecalho">
@@ -122,7 +126,7 @@ function StockDetailsCard({ product }: { product: StockProduct }) {
       </div>
       <div className="quadro-detalhes">
         <div className="linha-detalhe">
-          <span>Meu estoque</span>
+          <span>{estimated ? 'Meu estoque estimado' : 'Meu estoque'}</span>
           <strong>{quantityLabel(product.ownQuantity)}</strong>
         </div>
         {product.partners.map((partner) => (
@@ -132,7 +136,7 @@ function StockDetailsCard({ product }: { product: StockProduct }) {
           </div>
         ))}
         <div className="linha-detalhe">
-          <span>Estoque total</span>
+          <span>{estimated ? 'Estoque total estimado' : 'Estoque total'}</span>
           <strong>{quantityLabel(getStockTotal(product))}</strong>
         </div>
       </div>
@@ -141,7 +145,15 @@ function StockDetailsCard({ product }: { product: StockProduct }) {
   )
 }
 
-function StockDistribution({ product, onClose }: { product: StockProduct; onClose: () => void }) {
+function StockDistribution({
+  product,
+  onClose,
+  estimated,
+}: {
+  product: StockProduct
+  onClose: () => void
+  estimated: boolean
+}) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const partnerTotal = getPartnerTotal(product)
 
@@ -191,7 +203,7 @@ function StockDistribution({ product, onClose }: { product: StockProduct; onClos
         </div>
         <div className="quadro-detalhes">
           <div className="linha-detalhe">
-            <span>Meu estoque</span>
+            <span>{estimated ? 'Meu estoque estimado' : 'Meu estoque'}</span>
             <strong>{quantityLabel(product.ownQuantity)}</strong>
           </div>
           {product.partners.map((partner) => (
@@ -201,7 +213,7 @@ function StockDistribution({ product, onClose }: { product: StockProduct; onClos
             </div>
           ))}
           <div className="linha-detalhe">
-            <span>Estoque total</span>
+            <span>{estimated ? 'Estoque total estimado' : 'Estoque total'}</span>
             <strong>{quantityLabel(getStockTotal(product))}</strong>
           </div>
         </div>
@@ -211,6 +223,9 @@ function StockDistribution({ product, onClose }: { product: StockProduct; onClos
 }
 
 export function StockPage({ onOpenPurchase }: { onOpenPurchase: () => void }) {
+  const [products, setProducts] = useState(stockProducts)
+  const [localMovementCount, setLocalMovementCount] = useState(0)
+  const [projectionError, setProjectionError] = useState(false)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<StockFilter>('all')
   const [view, setView] = useState<StockView>('list')
@@ -218,10 +233,29 @@ export function StockPage({ onOpenPurchase }: { onOpenPurchase: () => void }) {
   const [selectedProduct, setSelectedProduct] = useState<StockProduct | null>(null)
   const [notice, setNotice] = useState('')
 
+  useEffect(() => {
+    let active = true
+
+    listOutboxCommands()
+      .then((commands) => {
+        if (!active) return
+        const projection = projectStockProducts(stockProducts, commands)
+        setProducts(projection.products)
+        setLocalMovementCount(projection.appliedCommandCount)
+      })
+      .catch(() => {
+        if (active) setProjectionError(true)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   const visibleProducts = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase('pt-BR')
 
-    return stockProducts.filter((product) => {
+    return products.filter((product) => {
       const matchesSearch = !normalizedSearch || product.name.toLocaleLowerCase('pt-BR').includes(normalizedSearch)
       const matchesFilter =
         filter === 'all' ||
@@ -231,7 +265,7 @@ export function StockPage({ onOpenPurchase }: { onOpenPurchase: () => void }) {
 
       return matchesSearch && matchesFilter
     })
-  }, [filter, search])
+  }, [filter, products, search])
 
   function selectFilter(nextFilter: StockFilter) {
     setFilter(nextFilter)
@@ -262,6 +296,19 @@ export function StockPage({ onOpenPurchase }: { onOpenPurchase: () => void }) {
       {notice ? (
         <div className="estoque-aviso visivel" role="status">
           {notice}
+        </div>
+      ) : null}
+
+      {localMovementCount > 0 ? (
+        <div className="estoque-aviso estimado visivel" role="status">
+          Saldo estimado inclui {localMovementCount}{' '}
+          {localMovementCount === 1 ? 'movimentação salva' : 'movimentações salvas'} neste aparelho.
+        </div>
+      ) : null}
+
+      {projectionError ? (
+        <div className="estoque-aviso alerta visivel" role="alert">
+          Não foi possível incluir agora as movimentações salvas neste aparelho.
         </div>
       ) : null}
 
@@ -322,6 +369,7 @@ export function StockPage({ onOpenPurchase }: { onOpenPurchase: () => void }) {
               onToggleMenu={(productId) => setOpenMenuId((current) => (current === productId ? null : productId))}
               onAction={showActionNotice}
               onOpenDistribution={setSelectedProduct}
+              estimated={localMovementCount > 0}
               key={product.id}
             />
           ))}
@@ -329,12 +377,18 @@ export function StockPage({ onOpenPurchase }: { onOpenPurchase: () => void }) {
       ) : (
         <div className="estoque-detalhado">
           {visibleProducts.map((product) => (
-            <StockDetailsCard product={product} key={product.id} />
+            <StockDetailsCard product={product} estimated={localMovementCount > 0} key={product.id} />
           ))}
         </div>
       )}
 
-      {selectedProduct ? <StockDistribution product={selectedProduct} onClose={() => setSelectedProduct(null)} /> : null}
+      {selectedProduct ? (
+        <StockDistribution
+          product={selectedProduct}
+          estimated={localMovementCount > 0}
+          onClose={() => setSelectedProduct(null)}
+        />
+      ) : null}
     </main>
   )
 }

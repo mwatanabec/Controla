@@ -495,6 +495,18 @@ button.numero-estoque {
   display: block;
 }
 
+.estoque-aviso.estimado {
+  color: var(--ouro);
+  background: var(--ouro-claro);
+  border-color: #ead9aa;
+}
+
+.estoque-aviso.alerta {
+  color: #9d3030;
+  background: #fff0f0;
+  border-color: #efcaca;
+}
+
 .estoque-modal {
   position: fixed;
   z-index: 35;
