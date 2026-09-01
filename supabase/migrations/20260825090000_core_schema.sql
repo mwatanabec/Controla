@@ -8,13 +8,14 @@ create type public.license_status as enum ('trial','active','grace','blocked','c
 
 create table public.businesses (
   id uuid primary key default gen_random_uuid(), name text not null check (length(trim(name)) > 0),
+  login_code text not null unique check (login_code = lower(trim(login_code)) and login_code ~ '^[a-z0-9][a-z0-9.-]{2,31}$'),
   support_code text not null unique, status public.record_status not null default 'active',
   timezone text not null default 'America/Sao_Paulo', version bigint not null default 1,
   created_at timestamptz not null default now(), updated_at timestamptz not null default now(), archived_at timestamptz
 );
 create table public.profiles (
   user_id uuid primary key references auth.users(id) on delete cascade, full_name text not null,
-  username text not null, username_normalized text not null, phone_whatsapp text,
+  phone_whatsapp text,
   status public.record_status not null default 'active', version bigint not null default 1,
   created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
@@ -25,9 +26,12 @@ create table public.plans (
 );
 create table public.business_memberships (
   id uuid primary key default gen_random_uuid(), business_id uuid not null references public.businesses(id),
-  user_id uuid not null references auth.users(id), role public.membership_role not null, status public.record_status not null default 'active',
+  user_id uuid not null references auth.users(id), username text not null,
+  username_normalized text generated always as (lower(trim(username))) stored,
+  role public.membership_role not null, status public.record_status not null default 'active',
   joined_at timestamptz, version bigint not null default 1, created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
-  unique (business_id,user_id), unique (id,business_id)
+  check (char_length(trim(username)) between 3 and 64),
+  unique (business_id,user_id), unique (business_id,username_normalized), unique (id,business_id)
 );
 create index business_memberships_user_business_idx on public.business_memberships(user_id,business_id) where status = 'active';
 create table public.licenses (

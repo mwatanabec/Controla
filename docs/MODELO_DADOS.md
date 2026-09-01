@@ -92,6 +92,7 @@ Campos lógicos principais:
 
 - `id`;
 - `name`;
+- `login_code`, público, curto e único para identificar a empresa no login;
 - `support_code`, público, curto e único para suporte;
 - `status`: teste, ativo, vencido, bloqueado ou cancelado;
 - `timezone`, inicialmente `America/Sao_Paulo`;
@@ -112,7 +113,6 @@ Campos:
 
 - `user_id`, igual ao identificador do Auth;
 - `full_name`;
-- `username` e `username_normalized`;
 - `phone_whatsapp`, opcional;
 - `status`: ativo, bloqueado ou inativo;
 - `created_at`, `updated_at`;
@@ -121,7 +121,7 @@ Campos:
 Regras:
 
 - o e-mail verificado e a senha permanecem sob responsabilidade do Auth;
-- o nome de usuário será único dentro de cada negócio, permitindo o mesmo login em empresas diferentes;
+- o nome de usuário não fica no perfil global, pois pertence ao vínculo do usuário com um negócio;
 - CPF, data de nascimento e endereço não entram na V1.
 
 ### `business_memberships`
@@ -131,6 +131,7 @@ Relaciona usuário e negócio.
 Campos:
 
 - `id`, `business_id`, `user_id`;
+- `username` e `username_normalized`;
 - `role`: owner, admin ou operator;
 - `status`: invited, active, blocked ou inactive;
 - `joined_at`, `created_at`, `updated_at`;
@@ -139,6 +140,8 @@ Campos:
 Regras:
 
 - na V1, um usuário ativo pertence a um negócio;
+- o nome de usuário é único dentro de cada negócio pela combinação `business_id + username_normalized`;
+- negócios diferentes podem ter o mesmo nome de usuário;
 - o vínculo, e não um valor enviado pela interface, determina o `business_id` permitido;
 - somente owner ou admin poderá gerenciar usuários internos, conforme permissões futuras.
 

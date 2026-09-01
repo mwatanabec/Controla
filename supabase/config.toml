@@ -1,0 +1,4 @@
+project_id = "maria-controla"
+
+[functions.login-with-username]
+verify_jwt = false

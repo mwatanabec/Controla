@@ -100,7 +100,7 @@ Este documento registra decisões vigentes do Maria Controla. Hipóteses e pergu
 
 - **Decisão:** o cadastro inicial terá e-mail verificado por código, nome completo, nome de usuário e senha. O login deverá pedir empresa, nome de usuário e senha, mantendo e-mail como identidade verificada e alternativa de recuperação.
 - **Unicidade:** o nome de usuário será único dentro de cada negócio, não em toda a plataforma. Assim, negócios diferentes podem ter o mesmo login, como `maria.maria`, desde que a empresa informada seja diferente.
-- **Impacto:** a identificação segura do acesso será feita pela combinação empresa + nome de usuário. A implementação segura dessa resolução será definida no lote de autenticação, porque o Supabase usa e-mail ou telefone como identidade de senha.
+- **Impacto:** a identificação segura do acesso será feita pela combinação empresa + nome de usuário. A resolução ocorrerá na Edge Function `login-with-username`, conforme `docs/AUTENTICACAO.md`, porque o Supabase usa e-mail ou telefone como identidade de senha.
 - **Evolução:** biometria/passkey fica fora da V1 e em standby para uma evolução futura.
 
 ### D-016 — Suporte inicial

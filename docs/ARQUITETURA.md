@@ -170,7 +170,9 @@ O futuro usuário do Ponto Parceiro não será criado na V1. O Ponto Parceiro j�
 
 Antes de uso externo, será necessário configurar um serviço SMTP próprio. O serviço de e-mail padrão do Supabase é destinado a testes e restringe destinatários e volume.
 
-O Supabase autentica senha usando e-mail ou telefone. Para oferecer login por empresa e nome de usuário sem expor a relação entre usuário e e-mail, a V1 precisará de uma função segura de autenticação no servidor. O nome de usuário será único dentro de cada negócio, permitindo o mesmo login em empresas diferentes quando o identificador da empresa mudar.
+O Supabase autentica senha usando e-mail ou telefone. Para oferecer login por empresa e nome de usuário, a V1 usará a Edge Function pública `login-with-username`. Ela resolverá negócio, vínculo e e-mail somente no servidor, validará a senha pelo Supabase Auth e responderá com a sessão normal sem devolver o e-mail no corpo. Empresa inexistente, usuário inexistente, conta inativa, e-mail não confirmado e senha incorreta produzirão a mesma resposta. O contrato completo está em `docs/AUTENTICACAO.md`.
+
+O código público da empresa será único. O nome de usuário ficará no vínculo `business_memberships` e será único dentro do negócio, permitindo o mesmo login em empresas diferentes. A chave secreta usada pela função nunca poderá chegar ao navegador. Antes da produção, o endpoint público deverá receber limitação de tentativas na borda e revisão específica contra enumeração e força bruta.
 
 Biometria em PWA é possível por passkeys/WebAuthn: o dispositivo valida biometria, PIN ou chave de segurança, sem enviar a biometria ao Maria Controla. Esse recurso fica fora da V1 e em standby para uma evolução futura; o suporte atual do Supabase a passkeys é experimental e não será requisito de acesso da primeira versão.
 
@@ -336,7 +338,7 @@ Em 21 de agosto de 2026, a owner aprovou:
 12. modelagem detalhada do banco local, banco central e protocolo de sincronização como próximo lote;
 13. biometria/passkey fora da V1 e em standby para evolução futura.
 
-O cadastro com e-mail verificado e o login por empresa, nome de usuário e senha foram aprovados. A forma segura de resolução da combinação empresa + nome de usuário será detalhada no lote de autenticação.
+O cadastro com e-mail verificado e o login por empresa, nome de usuário e senha foram aprovados. A resolução segura foi detalhada em `docs/AUTENTICACAO.md` e implementada localmente como Edge Function, ainda sem deploy ou credenciais remotas.
 
 ## 16. Referências técnicas oficiais
 
@@ -348,6 +350,9 @@ O cadastro com e-mail verificado e o login por empresa, nome de usuário e senha
 - [Vite: guia e compatibilidade](https://vite.dev/guide/)
 - [React com TypeScript](https://react.dev/learn/typescript)
 - [Supabase: arquitetura de autenticação](https://supabase.com/docs/guides/auth/architecture)
+- [Supabase: referência de campos do JWT](https://supabase.com/docs/guides/auth/jwt-fields)
+- [Supabase: segurança de Edge Functions](https://supabase.com/docs/guides/functions/auth)
+- [Supabase: administração de usuários](https://supabase.com/docs/reference/javascript/auth-admin-listusers)
 - [Supabase: autenticação com passkeys](https://supabase.com/docs/guides/auth/passkeys)
 - [Supabase: Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security)
 - [Supabase: segurança da API](https://supabase.com/docs/guides/api/securing-your-api)

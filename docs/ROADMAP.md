@@ -65,7 +65,7 @@ Inclui:
 
 ## Etapa 3 — V1 funcional para o cliente pagante
 
-**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Os Lotes 11 a 13 converteram Estoque, Pontos Parceiros e Acertos. Os Lotes 14 a 18 implementaram formulários editáveis para os fluxos principais. O Lote 19 criou a fundação IndexedDB v1 e a outbox local. Os Lotes 20 a 24 conectaram os cinco fluxos principais à outbox com uma identidade temporária de demonstração. Os Lotes 25 a 29 passaram a refletir operações pendentes nas consultas e validações como valores estimados. O Lote 30 tornou a fila local visível em linguagem humana. O Lote 31 completou o cálculo estimado para Compras repetidas. O Lote 32 decidiu o login por empresa e o Lote 33 criou a entrada local de demonstração. Backend, autenticação remota, banco ativo e sincronização ainda não foram conectados.
+**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Os Lotes 11 a 13 converteram Estoque, Pontos Parceiros e Acertos. Os Lotes 14 a 18 implementaram formulários editáveis para os fluxos principais. O Lote 19 criou a fundação IndexedDB v1 e a outbox local. Os Lotes 20 a 24 conectaram os cinco fluxos principais à outbox com uma identidade temporária de demonstração. Os Lotes 25 a 29 passaram a refletir operações pendentes nas consultas e validações como valores estimados. O Lote 30 tornou a fila local visível em linguagem humana. O Lote 31 completou o cálculo estimado para Compras repetidas. O Lote 32 decidiu o login por empresa, o Lote 33 criou a entrada local de demonstração e o Lote 34 implementou localmente o contrato seguro de resolução da identidade. Backend ativo, autenticação remota, banco ativo e sincronização ainda não foram conectados.
 
 **Objetivo:** entregar um produto pronto para uso que permita ao cliente pagante controlar manualmente o ciclo de mercadorias.
 
@@ -109,7 +109,8 @@ Lotes técnicos desta etapa:
 22. **Concluído — Lote 31:** estoque estimado no formulário de Compra e recálculo acumulado após cada comando local;
 23. **Concluído — Lote 32:** decisão de login por empresa, permitindo o mesmo nome de usuário em negócios diferentes;
 24. **Concluído — Lote 33:** tela local de acesso por empresa, usuário e senha, sessão no navegador, proteção das telas e saída sem apagar operações locais;
-25. **Próximos lotes:** contrato seguro de resolução da identidade, autenticação Supabase, integração com o banco e sincronização.
+25. **Concluído — Lote 34:** código público da empresa, usuário no vínculo com o negócio, contrato anti-enumeração e Edge Function local para autenticação por empresa + usuário + senha;
+26. **Próximos lotes:** cliente Supabase no frontend, substituição da sessão de demonstração, integração com o banco e sincronização.
 
 ## Etapa 4 — Apresentação do produto e fila de melhorias
 

@@ -2386,3 +2386,63 @@ Materializar no frontend a entrada por empresa, nome de usuário e senha, proteg
 ### Próximo passo recomendado
 
 Criar o contrato de backend para resolver empresa + usuário e iniciar a autenticação Supabase sem expor e-mail, existência de negócio ou existência de usuário.
+
+## 2026-09-01 — Lote 34: contrato seguro de autenticação por empresa e usuário
+
+### Objetivo do lote
+
+Implementar localmente o contrato de backend que resolve empresa + nome de usuário e valida a senha no Supabase Auth sem permitir enumeração anônima de negócios, usuários ou e-mails.
+
+### Arquivos lidos
+
+- `README.md`, `docs/DECISOES.md`, `docs/ARQUITETURA.md`, `docs/MODELO_DADOS.md`, `docs/REGRAS_NEGOCIO.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Migrations e testes estruturais existentes em `supabase/` e `tests/`.
+- Documentação oficial atual do Supabase sobre usuários, JWT, Edge Functions, chaves administrativas e RLS.
+
+### Arquivos criados ou alterados
+
+- Criados `docs/AUTENTICACAO.md`, `supabase/config.toml`, `supabase/functions/login-with-username/index.ts` e `tests/auth-contract.test.mjs`.
+- Alterados `supabase/migrations/20260825090000_core_schema.sql` e `supabase/migrations/20260825090300_rls_and_permissions.sql`.
+- Alterados `README.md`, `docs/DECISOES.md`, `docs/ARQUITETURA.md`, `docs/MODELO_DADOS.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Adicionado `businesses.login_code` como código público único digitado no campo Empresa.
+- Movido o nome de usuário do perfil global para `business_memberships`, onde sua unicidade por negócio pode ser garantida pelo banco.
+- Criada restrição única para `business_id + username_normalized`.
+- Criada Edge Function pública de login com origem permitida configurável.
+- Implementada resolução privilegiada de negócio ativo, vínculo ativo, perfil ativo e e-mail verificado.
+- Validada a senha no Supabase Auth e limitada a resposta de sucesso aos campos necessários da sessão.
+- Unificadas falhas de credencial em `invalid_credentials`, com duração mínima e cache proibido.
+- Mantidos erros internos sem detalhes em `login_unavailable`.
+- Revogada explicitamente a leitura anônima das tabelas usadas para resolver a identidade.
+- Documentada como obrigatória a limitação de tentativas na borda antes da produção.
+
+### Decisões registradas
+
+- O nome de usuário pertence ao vínculo usuário–negócio, não ao perfil global.
+- O próprio usuário autenticado poderá ver seu e-mail de recuperação presente na sessão Supabase; o endpoint pré-login não o devolve nem permite descobri-lo por tentativa.
+- A chave secreta existe somente no servidor e nunca será entregue à PWA.
+- Nenhuma restrição adicional de caracteres do nome de usuário foi definida neste lote; o banco apenas normaliza, exige de 3 a 64 caracteres e garante unicidade no negócio.
+
+### Validação realizada
+
+- `node --test tests/*.test.mjs` executado com quatro testes estruturais aprovados.
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com sessenta e três testes aprovados em seis arquivos.
+- `npm run build` executado com sucesso.
+- `git diff --check` executado sem erros de whitespace.
+- Deno e Supabase CLI não estão instalados no computador; por isso a função não foi iniciada localmente nem conectada a um projeto neste lote.
+
+### Pendências
+
+- Instalar e configurar o cliente Supabase no frontend.
+- Substituir a sessão de demonstração por sessão remota quando as variáveis públicas existirem.
+- Executar migrations e Edge Function no ambiente local do Supabase antes de qualquer deploy.
+- Configurar limitação de tentativas, origens oficiais e segredos no ambiente de destino.
+- Implementar cadastro, convite, verificação e recuperação de senha.
+- Definir comportamento exato ao atingir o limite de dispositivos.
+
+### Próximo passo recomendado
+
+Preparar o cliente Supabase no frontend com configuração opcional e trocar o serviço de acesso por uma interface que preserve a demonstração local enquanto não houver ambiente remoto disponível.

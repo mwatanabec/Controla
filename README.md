@@ -6,13 +6,13 @@ O produto não pretende ser um ERP, sistema fiscal, PDV ou plataforma financeira
 
 ## Momento atual
 
-Os Lotes 0 a 33 foram concluídos conforme seus escopos. O protótipo mobile-first da Home e dos fluxos principais da V1 está aprovado, incluindo Estoque, Pontos Parceiros e Acertos. A Etapa 3 está em andamento com a fundação da PWA em React, TypeScript e Vite, consultas e formulários principais em React e a base IndexedDB v1 com outbox local. Compra, Envio, Venda, Devolução e pagamento de Acerto gravam comandos pendentes no aparelho usando uma identidade de demonstração explicitamente temporária. Estoque e Pontos Parceiros aplicam movimentações físicas pendentes como quantidades estimadas; Acertos aplica pagamentos pendentes como valores estimados; e todos os cinco fluxos usam as projeções locais ao calcular ou validar novos lançamentos. A Home oferece uma visão humana, somente de leitura, das operações locais ainda não enviadas. A entrada local agora pede empresa, usuário e senha, protege as demais telas e permite encerrar a sessão. O projeto continua sem backend ativo, banco real, autenticação remota, credenciais externas ou deploy.
+Os Lotes 0 a 34 foram concluídos conforme seus escopos. O protótipo mobile-first da Home e dos fluxos principais da V1 está aprovado, incluindo Estoque, Pontos Parceiros e Acertos. A Etapa 3 está em andamento com a fundação da PWA em React, TypeScript e Vite, consultas e formulários principais em React e a base IndexedDB v1 com outbox local. Compra, Envio, Venda, Devolução e pagamento de Acerto gravam comandos pendentes no aparelho usando uma identidade de demonstração explicitamente temporária. Estoque e Pontos Parceiros aplicam movimentações físicas pendentes como quantidades estimadas; Acertos aplica pagamentos pendentes como valores estimados; e todos os cinco fluxos usam as projeções locais ao calcular ou validar novos lançamentos. A Home oferece uma visão humana, somente de leitura, das operações locais ainda não enviadas. A entrada local agora pede empresa, usuário e senha, protege as demais telas e permite encerrar a sessão. O contrato seguro de resolução da identidade e sua Edge Function estão implementados apenas localmente. O projeto continua sem backend ativo, banco real, autenticação remota, credenciais externas ou deploy.
 
 O cliente piloto é a **Anona Presentes**. Esse nome representa o primeiro caso de uso e não o nome do produto.
 
 ## Base técnica inicial da V1
 
-O Lote 9 registrou migrations SQL locais, políticas RLS, funções transacionais iniciais, contratos versionados de sincronização e testes estruturais. O Lote 10 criou o frontend em `app/`, configurou a estrutura inicial da PWA e implementou a Home com dados mockados da Anona Presentes. Os Lotes 11 a 13 implementaram as consultas de Estoque, Pontos Parceiros e Acertos. Os Lotes 14 a 18 implementaram os formulários e confirmações simuladas dos fluxos principais. O Lote 19 criou o esquema IndexedDB e a outbox tipada. Os Lotes 20 a 24 conectaram os cinco fluxos principais à outbox local. Os Lotes 25 a 29 aplicaram as projeções locais às consultas e validações. O Lote 30 criou o contador e a lista de operações salvas no aparelho. O Lote 31 completou o cálculo acumulado de Compras repetidas. O Lote 32 decidiu o login por empresa e o Lote 33 materializou sua tela local de demonstração. Nenhuma migration foi aplicada em banco remoto e não houve credencial externa ou deploy.
+O Lote 9 registrou migrations SQL locais, políticas RLS, funções transacionais iniciais, contratos versionados de sincronização e testes estruturais. O Lote 10 criou o frontend em `app/`, configurou a estrutura inicial da PWA e implementou a Home com dados mockados da Anona Presentes. Os Lotes 11 a 13 implementaram as consultas de Estoque, Pontos Parceiros e Acertos. Os Lotes 14 a 18 implementaram os formulários e confirmações simuladas dos fluxos principais. O Lote 19 criou o esquema IndexedDB e a outbox tipada. Os Lotes 20 a 24 conectaram os cinco fluxos principais à outbox local. Os Lotes 25 a 29 aplicaram as projeções locais às consultas e validações. O Lote 30 criou o contador e a lista de operações salvas no aparelho. O Lote 31 completou o cálculo acumulado de Compras repetidas. O Lote 32 decidiu o login por empresa, o Lote 33 materializou sua tela local e o Lote 34 criou o contrato seguro de resolução da identidade. Nenhuma migration foi aplicada em banco remoto e não houve credencial externa ou deploy.
 
 ## Frontend local
 
@@ -42,9 +42,10 @@ npm run build
 6. [Modelo de dados aprovado para o esquema](docs/MODELO_DADOS.md)
 7. [Sincronização offline aprovada para a base técnica](docs/SINCRONIZACAO_OFFLINE.md)
 8. [Fluxos funcionais da V1](docs/FLUXOS_V1.md)
-9. [Brief da Home](docs/BRIEF_HOME.md)
-10. [Wireframe da Home](docs/WIREFRAME_HOME.md)
-11. [Roteiro de validação da Home](docs/ROTEIRO_VALIDACAO_HOME.md)
-12. [Método de trabalho com IA](AGENTS.md)
+9. [Contrato de autenticação](docs/AUTENTICACAO.md)
+10. [Brief da Home](docs/BRIEF_HOME.md)
+11. [Wireframe da Home](docs/WIREFRAME_HOME.md)
+12. [Roteiro de validação da Home](docs/ROTEIRO_VALIDACAO_HOME.md)
+13. [Método de trabalho com IA](AGENTS.md)
 
 As regras de separação de ferramentas, ambientes e contextos estão definidas no `AGENTS.md`.
