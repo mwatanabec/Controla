@@ -1818,3 +1818,54 @@ Fazer os canais de Venda direta e Venda em Ponto Parceiro gravarem comandos pend
 ### Próximo passo recomendado
 
 Conectar o formulário de Devolução à outbox local como transferência `return_from_partner`, preservando a distinção entre devolução, venda cancelada e ajuste financeiro posterior.
+
+## 2026-09-01 — Lote 23: Devolução conectada à outbox local
+
+### Objetivo do lote
+
+Fazer o formulário de Devolução gravar uma transferência pendente do Ponto Parceiro ao estoque próprio, sem transformar a operação em venda cancelada ou antecipar ajustes financeiros.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/MODELO_DADOS.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Contrato de sincronização, dados, tipos, componente e testes do fluxo de Devolução em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Alterados `app/src/components/ReturnPage.tsx`, `app/src/types/return.ts` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Conectada a confirmação de Devolução ao comando `transfer.confirm` da outbox local.
+- Gravados no comando identificador da transferência, tipo `return_from_partner`, origem no parceiro, destino no estoque próprio, parceiro, produto, quantidade e data.
+- Preservadas as validações de quantidade inteira, data e saldo disponível na localização do parceiro.
+- Alterado o retorno visual para `Salvo neste aparelho`, deixando explícito que a transferência ainda não foi enviada ao banco central.
+- Mantida a explicação de que Devolução é movimentação de volta e não cancelamento de Venda.
+- Bloqueada a conclusão visual quando a gravação local falha.
+- Mantidos ajustes financeiros posteriores e projeções fora deste lote.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Devolução compartilha o comando de transferência com Envio, mas usa o tipo e o trajeto inversos.
+- O evento físico não apaga nem modifica uma Venda anterior.
+- Eventual reflexo em Acerto permanece como ajuste rastreável a ser implementado em lote transacional próprio.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta testes aprovados em dois arquivos.
+- `npm run build` executado com sucesso.
+- Validação de saldo, trajeto inverso, conteúdo do comando, preservação da Venda e estado local pendente cobertos por testes automatizados.
+
+### Pendências
+
+- Conectar pagamento de Acerto à outbox local.
+- Criar projeções locais para refletir comandos pendentes em Estoque, Parceiros e Acertos.
+- Implementar ajustes financeiros rastreáveis para devolução posterior a Acerto.
+- Substituir a identidade de demonstração e implementar processamento da fila, banco central e sincronização.
+
+### Próximo passo recomendado
+
+Conectar o pagamento de Acerto à outbox local, preservando valor calculado, acordado, já pago e pagamento atual sem apagar as vendas vinculadas.

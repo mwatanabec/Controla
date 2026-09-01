@@ -2,6 +2,14 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { partners } from '../data/partners'
 import { initialReturnDraft } from '../data/return'
 import { stockProducts } from '../data/stock'
+import {
+  DEMO_OWN_LOCATION_ID,
+  demoPartnerIds,
+  demoPartnerLocationIds,
+  demoProductIds,
+  getDemoIdentity,
+} from '../services/demoIdentity'
+import { enqueueLocalCommand, syncStatusLabel } from '../services/localDatabase'
 import type { ReturnDraft, ReturnResult } from '../types/return'
 
 type ReturnPageProps = {
@@ -30,8 +38,8 @@ function ReturnConfirmation({
       </div>
       <div className="texto-centro">
         <span className="etiqueta-simulacao">Dados mockados</span>
-        <h2>Devolução simulada</h2>
-        <p>A conferência foi concluída. Nenhum dado foi salvo no banco.</p>
+        <h2>Devolução salva na demonstração</h2>
+        <p>{syncStatusLabel(result.syncStatus)}. Ainda não foi enviada ao banco central.</p>
       </div>
 
       <article className="cartao resultado-resumo" aria-label="Resumo da devolução simulada">
@@ -54,6 +62,11 @@ function ReturnConfirmation({
           </div>
         </div>
       </article>
+
+      <div className="estado-sync-local" role="status">
+        <strong>{syncStatusLabel(result.syncStatus)}</strong>
+        <span>Comando local {result.commandId.slice(0, 8)}</span>
+      </div>
 
       <div className="efeito">
         O estoque de {result.productName} no {result.partnerName} passaria de {result.previousPartnerQuantity} para{' '}
@@ -81,6 +94,7 @@ export function ReturnPage({ initialPartnerId, onBack }: ReturnPageProps) {
   })
   const [error, setError] = useState('')
   const [result, setResult] = useState<ReturnResult | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
 
   const selectedPartner = useMemo(
     () => partners.find((partner) => partner.id === draft.partnerId) ?? partners[0],
@@ -102,7 +116,7 @@ export function ReturnPage({ initialPartnerId, onBack }: ReturnPageProps) {
     setError('')
   }
 
-  function submitReturn(event: FormEvent<HTMLFormElement>) {
+  async function submitReturn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!Number.isInteger(quantity) || quantity <= 0) {
@@ -118,16 +132,45 @@ export function ReturnPage({ initialPartnerId, onBack }: ReturnPageProps) {
       return
     }
 
-    setResult({
-      partnerName: selectedPartner.name,
-      productName: selectedProduct.name,
-      quantity,
-      date: draft.date,
-      previousPartnerQuantity: currentPartnerQuantity,
-      nextPartnerQuantity: currentPartnerQuantity - quantity,
-      previousOwnQuantity: selectedProduct.ownQuantity,
-      nextOwnQuantity: selectedProduct.ownQuantity + quantity,
-    })
+    setIsSaving(true)
+    try {
+      const identity = await getDemoIdentity()
+      const command = await enqueueLocalCommand({
+        ...identity,
+        commandType: 'transfer.confirm',
+        occurredAt: `${draft.date}T12:00:00.000Z`,
+        payload: {
+          transfer_id: crypto.randomUUID(),
+          transfer_type: 'return_from_partner',
+          source_location_id: demoPartnerLocationIds[selectedPartner.id],
+          destination_location_id: DEMO_OWN_LOCATION_ID,
+          partner_point_id: demoPartnerIds[selectedPartner.id],
+          partner_name: selectedPartner.name,
+          product_id: demoProductIds[selectedProduct.id],
+          product_name: selectedProduct.name,
+          quantity,
+          occurred_date: draft.date,
+          demo_mode: true,
+        },
+      })
+
+      setResult({
+        commandId: command.command_id,
+        syncStatus: 'queued',
+        partnerName: selectedPartner.name,
+        productName: selectedProduct.name,
+        quantity,
+        date: draft.date,
+        previousPartnerQuantity: currentPartnerQuantity,
+        nextPartnerQuantity: currentPartnerQuantity - quantity,
+        previousOwnQuantity: selectedProduct.ownQuantity,
+        nextOwnQuantity: selectedProduct.ownQuantity + quantity,
+      })
+    } catch {
+      setError('Não foi possível salvar neste aparelho. Tente novamente antes de sair da tela.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   if (result) {
@@ -216,8 +259,8 @@ export function ReturnPage({ initialPartnerId, onBack }: ReturnPageProps) {
           </p>
         ) : null}
 
-        <button className="botao-principal" type="submit">
-          Salvar simulação
+        <button className="botao-principal" type="submit" disabled={isSaving}>
+          {isSaving ? 'Salvando neste aparelho...' : 'Salvar neste aparelho'}
         </button>
       </form>
     </main>

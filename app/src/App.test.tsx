@@ -538,7 +538,7 @@ describe('Registrar devolução', () => {
     openReturn()
 
     fireEvent.change(screen.getByLabelText('Quantidade'), { target: { value: '3' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Estoque insuficiente. Há 2 unidades disponíveis no Salão Bella.',
@@ -555,17 +555,29 @@ describe('Registrar devolução', () => {
     expect(screen.getByLabelText('Ponto Parceiro')).toHaveValue('salao')
   })
 
-  it('confirma a devolução como simulação sem cancelar venda', () => {
+  it('salva a devolução como transferência sem cancelar venda', async () => {
     openReturn()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
-    expect(screen.getByRole('heading', { name: 'Devolução simulada' })).toBeInTheDocument()
-    expect(screen.getByText('A conferência foi concluída. Nenhum dado foi salvo no banco.')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Devolução salva na demonstração' })).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho')).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho. Ainda não foi enviada ao banco central.')).toBeInTheDocument()
     expect(screen.getByText(/O estoque de Kit Presente Lavanda no Salão Bella passaria/)).toHaveTextContent(
       'de 2 para 1 unidades',
     )
     expect(screen.getByText('Devolução é uma movimentação de volta. Não é venda cancelada.')).toBeInTheDocument()
+
+    const commands = await listOutboxCommands()
+    expect(commands).toHaveLength(1)
+    expect(commands[0].command_type).toBe('transfer.confirm')
+    expect(commands[0].payload).toMatchObject({
+      transfer_type: 'return_from_partner',
+      partner_name: 'Salão Bella',
+      product_name: 'Kit Presente Lavanda',
+      quantity: 1,
+      demo_mode: true,
+    })
   })
 })
 
