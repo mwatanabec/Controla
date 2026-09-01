@@ -380,3 +380,78 @@ describe('Registrar envio', () => {
     ).toBeInTheDocument()
   })
 })
+
+describe('Registrar venda', () => {
+  function openSale() {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir ações de registro' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Venda' }))
+  }
+
+  it('abre pelo menu Registrar como venda em Ponto Parceiro', () => {
+    openSale()
+
+    expect(screen.getByRole('heading', { name: 'Registrar venda' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Ponto Parceiro' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByLabelText('Ponto Parceiro')).toHaveValue('salao')
+    expect(screen.getByLabelText('Produto')).toHaveValue('caneca')
+    expect(screen.getByLabelText('Preço usado')).toHaveValue('39,90')
+  })
+
+  it('calcula a baixa no parceiro e a pendência de acerto', () => {
+    openSale()
+
+    const effect = screen.getByText(/O saldo em Salão Bella passaria/)
+    expect(effect).toHaveTextContent('de 4 para 1 unidades')
+    expect(effect).toHaveTextContent(/Criaria.*119,70 para acerto/)
+    expect(screen.getByText('Venda informada não significa pagamento recebido. O acerto vem depois.')).toBeInTheDocument()
+  })
+
+  it('alterna para venda direta sem criar acerto', () => {
+    openSale()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Venda direta' }))
+
+    expect(screen.queryByLabelText('Ponto Parceiro')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Produto')).toHaveValue('vela')
+    expect(screen.getByLabelText('Quantidade')).toHaveValue(1)
+    expect(screen.getByText(/O saldo em Estoque próprio passaria/)).toHaveTextContent('de 4 para 3 unidades')
+    expect(screen.getByText(/Total da venda/)).toHaveTextContent('Não cria acerto')
+  })
+
+  it('preserva o preço alterado no cálculo da simulação', () => {
+    openSale()
+
+    fireEvent.change(screen.getByLabelText('Preço usado'), { target: { value: '35,00' } })
+
+    expect(screen.getByText(/O saldo em Salão Bella passaria/)).toHaveTextContent(/Criaria.*105,00 para acerto/)
+  })
+
+  it('rejeita venda comum sem saldo suficiente na origem', () => {
+    openSale()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Venda direta' }))
+    fireEvent.change(screen.getByLabelText('Quantidade'), { target: { value: '5' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Estoque insuficiente. Há 4 unidades disponíveis em Estoque próprio.',
+    )
+  })
+
+  it('abre pela ação do parceiro e confirma a venda como simulação', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Parceiros' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ações de Salão Bella' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Registrar venda' }))
+
+    expect(screen.getByLabelText('Ponto Parceiro')).toHaveValue('salao')
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+
+    expect(screen.getByRole('heading', { name: 'Venda no parceiro simulada' })).toBeInTheDocument()
+    expect(screen.getByText('A conferência foi concluída. Nenhum dado foi salvo no banco.')).toBeInTheDocument()
+    expect(screen.getByText(/O estoque de Caneca Flores em Salão Bella passaria/)).toHaveTextContent(
+      /Criaria.*119,70 para acerto/,
+    )
+  })
+})

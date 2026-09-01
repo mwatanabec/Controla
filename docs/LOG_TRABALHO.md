@@ -1436,3 +1436,59 @@ Implementar o formulário editável de Envio para simular a transferência de me
 ### Próximo passo recomendado
 
 Planejar um lote pequeno para implementar o formulário de Venda com dados mockados, distinguindo venda direta de venda em Ponto Parceiro e seus efeitos sobre estoque e acerto.
+
+## 2026-09-01 — Lote 16: formulário de Venda em React
+
+### Objetivo do lote
+
+Implementar o formulário editável de Venda com dados mockados, distinguindo venda direta de venda em Ponto Parceiro e mostrando seus efeitos diferentes sobre estoque e acerto.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/DECISOES.md`, `docs/REGRAS_NEGOCIO.md`, `docs/FLUXOS_V1.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- `prototipo/fluxos-v1.html` e os componentes, dados, tipos, estilos e testes relevantes em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/SalePage.tsx`, `app/src/data/sale.ts` e `app/src/types/sale.ts`.
+- Alterados `app/src/App.tsx`, `app/src/App.css`, `app/src/App.test.tsx`, `app/src/components/BottomNavigation.tsx`, `app/src/components/PartnerPage.tsx` e `app/src/types/navigation.ts`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- O protótipo aprovado foi preservado sem alteração.
+
+### O que foi feito
+
+- Ligada a ação Venda do menu radial Registrar ao novo formulário.
+- Ligada a ação Registrar venda da tela Pontos Parceiros ao mesmo fluxo, com o parceiro de origem previamente selecionado.
+- Adicionada rota local `#registrar-venda`, sem instalar biblioteca de rotas.
+- Implementada alternância entre venda em Ponto Parceiro e venda direta.
+- Implementados campos de parceiro, produto, quantidade, preço usado e data conforme o canal.
+- Preenchido preço sugerido por produto, mantendo o campo editável para a simulação.
+- Implementadas validações de quantidade, saldo disponível na origem, preço positivo e data.
+- Implementados cálculo do valor total e projeção da baixa no estoque da origem.
+- Venda em parceiro projeta pendência de acerto; venda direta informa explicitamente que não cria acerto.
+- Implementada confirmação com resumo, efeito projetado e opção de repetir o fluxo, sem persistir dados.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Venda direta e venda em Ponto Parceiro permanecem canais distintos.
+- Venda informada pelo parceiro não representa pagamento recebido e cria pendência de acerto.
+- O preço efetivamente usado na simulação pode diferir do preço sugerido.
+- Conflito offline concorrente permanece fora deste formulário mockado e será tratado junto da persistência e sincronização.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com trinta e cinco testes aprovados.
+- `npm run build` executado com sucesso.
+- Os dois canais, preço editável, saldo da origem, bloqueio por saldo insuficiente, cálculo do acerto e confirmação não persistida foram cobertos pelos testes do frontend.
+
+### Pendências
+
+- Implementar os formulários de Devolução e pagamento de Acerto.
+- Implementar o cenário de conflito offline concorrente no lote de estado local e sincronização.
+- Definir em lote próprio quando os formulários passarão a alterar estado local persistido.
+
+### Próximo passo recomendado
+
+Planejar um lote pequeno para implementar o formulário de Devolução com dados mockados, transferindo mercadoria do Ponto Parceiro de volta ao estoque próprio sem tratar a operação como venda cancelada.

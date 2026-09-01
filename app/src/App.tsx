@@ -5,6 +5,7 @@ import { BottomNavigation } from './components/BottomNavigation'
 import { HomePage } from './components/HomePage'
 import { PartnerPage } from './components/PartnerPage'
 import { PurchasePage } from './components/PurchasePage'
+import { SalePage } from './components/SalePage'
 import { SettlementPage } from './components/SettlementPage'
 import { ShippingPage } from './components/ShippingPage'
 import { StockPage } from './components/StockPage'
@@ -16,6 +17,7 @@ function routeFromAddress(): AppRoute {
   if (window.location.hash === '#acertos') return 'settlements'
   if (window.location.hash === '#registrar-compra') return 'purchase'
   if (window.location.hash === '#registrar-envio') return 'shipping'
+  if (window.location.hash === '#registrar-venda') return 'sale'
   return 'home'
 }
 
@@ -23,6 +25,7 @@ export default function App() {
   const [route, setRoute] = useState<AppRoute>(routeFromAddress)
   const [notice, setNotice] = useState('')
   const [shippingPartnerId, setShippingPartnerId] = useState('')
+  const [salePartnerId, setSalePartnerId] = useState('')
 
   useEffect(() => {
     function syncRoute() {
@@ -55,6 +58,8 @@ export default function App() {
               ? 'registrar-compra'
               : nextRoute === 'shipping'
                 ? 'registrar-envio'
+                : nextRoute === 'sale'
+                  ? 'registrar-venda'
             : ''
     window.history.pushState(null, '', address)
     document.documentElement.scrollTop = 0
@@ -66,6 +71,11 @@ export default function App() {
   function openShipping(partnerId = '') {
     setShippingPartnerId(partnerId)
     navigate('shipping')
+  }
+
+  function openSale(partnerId = '') {
+    setSalePartnerId(partnerId)
+    navigate('sale')
   }
 
   return (
@@ -80,13 +90,15 @@ export default function App() {
       ) : route === 'stock' ? (
         <StockPage onOpenPurchase={() => navigate('purchase')} />
       ) : route === 'partners' ? (
-        <PartnerPage onOpenShipping={openShipping} />
+        <PartnerPage onOpenSale={openSale} onOpenShipping={openShipping} />
       ) : route === 'settlements' ? (
         <SettlementPage />
       ) : route === 'purchase' ? (
         <PurchasePage onBack={() => navigate('home')} />
-      ) : (
+      ) : route === 'shipping' ? (
         <ShippingPage initialPartnerId={shippingPartnerId} onBack={() => navigate('home')} />
+      ) : (
+        <SalePage initialPartnerId={salePartnerId} onBack={() => navigate('home')} />
       )}
       {notice ? (
         <div className="aviso-proximo-lote" role="status">
@@ -96,6 +108,7 @@ export default function App() {
       <BottomNavigation
         activeRoute={route}
         onNavigate={navigate}
+        onOpenSale={() => openSale()}
         onOpenShipping={() => openShipping()}
         onUnavailable={showNextLotNotice}
       />

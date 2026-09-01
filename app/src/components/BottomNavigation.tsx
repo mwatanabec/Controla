@@ -5,6 +5,7 @@ import { Icon } from './Icon'
 type BottomNavigationProps = {
   activeRoute: AppRoute
   onNavigate: (route: AppRoute) => void
+  onOpenSale: () => void
   onOpenShipping: () => void
   onUnavailable: (feature: string) => void
 }
@@ -16,7 +17,13 @@ const quickActions = [
   { label: 'Devolução', icon: 'return', x: '116px', y: '-28px' },
 ] as const
 
-export function BottomNavigation({ activeRoute, onNavigate, onOpenShipping, onUnavailable }: BottomNavigationProps) {
+export function BottomNavigation({
+  activeRoute,
+  onNavigate,
+  onOpenSale,
+  onOpenShipping,
+  onUnavailable,
+}: BottomNavigationProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   function closeMenu() {
@@ -31,6 +38,10 @@ export function BottomNavigation({ activeRoute, onNavigate, onOpenShipping, onUn
     }
     if (label === 'Envio') {
       onOpenShipping()
+      return
+    }
+    if (label === 'Venda') {
+      onOpenSale()
       return
     }
     onUnavailable(label)

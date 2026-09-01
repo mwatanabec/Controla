@@ -192,7 +192,13 @@ function PartnerSheet({ partner, onClose }: { partner: Partner; onClose: () => v
   )
 }
 
-export function PartnerPage({ onOpenShipping }: { onOpenShipping: (partnerId: string) => void }) {
+export function PartnerPage({
+  onOpenSale,
+  onOpenShipping,
+}: {
+  onOpenSale: (partnerId: string) => void
+  onOpenShipping: (partnerId: string) => void
+}) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<PartnerFilter>('all')
   const [view, setView] = useState<PartnerView>('list')
@@ -212,6 +218,10 @@ export function PartnerPage({ onOpenShipping }: { onOpenShipping: (partnerId: st
   }, [filter, search])
 
   function handleAction(action: string, partner: Partner) {
+    if (action === 'Registrar venda') {
+      onOpenSale(partner.id)
+      return
+    }
     if (action === 'Registrar envio' || action === 'Registrar novo envio') {
       onOpenShipping(partner.id)
       return
