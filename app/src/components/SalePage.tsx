@@ -2,6 +2,14 @@ import { useMemo, useState, type FormEvent } from 'react'
 import { partners } from '../data/partners'
 import { initialSaleDraft, productSalePrices } from '../data/sale'
 import { stockProducts } from '../data/stock'
+import {
+  DEMO_OWN_LOCATION_ID,
+  demoPartnerIds,
+  demoPartnerLocationIds,
+  demoProductIds,
+  getDemoIdentity,
+} from '../services/demoIdentity'
+import { enqueueLocalCommand, syncStatusLabel } from '../services/localDatabase'
 import type { SaleChannel, SaleDraft, SaleResult } from '../types/sale'
 
 type SalePageProps = {
@@ -41,8 +49,8 @@ function SaleConfirmation({
       </div>
       <div className="texto-centro">
         <span className="etiqueta-simulacao">Dados mockados</span>
-        <h2>{isPartnerSale ? 'Venda no parceiro simulada' : 'Venda direta simulada'}</h2>
-        <p>A conferência foi concluída. Nenhum dado foi salvo no banco.</p>
+        <h2>{isPartnerSale ? 'Venda no parceiro salva' : 'Venda direta salva'}</h2>
+        <p>{syncStatusLabel(result.syncStatus)}. Ainda não foi enviada ao banco central.</p>
       </div>
 
       <article className="cartao resultado-resumo" aria-label="Resumo da venda simulada">
@@ -74,6 +82,11 @@ function SaleConfirmation({
         </div>
       </article>
 
+      <div className="estado-sync-local" role="status">
+        <strong>{syncStatusLabel(result.syncStatus)}</strong>
+        <span>Comando local {result.commandId.slice(0, 8)}</span>
+      </div>
+
       <div className="efeito">
         O estoque de {result.productName} em {result.originName} passaria de {result.previousQuantity} para{' '}
         {result.nextQuantity} unidades. {isPartnerSale ? `Criaria ${formatCurrency(result.total)} para acerto.` : 'Não criaria acerto.'}
@@ -103,6 +116,7 @@ export function SalePage({ initialPartnerId, onBack }: SalePageProps) {
   })
   const [error, setError] = useState('')
   const [result, setResult] = useState<SaleResult | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
 
   const selectedPartner = useMemo(
     () => partners.find((partner) => partner.id === draft.partnerId) ?? partners[0],
@@ -141,7 +155,7 @@ export function SalePage({ initialPartnerId, onBack }: SalePageProps) {
     setError('')
   }
 
-  function submitSale(event: FormEvent<HTMLFormElement>) {
+  async function submitSale(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!Number.isInteger(quantity) || quantity <= 0) {
@@ -161,18 +175,59 @@ export function SalePage({ initialPartnerId, onBack }: SalePageProps) {
       return
     }
 
-    setResult({
-      channel: draft.channel,
-      originName,
-      partnerName: draft.channel === 'partner' ? selectedPartner.name : undefined,
-      productName: selectedProduct.name,
-      quantity,
-      unitPrice,
-      total: quantity * unitPrice,
-      date: draft.date,
-      previousQuantity: availableQuantity,
-      nextQuantity: availableQuantity - quantity,
-    })
+    setIsSaving(true)
+    try {
+      const identity = await getDemoIdentity()
+      const isPartnerSale = draft.channel === 'partner'
+      const unitPriceCents = Math.round(unitPrice * 100)
+      const command = await enqueueLocalCommand({
+        ...identity,
+        commandType: 'sale.confirm',
+        occurredAt: `${draft.date}T12:00:00.000Z`,
+        payload: {
+          sale_id: crypto.randomUUID(),
+          sale_channel: draft.channel,
+          source_location_id: isPartnerSale
+            ? demoPartnerLocationIds[selectedPartner.id]
+            : DEMO_OWN_LOCATION_ID,
+          partner_point_id: isPartnerSale ? demoPartnerIds[selectedPartner.id] : null,
+          partner_name: isPartnerSale ? selectedPartner.name : null,
+          items: [
+            {
+              id: crypto.randomUUID(),
+              product_id: demoProductIds[selectedProduct.id],
+              product_name: selectedProduct.name,
+              quantity,
+              suggested_unit_price_cents: Math.round(parsePrice(productSalePrices[selectedProduct.id]) * 100),
+              unit_price_cents: unitPriceCents,
+              total_amount_cents: quantity * unitPriceCents,
+              price_source: 'manual',
+            },
+          ],
+          occurred_date: draft.date,
+          demo_mode: true,
+        },
+      })
+
+      setResult({
+        commandId: command.command_id,
+        syncStatus: 'queued',
+        channel: draft.channel,
+        originName,
+        partnerName: isPartnerSale ? selectedPartner.name : undefined,
+        productName: selectedProduct.name,
+        quantity,
+        unitPrice,
+        total: quantity * unitPrice,
+        date: draft.date,
+        previousQuantity: availableQuantity,
+        nextQuantity: availableQuantity - quantity,
+      })
+    } catch {
+      setError('Não foi possível salvar neste aparelho. Tente novamente antes de sair da tela.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   if (result) {
@@ -285,8 +340,8 @@ export function SalePage({ initialPartnerId, onBack }: SalePageProps) {
           </p>
         ) : null}
 
-        <button className="botao-principal" type="submit">
-          Salvar simulação
+        <button className="botao-principal" type="submit" disabled={isSaving}>
+          {isSaving ? 'Salvando neste aparelho...' : 'Salvar neste aparelho'}
         </button>
       </form>
     </main>

@@ -1766,3 +1766,55 @@ Fazer o formulário de Envio gravar uma transferência pendente no IndexedDB usa
 ### Próximo passo recomendado
 
 Conectar o formulário de Venda à outbox local, tratando separadamente venda direta e venda em Ponto Parceiro e preservando o efeito financeiro apenas no segundo canal.
+
+## 2026-09-01 — Lote 22: Venda conectada à outbox local
+
+### Objetivo do lote
+
+Fazer os canais de Venda direta e Venda em Ponto Parceiro gravarem comandos pendentes no IndexedDB, preservando origem, preço histórico e efeito financeiro distintos.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/MODELO_DADOS.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Migration transacional de Venda, contrato de sincronização, dados, tipos, componente e testes do fluxo em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Alterados `app/src/components/SalePage.tsx`, `app/src/types/sale.ts` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Conectada a confirmação dos dois canais ao comando `sale.confirm` da outbox local.
+- Gravados no comando identificador da venda, canal, localização de origem, parceiro quando aplicável, data e item vendido.
+- Preservados por item produto, quantidade, preço sugerido, preço efetivamente usado, total em centavos e origem manual do preço.
+- Venda direta usa a localização do estoque próprio e não inclui Ponto Parceiro.
+- Venda no parceiro usa a localização e o identificador do parceiro e mantém visível que cria valor para acerto, sem tratar isso como pagamento.
+- Preservadas as validações de saldo, quantidade, preço positivo e data antes da persistência.
+- Alterado o retorno visual dos dois canais para `Salvo neste aparelho`, sem alegar envio ao banco central.
+- Bloqueada a conclusão visual quando a gravação local falha.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Os dois canais compartilham `sale.confirm`, diferenciados pelo campo `sale_channel` e pela presença do parceiro.
+- O preço digitado fica preservado em centavos no item do comando.
+- A pendência de acerto ainda é um efeito projetado; sua consulta será atualizada no lote de projeções locais.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta testes aprovados em dois arquivos.
+- `npm run build` executado com sucesso.
+- Origem própria sem parceiro, origem no parceiro, preço histórico, efeito financeiro e estado local pendente cobertos por testes automatizados.
+
+### Pendências
+
+- Conectar Devolução e pagamento de Acerto à outbox local.
+- Criar projeções locais para refletir comandos pendentes em Estoque, Parceiros e Acertos.
+- Substituir a identidade de demonstração antes do uso real.
+- Implementar processamento da fila, banco central, autenticação e sincronização.
+
+### Próximo passo recomendado
+
+Conectar o formulário de Devolução à outbox local como transferência `return_from_partner`, preservando a distinção entre devolução, venda cancelada e ajuste financeiro posterior.

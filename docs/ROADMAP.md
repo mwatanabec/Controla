@@ -65,7 +65,7 @@ Inclui:
 
 ## Etapa 3 — V1 funcional para o cliente pagante
 
-**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Os Lotes 11 a 13 converteram Estoque, Pontos Parceiros e Acertos. Os Lotes 14 a 18 implementaram formulários editáveis para os fluxos principais. O Lote 19 criou a fundação IndexedDB v1 e a outbox local. Os Lotes 20 e 21 conectaram Compra e Envio à outbox com uma identidade temporária de demonstração. Backend, autenticação, banco ativo e sincronização ainda não foram conectados.
+**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Os Lotes 11 a 13 converteram Estoque, Pontos Parceiros e Acertos. Os Lotes 14 a 18 implementaram formulários editáveis para os fluxos principais. O Lote 19 criou a fundação IndexedDB v1 e a outbox local. Os Lotes 20 a 22 conectaram Compra, Envio e Venda à outbox com uma identidade temporária de demonstração. Backend, autenticação, banco ativo e sincronização ainda não foram conectados.
 
 **Objetivo:** entregar um produto pronto para uso que permita ao cliente pagante controlar manualmente o ciclo de mercadorias.
 
@@ -97,7 +97,8 @@ Lotes técnicos desta etapa:
 10. **Concluído — Lote 19:** esquema IndexedDB v1, envelope tipado, sequência atômica por aparelho e operações básicas da outbox;
 11. **Concluído — Lote 20:** identidade local de demonstração persistente e gravação do fluxo de Compra na outbox, com estado visível de registro salvo somente no aparelho;
 12. **Concluído — Lote 21:** gravação do fluxo de Envio na outbox local, preservando origem, destino, parceiro e a distinção entre transferência e venda;
-13. **Próximos lotes:** conexão dos demais formulários ao estado local, projeções locais, autenticação, integração com o banco e sincronização.
+13. **Concluído — Lote 22:** gravação de Venda direta e Venda em Ponto Parceiro na outbox, preservando canal, origem, preço histórico e efeito financeiro distinto;
+14. **Próximos lotes:** conexão dos demais formulários ao estado local, projeções locais, autenticação, integração com o banco e sincronização.
 
 ## Etapa 4 — Apresentação do produto e fila de melhorias
 

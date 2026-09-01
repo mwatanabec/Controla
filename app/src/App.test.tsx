@@ -433,7 +433,7 @@ describe('Registrar venda', () => {
     expect(screen.getByText('Venda informada não significa pagamento recebido. O acerto vem depois.')).toBeInTheDocument()
   })
 
-  it('alterna para venda direta sem criar acerto', () => {
+  it('salva venda direta com origem própria e sem criar acerto', async () => {
     openSale()
 
     fireEvent.click(screen.getByRole('button', { name: 'Venda direta' }))
@@ -443,6 +443,20 @@ describe('Registrar venda', () => {
     expect(screen.getByLabelText('Quantidade')).toHaveValue(1)
     expect(screen.getByText(/O saldo em Estoque próprio passaria/)).toHaveTextContent('de 4 para 3 unidades')
     expect(screen.getByText(/Total da venda/)).toHaveTextContent('Não cria acerto')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
+
+    expect(await screen.findByRole('heading', { name: 'Venda direta salva' })).toBeInTheDocument()
+    const commands = await listOutboxCommands()
+    expect(commands).toHaveLength(1)
+    expect(commands[0].command_type).toBe('sale.confirm')
+    expect(commands[0].payload).toMatchObject({
+      sale_channel: 'direct',
+      partner_point_id: null,
+      partner_name: null,
+      items: [{ product_name: 'Vela Baunilha', quantity: 1, unit_price_cents: 2990 }],
+      demo_mode: true,
+    })
   })
 
   it('preserva o preço alterado no cálculo da simulação', () => {
@@ -458,27 +472,38 @@ describe('Registrar venda', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Venda direta' }))
     fireEvent.change(screen.getByLabelText('Quantidade'), { target: { value: '5' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Estoque insuficiente. Há 4 unidades disponíveis em Estoque próprio.',
     )
   })
 
-  it('abre pela ação do parceiro e confirma a venda como simulação', () => {
+  it('abre pela ação do parceiro e salva a venda com pendência de acerto', async () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: 'Parceiros' }))
     fireEvent.click(screen.getByRole('button', { name: 'Ações de Salão Bella' }))
     fireEvent.click(screen.getByRole('menuitem', { name: 'Registrar venda' }))
 
     expect(screen.getByLabelText('Ponto Parceiro')).toHaveValue('salao')
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
-    expect(screen.getByRole('heading', { name: 'Venda no parceiro simulada' })).toBeInTheDocument()
-    expect(screen.getByText('A conferência foi concluída. Nenhum dado foi salvo no banco.')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Venda no parceiro salva' })).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho')).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho. Ainda não foi enviada ao banco central.')).toBeInTheDocument()
     expect(screen.getByText(/O estoque de Caneca Flores em Salão Bella passaria/)).toHaveTextContent(
       /Criaria.*119,70 para acerto/,
     )
+
+    const commands = await listOutboxCommands()
+    expect(commands).toHaveLength(1)
+    expect(commands[0].command_type).toBe('sale.confirm')
+    expect(commands[0].payload).toMatchObject({
+      sale_channel: 'partner',
+      partner_name: 'Salão Bella',
+      items: [{ product_name: 'Caneca Flores', quantity: 3, unit_price_cents: 3990 }],
+      demo_mode: true,
+    })
   })
 })
 
