@@ -1869,3 +1869,56 @@ Fazer o formulário de Devolução gravar uma transferência pendente do Ponto P
 ### Próximo passo recomendado
 
 Conectar o pagamento de Acerto à outbox local, preservando valor calculado, acordado, já pago e pagamento atual sem apagar as vendas vinculadas.
+
+## 2026-09-01 — Lote 24: pagamento de Acerto conectado à outbox local
+
+### Objetivo do lote
+
+Fazer o pagamento parcial ou total de Acerto gravar um comando pendente no IndexedDB, preservando valores separados e o vínculo histórico sem modificar a Venda de origem.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/MODELO_DADOS.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Contrato de sincronização, migration de pagamentos, dados, tipos, componente e testes do fluxo em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Alterados `app/src/services/demoIdentity.ts`, `app/src/components/SettlementPaymentPage.tsx`, `app/src/types/settlementPayment.ts` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Adicionados identificadores fictícios estáveis para os Acertos da demonstração.
+- Conectada a confirmação ao comando `settlement.payment` da outbox local.
+- Gravados no comando identificadores de pagamento, Acerto e parceiro, referência textual da Venda, modo parcial ou total, data e valores em centavos.
+- Preservados separadamente valor calculado, valor acordado, valor já pago e pagamento atual.
+- Preservada a justificativa da diferença quando preenchida.
+- Mantidas as validações de valor positivo, acordo não inferior ao já pago, pagamento não superior ao saldo e data obrigatória.
+- Alterado o retorno visual para `Salvo neste aparelho`, sem alegar envio ao banco central.
+- Mantidas visíveis a nova situação do saldo e a explicação de que o pagamento não apaga a Venda nem o histórico.
+- Bloqueada a conclusão visual quando a gravação local falha.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- O envelope preserva o valor acordado editável e a justificativa para que o futuro processador aplique as regras de forma transacional.
+- Pagamento excedente continua bloqueado; confirmação especial e conflito rastreável permanecem para lote futuro.
+- A consulta de Acertos ainda não aplica o comando pendente até a implementação das projeções locais.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta testes aprovados em dois arquivos.
+- `npm run build` executado com sucesso.
+- Valores separados, vínculo histórico, conteúdo do comando, bloqueio de excedente e estado local pendente cobertos por testes automatizados.
+
+### Pendências
+
+- Criar projeções locais para refletir os cinco fluxos pendentes em Estoque, Parceiros e Acertos.
+- Implementar distribuição transacional entre itens e pagamento excedente com confirmação especial.
+- Substituir a identidade de demonstração antes do uso real.
+- Implementar processamento da fila, banco central, autenticação e sincronização.
+
+### Próximo passo recomendado
+
+Criar uma camada de projeções locais de estoque que aplique Compra, Envio, Venda e Devolução pendentes sobre os dados mockados, sem alterar a fonte-base e sem tratar o resultado como saldo confirmado no servidor.

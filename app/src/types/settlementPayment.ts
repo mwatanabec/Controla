@@ -19,6 +19,8 @@ export type SettlementPaymentDraft = {
 }
 
 export type SettlementPaymentResult = {
+  commandId: string
+  syncStatus: 'queued'
   partnerName: string
   saleLabel: string
   mode: PaymentMode

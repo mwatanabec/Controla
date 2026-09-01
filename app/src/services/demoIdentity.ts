@@ -20,6 +20,11 @@ export const demoPartnerLocationIds: Record<string, string> = {
   loja: 'cccccccc-cccc-4ccc-8ccc-ccccccccccc2',
 }
 
+export const demoSettlementIds: Record<string, string> = {
+  salao: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd1',
+  loja: 'dddddddd-dddd-4ddd-8ddd-ddddddddddd2',
+}
+
 export async function getDemoIdentity() {
   const deviceId = await getOrCreateLocalMetaValue('demo:device_id', () => crypto.randomUUID())
 

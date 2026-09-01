@@ -625,7 +625,7 @@ describe('Registrar pagamento de acerto', () => {
     openPayment()
 
     fireEvent.change(screen.getByLabelText('Pagamento agora'), { target: { value: '51,00' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent(/O pagamento supera o saldo de.*50,00 deste acerto/)
   })
@@ -640,15 +640,31 @@ describe('Registrar pagamento de acerto', () => {
     expect(screen.getByLabelText('Acerto do parceiro')).toHaveValue('loja')
   })
 
-  it('confirma pagamento parcial sem apagar o histórico', () => {
+  it('salva pagamento parcial sem apagar o histórico', async () => {
     openPayment()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
-    expect(screen.getByRole('heading', { name: 'Pagamento parcial simulado' })).toBeInTheDocument()
-    expect(screen.getByText('A conferência foi concluída. Nenhum dado foi salvo no banco.')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Pagamento parcial salvo' })).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho')).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho. Ainda não foi enviado ao banco central.')).toBeInTheDocument()
     expect(screen.getByText(/O valor pago passaria/)).toHaveTextContent(/60,00.*85,00/)
     expect(screen.getByText(/O valor pago passaria/)).toHaveTextContent(/25,00 para acertar/)
     expect(screen.getByText('O pagamento não apaga a venda vinculada nem o histórico do acerto.')).toBeInTheDocument()
+
+    const commands = await listOutboxCommands()
+    expect(commands).toHaveLength(1)
+    expect(commands[0].command_type).toBe('settlement.payment')
+    expect(commands[0].payload).toMatchObject({
+      partner_name: 'Salão Bella',
+      sale_label: '3 Canecas Flores',
+      payment_mode: 'partial',
+      calculated_amount_cents: 11970,
+      agreed_amount_cents: 11000,
+      previous_paid_amount_cents: 6000,
+      amount_cents: 2500,
+      difference_reason: 'Valor combinado com o parceiro',
+      demo_mode: true,
+    })
   })
 })

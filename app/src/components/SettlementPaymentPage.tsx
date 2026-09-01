@@ -1,5 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { settlementPaymentSources } from '../data/settlementPayment'
+import { demoPartnerIds, demoSettlementIds, getDemoIdentity } from '../services/demoIdentity'
+import { enqueueLocalCommand, syncStatusLabel } from '../services/localDatabase'
 import type {
   PaymentMode,
   SettlementPaymentDraft,
@@ -58,8 +60,8 @@ function PaymentConfirmation({
       </div>
       <div className="texto-centro">
         <span className="etiqueta-simulacao">Dados mockados</span>
-        <h2>{result.remainingValue === 0 ? 'Pagamento total simulado' : 'Pagamento parcial simulado'}</h2>
-        <p>A conferência foi concluída. Nenhum dado foi salvo no banco.</p>
+        <h2>{result.remainingValue === 0 ? 'Pagamento total salvo' : 'Pagamento parcial salvo'}</h2>
+        <p>{syncStatusLabel(result.syncStatus)}. Ainda não foi enviado ao banco central.</p>
       </div>
 
       <article className="cartao resultado-resumo" aria-label="Resumo do pagamento simulado">
@@ -91,6 +93,11 @@ function PaymentConfirmation({
         </div>
       </article>
 
+      <div className="estado-sync-local" role="status">
+        <strong>{syncStatusLabel(result.syncStatus)}</strong>
+        <span>Comando local {result.commandId.slice(0, 8)}</span>
+      </div>
+
       <div className="efeito">
         O valor pago passaria de {formatCurrency(result.previousPaidValue)} para {formatCurrency(result.nextPaidValue)}.{' '}
         {result.remainingValue === 0
@@ -117,6 +124,7 @@ export function SettlementPaymentPage({ initialSettlementId, onBack }: Settlemen
   const [draft, setDraft] = useState<SettlementPaymentDraft>(() => draftForSource(initialSource))
   const [error, setError] = useState('')
   const [result, setResult] = useState<SettlementPaymentResult | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
 
   const selectedSource = useMemo(
     () => settlementPaymentSources.find((source) => source.id === draft.settlementId) ?? settlementPaymentSources[0],
@@ -147,7 +155,7 @@ export function SettlementPaymentPage({ initialSettlementId, onBack }: Settlemen
     setError('')
   }
 
-  function submitPayment(event: FormEvent<HTMLFormElement>) {
+  async function submitPayment(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     if (!Number.isFinite(agreedValue) || agreedValue <= 0) {
@@ -171,19 +179,50 @@ export function SettlementPaymentPage({ initialSettlementId, onBack }: Settlemen
       return
     }
 
-    setResult({
-      partnerName: selectedSource.partnerName,
-      saleLabel: selectedSource.saleLabel,
-      mode: draft.mode,
-      calculatedValue: selectedSource.calculatedValue,
-      agreedValue,
-      previousPaidValue: selectedSource.paidValue,
-      paymentValue,
-      nextPaidValue: selectedSource.paidValue + paymentValue,
-      remainingValue: remainingBefore - paymentValue,
-      date: draft.date,
-      justification: draft.justification.trim(),
-    })
+    setIsSaving(true)
+    try {
+      const identity = await getDemoIdentity()
+      const command = await enqueueLocalCommand({
+        ...identity,
+        commandType: 'settlement.payment',
+        occurredAt: `${draft.date}T12:00:00.000Z`,
+        payload: {
+          payment_id: crypto.randomUUID(),
+          settlement_id: demoSettlementIds[selectedSource.id],
+          partner_point_id: demoPartnerIds[selectedSource.id],
+          partner_name: selectedSource.partnerName,
+          sale_label: selectedSource.saleLabel,
+          payment_mode: draft.mode,
+          calculated_amount_cents: Math.round(selectedSource.calculatedValue * 100),
+          agreed_amount_cents: Math.round(agreedValue * 100),
+          previous_paid_amount_cents: Math.round(selectedSource.paidValue * 100),
+          amount_cents: Math.round(paymentValue * 100),
+          difference_reason: draft.justification.trim() || null,
+          paid_date: draft.date,
+          demo_mode: true,
+        },
+      })
+
+      setResult({
+        commandId: command.command_id,
+        syncStatus: 'queued',
+        partnerName: selectedSource.partnerName,
+        saleLabel: selectedSource.saleLabel,
+        mode: draft.mode,
+        calculatedValue: selectedSource.calculatedValue,
+        agreedValue,
+        previousPaidValue: selectedSource.paidValue,
+        paymentValue,
+        nextPaidValue: selectedSource.paidValue + paymentValue,
+        remainingValue: remainingBefore - paymentValue,
+        date: draft.date,
+        justification: draft.justification.trim(),
+      })
+    } catch {
+      setError('Não foi possível salvar neste aparelho. Tente novamente antes de sair da tela.')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   if (result) {
@@ -289,8 +328,8 @@ export function SettlementPaymentPage({ initialSettlementId, onBack }: Settlemen
           </p>
         ) : null}
 
-        <button className="botao-principal" type="submit">
-          Salvar simulação
+        <button className="botao-principal" type="submit" disabled={isSaving}>
+          {isSaving ? 'Salvando neste aparelho...' : 'Salvar neste aparelho'}
         </button>
       </form>
     </main>
