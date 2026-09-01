@@ -6,13 +6,13 @@ O produto não pretende ser um ERP, sistema fiscal, PDV ou plataforma financeira
 
 ## Momento atual
 
-Os Lotes 0 a 16 foram concluídos conforme seus escopos. O protótipo mobile-first da Home e dos fluxos principais da V1 está aprovado, incluindo Estoque, Pontos Parceiros e Acertos. A Etapa 3 está em andamento com a fundação da PWA em React, TypeScript e Vite, com a Home e as consultas principais convertidas para componentes próprios e com formulários editáveis de Compra, Envio e Venda. O projeto continua sem backend ativo, banco real, autenticação, credenciais ou deploy.
+Os Lotes 0 a 17 foram concluídos conforme seus escopos. O protótipo mobile-first da Home e dos fluxos principais da V1 está aprovado, incluindo Estoque, Pontos Parceiros e Acertos. A Etapa 3 está em andamento com a fundação da PWA em React, TypeScript e Vite, com a Home e as consultas principais convertidas para componentes próprios e com formulários editáveis de Compra, Envio, Venda e Devolução. O projeto continua sem backend ativo, banco real, autenticação, credenciais ou deploy.
 
 O cliente piloto é a **Anona Presentes**. Esse nome representa o primeiro caso de uso e não o nome do produto.
 
 ## Base técnica inicial da V1
 
-O Lote 9 registrou migrations SQL locais, políticas RLS, funções transacionais iniciais, contratos versionados de sincronização e testes estruturais. O Lote 10 criou o frontend em `app/`, configurou a estrutura inicial da PWA e implementou a Home com dados mockados da Anona Presentes. Os Lotes 11 a 13 implementaram as consultas de Estoque, Pontos Parceiros e Acertos, com busca, filtros, visões e folhas de detalhe. Os Lotes 14 a 16 implementaram os formulários de Compra, Envio e Venda e suas confirmações simuladas, sem persistência. Nenhuma migration foi aplicada em banco remoto e não houve credencial ou deploy.
+O Lote 9 registrou migrations SQL locais, políticas RLS, funções transacionais iniciais, contratos versionados de sincronização e testes estruturais. O Lote 10 criou o frontend em `app/`, configurou a estrutura inicial da PWA e implementou a Home com dados mockados da Anona Presentes. Os Lotes 11 a 13 implementaram as consultas de Estoque, Pontos Parceiros e Acertos, com busca, filtros, visões e folhas de detalhe. Os Lotes 14 a 17 implementaram os formulários de Compra, Envio, Venda e Devolução e suas confirmações simuladas, sem persistência. Nenhuma migration foi aplicada em banco remoto e não houve credencial ou deploy.
 
 ## Frontend local
 

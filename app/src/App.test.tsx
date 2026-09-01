@@ -455,3 +455,65 @@ describe('Registrar venda', () => {
     )
   })
 })
+
+describe('Registrar devolução', () => {
+  function openReturn() {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir ações de registro' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Devolução' }))
+  }
+
+  it('abre pelo menu Registrar com origem e destino corretos', () => {
+    openReturn()
+
+    expect(screen.getByRole('heading', { name: 'Registrar devolução' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Ponto Parceiro')).toHaveValue('salao')
+    expect(screen.getByLabelText('Produto')).toHaveValue('kit')
+    expect(screen.getByLabelText('Quantidade')).toHaveValue(1)
+    expect(screen.getByLabelText('Trajeto da devolução')).toHaveTextContent('Salão Bella')
+    expect(screen.getByLabelText('Trajeto da devolução')).toHaveTextContent('Estoque próprio')
+  })
+
+  it('calcula a saída do parceiro e a volta ao estoque próprio', () => {
+    openReturn()
+
+    expect(screen.getByText(/O saldo no Salão Bella passaria/)).toHaveTextContent(
+      'de 2 para 1 unidades, e o estoque próprio passaria de 0 para 1 unidades.',
+    )
+    expect(screen.getByText('Devolução não é venda cancelada. É uma movimentação de volta.')).toBeInTheDocument()
+  })
+
+  it('rejeita devolução maior que o saldo disponível no parceiro', () => {
+    openReturn()
+
+    fireEvent.change(screen.getByLabelText('Quantidade'), { target: { value: '3' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Estoque insuficiente. Há 2 unidades disponíveis no Salão Bella.',
+    )
+  })
+
+  it('abre pela visão detalhada do parceiro com a origem preenchida', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Parceiros' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Detalhes' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Registrar devolução' }))
+
+    expect(screen.getByRole('heading', { name: 'Registrar devolução' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Ponto Parceiro')).toHaveValue('salao')
+  })
+
+  it('confirma a devolução como simulação sem cancelar venda', () => {
+    openReturn()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+
+    expect(screen.getByRole('heading', { name: 'Devolução simulada' })).toBeInTheDocument()
+    expect(screen.getByText('A conferência foi concluída. Nenhum dado foi salvo no banco.')).toBeInTheDocument()
+    expect(screen.getByText(/O estoque de Kit Presente Lavanda no Salão Bella passaria/)).toHaveTextContent(
+      'de 2 para 1 unidades',
+    )
+    expect(screen.getByText('Devolução é uma movimentação de volta. Não é venda cancelada.')).toBeInTheDocument()
+  })
+})

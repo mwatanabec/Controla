@@ -193,9 +193,11 @@ function PartnerSheet({ partner, onClose }: { partner: Partner; onClose: () => v
 }
 
 export function PartnerPage({
+  onOpenReturn,
   onOpenSale,
   onOpenShipping,
 }: {
+  onOpenReturn: (partnerId: string) => void
   onOpenSale: (partnerId: string) => void
   onOpenShipping: (partnerId: string) => void
 }) {
@@ -218,6 +220,10 @@ export function PartnerPage({
   }, [filter, search])
 
   function handleAction(action: string, partner: Partner) {
+    if (action === 'Registrar devolução') {
+      onOpenReturn(partner.id)
+      return
+    }
     if (action === 'Registrar venda') {
       onOpenSale(partner.id)
       return

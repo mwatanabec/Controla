@@ -5,6 +5,7 @@ import { Icon } from './Icon'
 type BottomNavigationProps = {
   activeRoute: AppRoute
   onNavigate: (route: AppRoute) => void
+  onOpenReturn: () => void
   onOpenSale: () => void
   onOpenShipping: () => void
   onUnavailable: (feature: string) => void
@@ -20,6 +21,7 @@ const quickActions = [
 export function BottomNavigation({
   activeRoute,
   onNavigate,
+  onOpenReturn,
   onOpenSale,
   onOpenShipping,
   onUnavailable,
@@ -42,6 +44,10 @@ export function BottomNavigation({
     }
     if (label === 'Venda') {
       onOpenSale()
+      return
+    }
+    if (label === 'Devolução') {
+      onOpenReturn()
       return
     }
     onUnavailable(label)

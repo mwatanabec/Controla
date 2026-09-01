@@ -1492,3 +1492,58 @@ Implementar o formulário editável de Venda com dados mockados, distinguindo ve
 ### Próximo passo recomendado
 
 Planejar um lote pequeno para implementar o formulário de Devolução com dados mockados, transferindo mercadoria do Ponto Parceiro de volta ao estoque próprio sem tratar a operação como venda cancelada.
+
+## 2026-09-01 — Lote 17: formulário de Devolução em React
+
+### Objetivo do lote
+
+Implementar o formulário editável de Devolução com dados mockados, transferindo mercadoria do Ponto Parceiro de volta ao estoque próprio sem tratar a operação como venda cancelada.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/FLUXOS_V1.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- `prototipo/fluxos-v1.html` e os dados, componentes, tipos, navegação e testes relevantes em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/ReturnPage.tsx`, `app/src/data/return.ts` e `app/src/types/return.ts`.
+- Alterados `app/src/App.tsx`, `app/src/App.test.tsx`, `app/src/components/BottomNavigation.tsx`, `app/src/components/PartnerPage.tsx` e `app/src/types/navigation.ts`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- O protótipo aprovado foi preservado sem alteração.
+
+### O que foi feito
+
+- Ligada a ação Devolução do menu radial Registrar ao novo formulário.
+- Ligada a ação Registrar devolução da visão detalhada do parceiro ao mesmo fluxo, com a origem previamente selecionada.
+- Adicionada rota local `#registrar-devolucao`, sem instalar biblioteca de rotas.
+- Implementados campos editáveis de Ponto Parceiro, produto, quantidade e data.
+- Mantidos origem e destino visíveis como Ponto Parceiro selecionado e Estoque próprio.
+- Exibido o saldo de cada produto no parceiro dentro da seleção.
+- Implementadas validações de quantidade inteira positiva, data e saldo suficiente no parceiro.
+- Implementado cálculo imediato da redução no parceiro e do aumento no estoque próprio.
+- Implementada confirmação com resumo, efeito projetado e opção de repetir o fluxo, sem persistir dados.
+- Reforçado antes e depois da confirmação que devolução é movimentação de volta e não venda cancelada.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Devolução permanece uma movimentação própria e distinta de venda, estorno ou cancelamento.
+- A confirmação deste lote é uma simulação e não altera permanentemente os dados mockados.
+- Ajustes financeiros de devoluções posteriores a acertos permanecem para o lote de persistência e regras transacionais.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com quarenta testes aprovados.
+- `npm run build` executado com sucesso.
+- Abertura pelas duas entradas, origem contextual, cálculo dos saldos, bloqueio por saldo insuficiente e confirmação não persistida cobertos pelos testes do frontend.
+
+### Pendências
+
+- Implementar o formulário de pagamento de Acerto.
+- Implementar ajustes financeiros de devoluções posteriores a acertos quando houver estado persistido.
+- Definir em lote próprio quando os formulários passarão a alterar estado local persistido.
+
+### Próximo passo recomendado
+
+Planejar um lote pequeno para implementar o formulário de pagamento de Acerto com dados mockados, permitindo pagamento parcial ou total sem apagar o histórico das vendas.

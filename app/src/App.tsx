@@ -5,6 +5,7 @@ import { BottomNavigation } from './components/BottomNavigation'
 import { HomePage } from './components/HomePage'
 import { PartnerPage } from './components/PartnerPage'
 import { PurchasePage } from './components/PurchasePage'
+import { ReturnPage } from './components/ReturnPage'
 import { SalePage } from './components/SalePage'
 import { SettlementPage } from './components/SettlementPage'
 import { ShippingPage } from './components/ShippingPage'
@@ -18,6 +19,7 @@ function routeFromAddress(): AppRoute {
   if (window.location.hash === '#registrar-compra') return 'purchase'
   if (window.location.hash === '#registrar-envio') return 'shipping'
   if (window.location.hash === '#registrar-venda') return 'sale'
+  if (window.location.hash === '#registrar-devolucao') return 'return'
   return 'home'
 }
 
@@ -26,6 +28,7 @@ export default function App() {
   const [notice, setNotice] = useState('')
   const [shippingPartnerId, setShippingPartnerId] = useState('')
   const [salePartnerId, setSalePartnerId] = useState('')
+  const [returnPartnerId, setReturnPartnerId] = useState('')
 
   useEffect(() => {
     function syncRoute() {
@@ -60,6 +63,8 @@ export default function App() {
                 ? 'registrar-envio'
                 : nextRoute === 'sale'
                   ? 'registrar-venda'
+                  : nextRoute === 'return'
+                    ? 'registrar-devolucao'
             : ''
     window.history.pushState(null, '', address)
     document.documentElement.scrollTop = 0
@@ -78,6 +83,11 @@ export default function App() {
     navigate('sale')
   }
 
+  function openReturn(partnerId = '') {
+    setReturnPartnerId(partnerId)
+    navigate('return')
+  }
+
   return (
     <div className="app">
       <AppHeader />
@@ -90,15 +100,17 @@ export default function App() {
       ) : route === 'stock' ? (
         <StockPage onOpenPurchase={() => navigate('purchase')} />
       ) : route === 'partners' ? (
-        <PartnerPage onOpenSale={openSale} onOpenShipping={openShipping} />
+        <PartnerPage onOpenReturn={openReturn} onOpenSale={openSale} onOpenShipping={openShipping} />
       ) : route === 'settlements' ? (
         <SettlementPage />
       ) : route === 'purchase' ? (
         <PurchasePage onBack={() => navigate('home')} />
       ) : route === 'shipping' ? (
         <ShippingPage initialPartnerId={shippingPartnerId} onBack={() => navigate('home')} />
-      ) : (
+      ) : route === 'sale' ? (
         <SalePage initialPartnerId={salePartnerId} onBack={() => navigate('home')} />
+      ) : (
+        <ReturnPage initialPartnerId={returnPartnerId} onBack={() => navigate('home')} />
       )}
       {notice ? (
         <div className="aviso-proximo-lote" role="status">
@@ -108,6 +120,7 @@ export default function App() {
       <BottomNavigation
         activeRoute={route}
         onNavigate={navigate}
+        onOpenReturn={() => openReturn()}
         onOpenSale={() => openSale()}
         onOpenShipping={() => openShipping()}
         onUnavailable={showNextLotNotice}
