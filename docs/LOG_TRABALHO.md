@@ -1547,3 +1547,60 @@ Implementar o formulário editável de Devolução com dados mockados, transferi
 ### Próximo passo recomendado
 
 Planejar um lote pequeno para implementar o formulário de pagamento de Acerto com dados mockados, permitindo pagamento parcial ou total sem apagar o histórico das vendas.
+
+## 2026-09-01 — Lote 18: formulário de pagamento de Acerto em React
+
+### Objetivo do lote
+
+Implementar o formulário editável de pagamento de Acerto com dados mockados, permitindo pagamento parcial ou total e preservando separadamente valores, venda vinculada e histórico.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/DECISOES.md`, `docs/REGRAS_NEGOCIO.md`, `docs/FLUXOS_V1.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- `prototipo/fluxos-v1.html` e os componentes, dados, tipos, navegação e testes de Acertos em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/SettlementPaymentPage.tsx`, `app/src/data/settlementPayment.ts` e `app/src/types/settlementPayment.ts`.
+- Alterados `app/src/App.tsx`, `app/src/App.css`, `app/src/App.test.tsx`, `app/src/components/SettlementPage.tsx` e `app/src/types/navigation.ts`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- O protótipo aprovado foi preservado sem alteração.
+
+### O que foi feito
+
+- Ligada a ação Registrar pagamento do menu de cada acerto ao novo formulário.
+- Ligados os botões Registrar acerto parcial e Registrar pagamento total da visão detalhada ao mesmo fluxo.
+- Adicionada rota local `#registrar-pagamento`, sem instalar biblioteca de rotas.
+- Implementada seleção do acerto com parceiro e venda vinculada.
+- Implementada alternância entre pagamento parcial e total.
+- Mantidos separados valor calculado, valor acordado, valor já pago, pagamento atual e saldo restante.
+- Mantido o valor acordado editável e adicionada justificativa opcional para diferença.
+- Implementadas validações para valores positivos, acordo não inferior ao já pago, pagamento não superior ao saldo e data obrigatória.
+- Implementado cálculo imediato do saldo antes e depois do pagamento.
+- Implementada confirmação com resumo, efeito projetado e opção de repetir, sem persistir dados.
+- Reforçado que o pagamento não apaga a venda vinculada nem o histórico do acerto.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Pagamentos parciais e totais seguem o mesmo fluxo e preservam a venda de origem.
+- Pagamento acima do saldo acordado é bloqueado neste formulário mockado; confirmação especial e conflito rastreável permanecem para o lote transacional.
+- A confirmação deste lote é uma simulação e não altera permanentemente os dados mockados.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com quarenta e seis testes aprovados.
+- `npm run build` executado com sucesso.
+- Entradas por lista e detalhes, troca de acerto, modos parcial e total, valores separados, bloqueio de excedente e preservação do histórico cobertos pelos testes do frontend.
+
+### Pendências
+
+- Criar estado local persistido para substituir confirmações somente simuladas.
+- Implementar fila offline, comandos idempotentes e estados visíveis de sincronização.
+- Conectar banco, autenticação e sincronização em lotes próprios.
+- Implementar distribuição transacional entre itens, ajustes posteriores e pagamento excedente no banco.
+
+### Próximo passo recomendado
+
+Revisar a arquitetura e o protocolo offline aprovados para planejar um lote pequeno de estado local e fila de comandos, sem conectar ainda o banco remoto.

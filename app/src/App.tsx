@@ -8,6 +8,7 @@ import { PurchasePage } from './components/PurchasePage'
 import { ReturnPage } from './components/ReturnPage'
 import { SalePage } from './components/SalePage'
 import { SettlementPage } from './components/SettlementPage'
+import { SettlementPaymentPage } from './components/SettlementPaymentPage'
 import { ShippingPage } from './components/ShippingPage'
 import { StockPage } from './components/StockPage'
 import type { AppRoute } from './types/navigation'
@@ -20,6 +21,7 @@ function routeFromAddress(): AppRoute {
   if (window.location.hash === '#registrar-envio') return 'shipping'
   if (window.location.hash === '#registrar-venda') return 'sale'
   if (window.location.hash === '#registrar-devolucao') return 'return'
+  if (window.location.hash === '#registrar-pagamento') return 'settlement-payment'
   return 'home'
 }
 
@@ -29,6 +31,7 @@ export default function App() {
   const [shippingPartnerId, setShippingPartnerId] = useState('')
   const [salePartnerId, setSalePartnerId] = useState('')
   const [returnPartnerId, setReturnPartnerId] = useState('')
+  const [paymentSettlementId, setPaymentSettlementId] = useState('')
 
   useEffect(() => {
     function syncRoute() {
@@ -65,6 +68,8 @@ export default function App() {
                   ? 'registrar-venda'
                   : nextRoute === 'return'
                     ? 'registrar-devolucao'
+                    : nextRoute === 'settlement-payment'
+                      ? 'registrar-pagamento'
             : ''
     window.history.pushState(null, '', address)
     document.documentElement.scrollTop = 0
@@ -88,6 +93,11 @@ export default function App() {
     navigate('return')
   }
 
+  function openSettlementPayment(settlementId: string) {
+    setPaymentSettlementId(settlementId)
+    navigate('settlement-payment')
+  }
+
   return (
     <div className="app">
       <AppHeader />
@@ -102,15 +112,20 @@ export default function App() {
       ) : route === 'partners' ? (
         <PartnerPage onOpenReturn={openReturn} onOpenSale={openSale} onOpenShipping={openShipping} />
       ) : route === 'settlements' ? (
-        <SettlementPage />
+        <SettlementPage onOpenPayment={openSettlementPayment} />
       ) : route === 'purchase' ? (
         <PurchasePage onBack={() => navigate('home')} />
       ) : route === 'shipping' ? (
         <ShippingPage initialPartnerId={shippingPartnerId} onBack={() => navigate('home')} />
       ) : route === 'sale' ? (
         <SalePage initialPartnerId={salePartnerId} onBack={() => navigate('home')} />
-      ) : (
+      ) : route === 'return' ? (
         <ReturnPage initialPartnerId={returnPartnerId} onBack={() => navigate('home')} />
+      ) : (
+        <SettlementPaymentPage
+          initialSettlementId={paymentSettlementId}
+          onBack={() => navigate('settlements')}
+        />
       )}
       {notice ? (
         <div className="aviso-proximo-lote" role="status">

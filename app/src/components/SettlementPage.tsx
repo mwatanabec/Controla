@@ -187,7 +187,7 @@ function SettlementSheet({ settlement, onClose }: { settlement: Settlement; onCl
   )
 }
 
-export function SettlementPage() {
+export function SettlementPage({ onOpenPayment }: { onOpenPayment: (settlementId: string) => void }) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<SettlementFilter>('all')
   const [view, setView] = useState<SettlementView>('list')
@@ -207,7 +207,15 @@ export function SettlementPage() {
     })
   }, [filter, search])
 
-  function showActionNotice(action: string) {
+  function handleAction(action: string, settlement: Settlement) {
+    if (
+      action === 'Registrar pagamento' ||
+      action === 'Registrar acerto parcial' ||
+      action === 'Registrar pagamento total'
+    ) {
+      onOpenPayment(settlement.id)
+      return
+    }
     setNotice(`${action} ficará disponível no lote do fluxo correspondente.`)
     setOpenMenuId(null)
   }
@@ -287,7 +295,7 @@ export function SettlementPage() {
               onToggleMenu={(settlementId) =>
                 setOpenMenuId((current) => (current === settlementId ? null : settlementId))
               }
-              onAction={showActionNotice}
+              onAction={(action) => handleAction(action, settlement)}
               onOpenDetails={setSelectedSettlement}
               key={settlement.id}
             />
@@ -296,7 +304,11 @@ export function SettlementPage() {
       ) : (
         <div className="consulta-detalhado">
           {visibleSettlements.map((settlement) => (
-            <SettlementDetailsCard settlement={settlement} onAction={showActionNotice} key={settlement.id} />
+            <SettlementDetailsCard
+              settlement={settlement}
+              onAction={(action) => handleAction(action, settlement)}
+              key={settlement.id}
+            />
           ))}
         </div>
       )}

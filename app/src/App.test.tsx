@@ -517,3 +517,75 @@ describe('Registrar devolução', () => {
     expect(screen.getByText('Devolução é uma movimentação de volta. Não é venda cancelada.')).toBeInTheDocument()
   })
 })
+
+describe('Registrar pagamento de acerto', () => {
+  function openPayment() {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Acertos' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ações do acerto de Salão Bella' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Registrar pagamento' }))
+  }
+
+  it('abre pela ação do acerto preservando os valores separados', () => {
+    openPayment()
+
+    expect(screen.getByRole('heading', { name: 'Registrar pagamento' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Acerto do parceiro')).toHaveValue('salao')
+    expect(screen.getByText('R$ 119,70')).toBeInTheDocument()
+    expect(screen.getByText('R$ 60,00')).toBeInTheDocument()
+    expect(screen.getByLabelText('Valor acordado')).toHaveValue('110,00')
+    expect(screen.getByLabelText('Pagamento agora')).toHaveValue('25,00')
+  })
+
+  it('calcula pagamento parcial e total sem apagar a venda', () => {
+    openPayment()
+
+    expect(screen.getByText(/Saldo antes/)).toHaveTextContent(/Depois deste pagamento:.*25,00/)
+    fireEvent.click(screen.getByRole('button', { name: 'Total' }))
+
+    expect(screen.getByLabelText('Pagamento agora')).toHaveValue('50,00')
+    expect(screen.getByText(/Saldo antes/)).toHaveTextContent(/Depois deste pagamento:.*0,00/)
+    expect(screen.getByText('A venda continua vinculada ao acerto mesmo depois do pagamento.')).toBeInTheDocument()
+  })
+
+  it('troca o acerto e recalcula pelos valores do parceiro', () => {
+    openPayment()
+
+    fireEvent.change(screen.getByLabelText('Acerto do parceiro'), { target: { value: 'loja' } })
+
+    expect(screen.getByLabelText('Valor acordado')).toHaveValue('59,80')
+    expect(screen.getByLabelText('Pagamento agora')).toHaveValue('29,90')
+    expect(screen.getByText(/Saldo antes/)).toHaveTextContent(/59,80.*29,90/)
+  })
+
+  it('impede pagamento acima do saldo acordado', () => {
+    openPayment()
+
+    fireEvent.change(screen.getByLabelText('Pagamento agora'), { target: { value: '51,00' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+
+    expect(screen.getByRole('alert')).toHaveTextContent(/O pagamento supera o saldo de.*50,00 deste acerto/)
+  })
+
+  it('abre pelo detalhe do acerto correspondente', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Acertos' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Detalhes' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Registrar pagamento total' }))
+
+    expect(screen.getByRole('heading', { name: 'Registrar pagamento' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Acerto do parceiro')).toHaveValue('loja')
+  })
+
+  it('confirma pagamento parcial sem apagar o histórico', () => {
+    openPayment()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+
+    expect(screen.getByRole('heading', { name: 'Pagamento parcial simulado' })).toBeInTheDocument()
+    expect(screen.getByText('A conferência foi concluída. Nenhum dado foi salvo no banco.')).toBeInTheDocument()
+    expect(screen.getByText(/O valor pago passaria/)).toHaveTextContent(/60,00.*85,00/)
+    expect(screen.getByText(/O valor pago passaria/)).toHaveTextContent(/25,00 para acertar/)
+    expect(screen.getByText('O pagamento não apaga a venda vinculada nem o histórico do acerto.')).toBeInTheDocument()
+  })
+})

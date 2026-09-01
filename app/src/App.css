@@ -1003,6 +1003,11 @@ button.numero-estoque {
   margin-top: 10px;
 }
 
+.resumo-acerto-formulario {
+  margin-top: 0;
+  padding: 0 2px;
+}
+
 .resultado-compra {
   padding-top: 24px;
 }

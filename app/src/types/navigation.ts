@@ -1,1 +1,10 @@
-export type AppRoute = 'home' | 'stock' | 'partners' | 'settlements' | 'purchase' | 'shipping' | 'sale' | 'return'
+export type AppRoute =
+  | 'home'
+  | 'stock'
+  | 'partners'
+  | 'settlements'
+  | 'purchase'
+  | 'shipping'
+  | 'sale'
+  | 'return'
+  | 'settlement-payment'
