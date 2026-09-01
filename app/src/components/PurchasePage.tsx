@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { initialPurchaseDraft } from '../data/purchase'
-import { stockProducts } from '../data/stock'
+import { useEstimatedStock } from '../hooks/useEstimatedStock'
 import { demoProductIds, getDemoIdentity } from '../services/demoIdentity'
 import { enqueueLocalCommand, syncStatusLabel } from '../services/localDatabase'
 import type { PurchaseDraft, PurchaseResult } from '../types/purchase'
@@ -95,10 +95,11 @@ export function PurchasePage({ onBack }: PurchasePageProps) {
   const [error, setError] = useState('')
   const [result, setResult] = useState<PurchaseResult | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const { products: estimatedProducts, status: stockStatus, refresh: refreshStock } = useEstimatedStock()
 
   const selectedProduct = useMemo(
-    () => stockProducts.find((product) => product.id === draft.productId) ?? stockProducts[0],
-    [draft.productId],
+    () => estimatedProducts.find((product) => product.id === draft.productId) ?? estimatedProducts[0],
+    [draft.productId, estimatedProducts],
   )
   const quantity = Number(draft.quantity)
   const projectedQuantity = selectedProduct.ownQuantity + (Number.isInteger(quantity) && quantity > 0 ? quantity : 0)
@@ -149,6 +150,8 @@ export function PurchasePage({ onBack }: PurchasePageProps) {
         },
       })
 
+      await refreshStock()
+
       setResult({
         commandId: command.command_id,
         syncStatus: 'queued',
@@ -186,7 +189,7 @@ export function PurchasePage({ onBack }: PurchasePageProps) {
         <label className="campo-formulario">
           <span>Produto</span>
           <select value={draft.productId} onChange={(event) => updateDraft('productId', event.target.value)}>
-            {stockProducts.map((product) => (
+            {estimatedProducts.map((product) => (
               <option value={product.id} key={product.id}>
                 {product.name}
               </option>
@@ -246,14 +249,24 @@ export function PurchasePage({ onBack }: PurchasePageProps) {
           A compra preserva fornecedor, custo e data. Nesta etapa, a confirmação apenas simula o resultado.
         </p>
 
-        {error ? (
+        {stockStatus === 'error' ? (
+          <p className="erro-formulario" role="alert">
+            Não foi possível conferir o saldo salvo neste aparelho. Tente abrir o formulário novamente.
+          </p>
+        ) : error ? (
           <p className="erro-formulario" role="alert">
             {error}
           </p>
         ) : null}
 
-        <button className="botao-principal" type="submit" disabled={isSaving}>
-          {isSaving ? 'Salvando neste aparelho...' : 'Salvar neste aparelho'}
+        <button className="botao-principal" type="submit" disabled={isSaving || stockStatus !== 'ready'}>
+          {isSaving
+            ? 'Salvando neste aparelho...'
+            : stockStatus === 'loading'
+              ? 'Conferindo saldo...'
+              : stockStatus === 'error'
+                ? 'Saldo indisponível'
+                : 'Salvar neste aparelho'}
         </button>
       </form>
     </main>

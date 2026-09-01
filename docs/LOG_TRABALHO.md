@@ -2244,3 +2244,52 @@ Dar visibilidade às operações presentes na outbox por meio de um contador na 
 ### Próximo passo recomendado
 
 Aplicar o estoque estimado ao formulário de Compra e recarregar a projeção após salvar, para que compras repetidas mostrem corretamente o saldo acumulado no aparelho.
+
+## 2026-09-01 — Lote 31: estoque estimado no formulário de Compra
+
+### Objetivo do lote
+
+Fazer o formulário de Compra calcular seu efeito sobre o saldo estimado e recarregar a projeção após salvar, mantendo corretas as compras repetidas no mesmo aparelho.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Formulário, dados, tipos, hook de estoque estimado e testes de Compra em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Alterados `app/src/components/PurchasePage.tsx` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Substituída a leitura direta da base mockada pelo estoque estimado compartilhado.
+- Bloqueado o botão enquanto os movimentos locais são conferidos.
+- Bloqueado o lançamento se a leitura local falhar.
+- Recarregada a projeção depois que o comando de Compra é persistido.
+- Mantidos produto, fornecedor, quantidade, custo e data preenchidos ao repetir.
+- O efeito de uma nova Compra passa a partir do saldo que já inclui Compras e demais movimentos pendentes.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Todos os cinco fluxos principais agora calculam ou validam usando as projeções locais pertinentes.
+- Falha de leitura continua bloqueando o lançamento para não mostrar um efeito baseado em saldo antigo.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com sessenta e um testes aprovados em seis arquivos.
+- `npm run build` executado com sucesso.
+- A primeira Compra projeta Caneca Flores de 2 para 14 unidades; ao repetir, o mesmo formulário projeta de 14 para 26.
+
+### Pendências
+
+- Implementar autenticação e substituir a identidade de demonstração.
+- Integrar a outbox ao banco central e implementar sincronização.
+- Projetar Venda em parceiro como nova pendência financeira somente após a regra de abertura e alocação transacional.
+- Atualizar os indicadores mockados da Home a partir das projeções em lote próprio, se mantidos antes da integração real.
+
+### Próximo passo recomendado
+
+Planejar a autenticação e o contexto real de negócio, usuário e aparelho antes de conectar a outbox ao banco central, definindo também a decisão pendente sobre unicidade do nome de usuário.

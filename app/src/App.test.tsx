@@ -45,6 +45,7 @@ describe('Home', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: 'Abrir ações de registro' }))
     fireEvent.click(screen.getByRole('menuitem', { name: 'Compra' }))
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
     await screen.findByRole('heading', { name: 'Compra salva na demonstração' })
 
@@ -142,6 +143,7 @@ describe('Estoque', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: 'Abrir ações de registro' }))
     fireEvent.click(screen.getByRole('menuitem', { name: 'Compra' }))
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
     await screen.findByRole('heading', { name: 'Compra salva na demonstração' })
 
@@ -381,10 +383,11 @@ describe('Registrar compra', () => {
     )
   })
 
-  it('valida os campos obrigatórios antes da simulação', () => {
+  it('valida os campos obrigatórios antes de salvar', async () => {
     openPurchase()
 
     fireEvent.change(screen.getByLabelText('Fornecedor'), { target: { value: '' } })
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent('Informe o fornecedor da compra.')
@@ -394,6 +397,7 @@ describe('Registrar compra', () => {
   it('salva a compra na outbox local sem apresentá-la como sincronizada', async () => {
     openPurchase()
 
+    await waitForEstimatedStock()
     fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(await screen.findByRole('heading', { name: 'Compra salva na demonstração' })).toBeInTheDocument()
@@ -416,6 +420,9 @@ describe('Registrar compra', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Repetir esta compra' }))
     expect(screen.getByRole('heading', { name: 'Registrar compra' })).toBeInTheDocument()
+    expect(screen.getByText(/Aumenta o estoque próprio de Caneca Flores/)).toHaveTextContent(
+      'de 14 para 26 unidades',
+    )
   })
 })
 
