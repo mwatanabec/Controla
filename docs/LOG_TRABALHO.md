@@ -1217,3 +1217,222 @@ Converter a tela Estoque aprovada para React e ligá-la à Home, preservando a c
 ### Próximo passo recomendado
 
 Planejar um lote pequeno para converter a tela Pontos Parceiros aprovada para React e ligar sua navegação, ainda com dados mockados.
+
+## 2026-09-01 — Lote 12: tela Pontos Parceiros em React
+
+### Objetivo do lote
+
+Converter a tela Pontos Parceiros aprovada para React e ligá-la à Home e à navegação inferior, preservando a consulta compacta e a distinção entre mercadorias, vendas, envios, devoluções e acertos.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/DECISOES.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- `docs/REGRAS_NEGOCIO.md`, `docs/FLUXOS_V1.md` e `prototipo/fluxos-v1.html`.
+- Componentes, estilos, dados, tipos e testes existentes em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/PartnerPage.tsx`, `app/src/data/partners.ts` e `app/src/types/partner.ts`.
+- Alterados `app/src/App.tsx`, `app/src/App.css`, `app/src/App.test.tsx`, `app/src/components/HomePage.tsx`, `app/src/components/BottomNavigation.tsx` e `app/src/types/navigation.ts`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- O protótipo aprovado foi preservado sem alteração.
+
+### O que foi feito
+
+- Ligados os acessos de pendências da Home e o item Parceiros da navegação inferior à nova tela.
+- Adicionada rota local `#parceiros`, sem instalar biblioteca de rotas.
+- Implementadas busca e contagem dinâmica de Pontos Parceiros.
+- Implementados filtros por Todos, Com pendência e Sem atualização.
+- Implementadas as visões Lista e Detalhes.
+- Preservadas as informações de mercadorias no ponto, responsável, situação e valor a conferir.
+- Implementados menu de ações preparatórias e folha inferior com mercadorias e situação de cada ponto.
+- Adicionados fechamento da folha por botão, fundo ou tecla Escape e bloqueio de rolagem durante sua exibição.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- A consulta segue os componentes próprios e a navegação por fragmento adotados nos lotes anteriores.
+- Ações que dependem de formulários futuros continuam informativas e não alteram os dados mockados.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com quatorze testes aprovados.
+- `npm run build` executado com sucesso.
+- Busca, filtros, alternância de visualização, menu de ações, folha de detalhes e navegação cobertos pelos testes do frontend.
+
+### Pendências
+
+- Converter a tela Acertos para React.
+- Implementar formulários reais de cadastro e movimentação.
+- Criar armazenamento local, integração com banco, autenticação e sincronização em lotes próprios.
+
+### Próximo passo recomendado
+
+Planejar um lote pequeno para converter a tela Acertos aprovada para React e ligar sua navegação, ainda com dados mockados.
+
+## 2026-09-01 — Lote 13: tela Acertos em React
+
+### Objetivo do lote
+
+Converter a tela Acertos aprovada para React e ligá-la à navegação inferior, preservando a separação entre valor calculado, valor acordado, valor pago e valor pendente.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- `docs/REGRAS_NEGOCIO.md`, `docs/FLUXOS_V1.md` e `prototipo/fluxos-v1.html`.
+- Componentes, estilos, dados, tipos e testes existentes em `app/src/`, incluindo a implementação do Lote 12.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/SettlementPage.tsx`, `app/src/data/settlements.ts` e `app/src/types/settlement.ts`.
+- Alterados `app/src/App.tsx`, `app/src/App.css`, `app/src/App.test.tsx`, `app/src/components/BottomNavigation.tsx` e `app/src/types/navigation.ts`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- O protótipo aprovado foi preservado sem alteração.
+
+### O que foi feito
+
+- Ligado o item Acertos da navegação inferior à nova tela.
+- Adicionada rota local `#acertos`, sem instalar biblioteca de rotas.
+- Implementadas busca por parceiro e contagem dinâmica de acertos.
+- Implementados filtros por Todos, Em aberto, Parcial e Pagos, incluindo estado vazio quando não há exemplo mockado.
+- Implementadas as visões Lista e Detalhes.
+- Preservados separadamente valor calculado, valor acordado, valor já pago e valor que falta acertar.
+- Mantida visível a venda que originou cada pendência.
+- Implementados menu de ações preparatórias e folha inferior com o resumo completo do acerto.
+- Adicionados fechamento da folha por botão, fundo ou tecla Escape e bloqueio de rolagem durante sua exibição.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- A consulta segue os componentes próprios e a navegação por fragmento adotados nos lotes anteriores.
+- Registro de pagamento, acerto parcial, pagamento total e histórico permanecem informativos até os lotes dos formulários reais.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com dezenove testes aprovados.
+- `npm run build` executado com sucesso.
+- Busca, filtros, estado vazio, alternância de visualização, valores financeiros, menu de ações, folha de detalhes e navegação cobertos pelos testes do frontend.
+
+### Pendências
+
+- Implementar formulários reais de cadastro e movimentação.
+- Criar armazenamento local e fila offline.
+- Conectar banco, autenticação e sincronização em lotes próprios.
+
+### Próximo passo recomendado
+
+Planejar um lote pequeno para implementar o primeiro formulário real de movimentação aprovado, ainda com dados mockados e sem antecipar persistência ou sincronização.
+
+## 2026-09-01 — Lote 14: formulário de Compra em React
+
+### Objetivo do lote
+
+Implementar o primeiro formulário editável de movimentação da V1 para conferir e simular uma Compra, mantendo dados mockados e sem persistência, backend ou sincronização.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- `docs/REGRAS_NEGOCIO.md`, `docs/FLUXOS_V1.md` e `prototipo/fluxos-v1.html`.
+- Dados, tipos, navegação, componentes, estilos e testes existentes em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/PurchasePage.tsx`, `app/src/data/purchase.ts` e `app/src/types/purchase.ts`.
+- Alterados `app/src/App.tsx`, `app/src/App.css`, `app/src/App.test.tsx`, `app/src/components/BottomNavigation.tsx`, `app/src/components/StockPage.tsx` e `app/src/types/navigation.ts`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- O protótipo aprovado foi preservado sem alteração.
+
+### O que foi feito
+
+- Ligada a ação Compra do menu radial Registrar ao novo formulário.
+- Ligada a ação Registrar compra do menu de cada produto no Estoque ao mesmo fluxo.
+- Adicionada rota local `#registrar-compra`, sem instalar biblioteca de rotas.
+- Implementados campos editáveis de produto, fornecedor, quantidade, custo unitário e data.
+- Mantido o destino explícito como Estoque próprio.
+- Implementadas validações para fornecedor, quantidade inteira positiva, custo positivo e data.
+- Implementado cálculo imediato do saldo projetado de estoque próprio conforme produto e quantidade.
+- Implementada confirmação com resumo da compra, efeito projetado e opção de repetir o fluxo.
+- Exibidos avisos claros antes e depois da confirmação de que os dados são mockados e não foram salvos no banco.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- A Compra é o primeiro formulário editável dos fluxos de movimentação.
+- A confirmação deste lote é uma simulação e não altera permanentemente os dados mockados.
+- Os fluxos Envio, Venda e Devolução permanecem informativos até seus lotes próprios.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com vinte e quatro testes aprovados.
+- `npm run build` executado com sucesso.
+- Abertura pelas duas entradas, preenchimento inicial, recálculo do saldo, validação obrigatória e confirmação não persistida cobertos pelos testes do frontend.
+
+### Pendências
+
+- Implementar os formulários de Envio, Venda, Devolução e pagamento de Acerto.
+- Definir em lote próprio quando os formulários passarão a alterar estado local persistido.
+- Criar fila offline, integração com banco, autenticação e sincronização em lotes próprios.
+
+### Próximo passo recomendado
+
+Planejar um lote pequeno para implementar o formulário de Envio com dados mockados, preservando a distinção entre transferência para Ponto Parceiro e venda.
+
+## 2026-09-01 — Lote 15: formulário de Envio em React
+
+### Objetivo do lote
+
+Implementar o formulário editável de Envio para simular a transferência de mercadoria do estoque próprio para um Ponto Parceiro, sem confundir envio com venda e sem persistência, backend ou sincronização.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- `docs/REGRAS_NEGOCIO.md`, `docs/FLUXOS_V1.md` e `prototipo/fluxos-v1.html`.
+- Dados de estoque e parceiros, navegação, componentes, estilos e testes existentes em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/ShippingPage.tsx`, `app/src/data/shipping.ts` e `app/src/types/shipping.ts`.
+- Alterados `app/src/App.tsx`, `app/src/App.css`, `app/src/App.test.tsx`, `app/src/components/BottomNavigation.tsx`, `app/src/components/PartnerPage.tsx` e `app/src/types/navigation.ts`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- O protótipo aprovado foi preservado sem alteração.
+
+### O que foi feito
+
+- Ligada a ação Envio do menu radial Registrar ao novo formulário.
+- Ligadas as ações Registrar envio e Registrar novo envio da tela Pontos Parceiros ao mesmo fluxo.
+- Adicionada rota local `#registrar-envio`, sem instalar biblioteca de rotas.
+- Implementados campos editáveis de Ponto Parceiro, produto, quantidade e data.
+- Mantidas origem e destino visíveis como Estoque próprio e Ponto Parceiro selecionado.
+- Implementadas validações para quantidade inteira positiva, data e saldo suficiente no estoque próprio.
+- Implementado bloqueio da simulação quando a quantidade supera o saldo mockado disponível.
+- Implementado cálculo imediato da redução no estoque próprio e do aumento no parceiro.
+- Quando aberto pela ação de um parceiro, o formulário inicia com esse destino selecionado.
+- Implementada confirmação com resumo, efeito projetado e opção de repetir o fluxo.
+- Reforçado antes e depois da confirmação que envio não é venda e que os dados não foram persistidos.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Envio permanece uma transferência entre localizações e não cria venda ou acerto.
+- A confirmação deste lote é uma simulação e não altera permanentemente os dados mockados.
+- Saldo insuficiente impede a confirmação, evitando projeção de estoque próprio negativo em operação comum.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com vinte e nove testes aprovados.
+- `npm run build` executado com sucesso.
+- Abertura pelas duas entradas, seleção prévia do parceiro, cálculo dos dois saldos, bloqueio por saldo insuficiente e confirmação não persistida cobertos pelos testes do frontend.
+
+### Pendências
+
+- Implementar os formulários de Venda, Devolução e pagamento de Acerto.
+- Definir em lote próprio quando os formulários passarão a alterar estado local persistido.
+- Criar fila offline, integração com banco, autenticação e sincronização em lotes próprios.
+
+### Próximo passo recomendado
+
+Planejar um lote pequeno para implementar o formulário de Venda com dados mockados, distinguindo venda direta de venda em Ponto Parceiro e seus efeitos sobre estoque e acerto.

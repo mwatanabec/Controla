@@ -210,7 +210,7 @@ function StockDistribution({ product, onClose }: { product: StockProduct; onClos
   )
 }
 
-export function StockPage() {
+export function StockPage({ onOpenPurchase }: { onOpenPurchase: () => void }) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<StockFilter>('all')
   const [view, setView] = useState<StockView>('list')
@@ -244,6 +244,10 @@ export function StockPage() {
   }
 
   function showActionNotice(action: string) {
+    if (action === 'Registrar compra') {
+      onOpenPurchase()
+      return
+    }
     setNotice(`${action} ficará disponível no lote do fluxo correspondente.`)
     setOpenMenuId(null)
   }

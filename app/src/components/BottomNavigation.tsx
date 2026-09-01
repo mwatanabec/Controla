@@ -5,6 +5,7 @@ import { Icon } from './Icon'
 type BottomNavigationProps = {
   activeRoute: AppRoute
   onNavigate: (route: AppRoute) => void
+  onOpenShipping: () => void
   onUnavailable: (feature: string) => void
 }
 
@@ -15,7 +16,7 @@ const quickActions = [
   { label: 'Devolução', icon: 'return', x: '116px', y: '-28px' },
 ] as const
 
-export function BottomNavigation({ activeRoute, onNavigate, onUnavailable }: BottomNavigationProps) {
+export function BottomNavigation({ activeRoute, onNavigate, onOpenShipping, onUnavailable }: BottomNavigationProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   function closeMenu() {
@@ -24,6 +25,14 @@ export function BottomNavigation({ activeRoute, onNavigate, onUnavailable }: Bot
 
   function chooseQuickAction(label: string) {
     closeMenu()
+    if (label === 'Compra') {
+      onNavigate('purchase')
+      return
+    }
+    if (label === 'Envio') {
+      onOpenShipping()
+      return
+    }
     onUnavailable(label)
   }
 
@@ -105,14 +114,24 @@ export function BottomNavigation({ activeRoute, onNavigate, onUnavailable }: Bot
           </div>
         </div>
 
-        <button className="item-navegacao" type="button" onClick={() => onUnavailable('Pontos Parceiros')}>
+        <button
+          className="item-navegacao"
+          type="button"
+          aria-current={activeRoute === 'partners' ? 'page' : undefined}
+          onClick={() => onNavigate('partners')}
+        >
           <span className="icone-navegacao">
             <Icon name="partners" />
           </span>
           <span>Parceiros</span>
         </button>
 
-        <button className="item-navegacao" type="button" onClick={() => onUnavailable('Acertos')}>
+        <button
+          className="item-navegacao"
+          type="button"
+          aria-current={activeRoute === 'settlements' ? 'page' : undefined}
+          onClick={() => onNavigate('settlements')}
+        >
           <span className="icone-navegacao">
             <Icon name="settlements" />
           </span>

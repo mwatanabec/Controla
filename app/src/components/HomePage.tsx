@@ -3,9 +3,10 @@ import { lowStockProducts, partnerPendingItems, recentActivities, summary } from
 type HomePageProps = {
   onUnavailable: (feature: string) => void
   onOpenStock: () => void
+  onOpenPartners: () => void
 }
 
-export function HomePage({ onUnavailable, onOpenStock }: HomePageProps) {
+export function HomePage({ onUnavailable, onOpenStock, onOpenPartners }: HomePageProps) {
   return (
       <main className="conteudo-home">
         <section className="indicadores" aria-label="Resumo do que exige atenção">
@@ -67,7 +68,7 @@ export function HomePage({ onUnavailable, onOpenStock }: HomePageProps) {
                   className="ver-item"
                   type="button"
                   aria-label={`Ver pendência de ${partner.name}`}
-                  onClick={() => onUnavailable(`Pendência de ${partner.name}`)}
+                  onClick={onOpenPartners}
                 >
                   Ver
                 </button>

@@ -65,7 +65,7 @@ Inclui:
 
 ## Etapa 3 — V1 funcional para o cliente pagante
 
-**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. O Lote 11 converteu a tela de Estoque e ligou sua navegação à Home. Backend, autenticação, banco ativo e sincronização ainda não foram conectados.
+**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Os Lotes 11 a 13 converteram Estoque, Pontos Parceiros e Acertos, ligados à navegação existente. Os Lotes 14 e 15 implementaram formulários editáveis para simular Compra e Envio. Backend, autenticação, banco ativo e sincronização ainda não foram conectados.
 
 **Objetivo:** entregar um produto pronto para uso que permita ao cliente pagante controlar manualmente o ciclo de mercadorias.
 
@@ -87,7 +87,11 @@ Lotes técnicos desta etapa:
 
 1. **Concluído — Lote 10:** fundação da PWA, componentes próprios, Home mobile-first, dados mockados e validações automatizadas;
 2. **Concluído — Lote 11:** tela Estoque com busca, filtros, lista, detalhes, distribuição por Ponto Parceiro e navegação;
-3. **Próximos lotes:** demais telas e rotinas funcionais, armazenamento local, integração com o banco, autenticação e sincronização.
+3. **Concluído — Lote 12:** tela Pontos Parceiros com busca, filtros, lista, detalhes, folha de mercadorias e navegação;
+4. **Concluído — Lote 13:** tela Acertos com busca, filtros, lista, detalhes, resumo financeiro e navegação;
+5. **Concluído — Lote 14:** formulário de Compra com campos editáveis, validação, cálculo do efeito e confirmação explicitamente simulada;
+6. **Concluído — Lote 15:** formulário de Envio com validação de saldo, transferência projetada entre localizações e confirmação explicitamente simulada;
+7. **Próximos lotes:** demais telas e rotinas funcionais, armazenamento local, integração com o banco, autenticação e sincronização.
 
 ## Etapa 4 — Apresentação do produto e fila de melhorias
 
