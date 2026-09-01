@@ -507,6 +507,59 @@ button.numero-estoque {
   border-color: #efcaca;
 }
 
+.resumo-pendencias-locais {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 12px;
+  padding: 13px 14px;
+  color: var(--ouro);
+  background: var(--ouro-claro);
+  border: 1px solid #ead9aa;
+  border-radius: var(--raio);
+  text-align: left;
+}
+
+.resumo-pendencias-locais span:first-child,
+.pendencia-local-item > div {
+  display: grid;
+  gap: 3px;
+}
+
+.resumo-pendencias-locais small,
+.pendencia-local-item span,
+.pendencia-local-item small {
+  color: var(--texto-fraco);
+}
+
+.pendencia-local-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+}
+
+.pendencia-local-item > div {
+  min-width: 0;
+}
+
+.pendencia-local-item span {
+  font-size: 12px;
+}
+
+.pendencia-local-item small {
+  font-size: 11px;
+}
+
+.pendencia-local-estado {
+  flex: 0 0 auto;
+  color: var(--ouro) !important;
+  white-space: nowrap;
+}
+
 .estoque-modal {
   position: fixed;
   z-index: 35;

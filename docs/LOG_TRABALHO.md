@@ -2191,3 +2191,56 @@ Fazer o formulário de pagamento abrir e repetir com os valores projetados do Ac
 ### Próximo passo recomendado
 
 Criar uma visão simples de pendências locais com quantidade total, tipo de operação, horário, estado visível e acesso pela Home, sem expor payload técnico ou permitir exclusão destrutiva.
+
+## 2026-09-01 — Lote 30: visão das operações salvas no aparelho
+
+### Objetivo do lote
+
+Dar visibilidade às operações presentes na outbox por meio de um contador na Home e de uma lista somente de leitura, com linguagem humana e sem expor dados técnicos.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Home, App, navegação, serviço IndexedDB, estilos e testes em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/components/LocalPendingPage.tsx`, `app/src/services/localPendingPresentation.ts` e `app/src/services/localPendingPresentation.test.ts`.
+- Alterados `app/src/components/HomePage.tsx`, `app/src/App.tsx`, `app/src/types/navigation.ts`, `app/src/App.css` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Adicionado contador de registros locais na Home quando a outbox não está vazia.
+- Criada rota local `#pendencias-locais` acessível pelo resumo da Home.
+- Criada lista ordenada com título, descrição, horário local e estado de cada comando.
+- Traduzidos Compra, Envio, Devolução, Venda direta, Venda em parceiro e pagamento de Acerto para textos simples.
+- Mantido o estado técnico centralizado nos rótulos já aprovados, como `Salvo neste aparelho`.
+- Adicionados estados de carregamento, lista vazia e falha de leitura.
+- Adicionado aviso para não limpar os dados do navegador enquanto houver pendências.
+- O identificador do comando permanece apenas como chave interna e não é exibido.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- A visão local é somente de leitura neste momento.
+- Exclusão, edição, reenvio e sincronização manual não foram adicionados.
+- Payload, UUID, sequência do aparelho e outros detalhes técnicos não aparecem para a usuária.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com sessenta e um testes aprovados em seis arquivos.
+- `npm run build` executado com sucesso.
+- Tradução dos tipos, separação entre Venda e pagamento, contador na Home, navegação e ocultação do identificador técnico cobertos por testes automatizados.
+
+### Pendências
+
+- Refinar Compra repetida para mostrar o estoque estimado acumulado no próprio formulário.
+- Definir e implementar sincronização manual e automática em lote posterior.
+- Projetar Venda em parceiro como nova pendência financeira somente após a regra de abertura e alocação transacional.
+- Implementar autenticação e integração com o banco central.
+
+### Próximo passo recomendado
+
+Aplicar o estoque estimado ao formulário de Compra e recarregar a projeção após salvar, para que compras repetidas mostrem corretamente o saldo acumulado no aparelho.

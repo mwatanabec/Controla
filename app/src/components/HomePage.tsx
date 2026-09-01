@@ -1,12 +1,30 @@
+import { useEffect, useState } from 'react'
 import { lowStockProducts, partnerPendingItems, recentActivities, summary } from '../data/home'
+import { countOutboxCommands } from '../services/localDatabase'
 
 type HomePageProps = {
   onUnavailable: (feature: string) => void
   onOpenStock: () => void
   onOpenPartners: () => void
+  onOpenLocalPending: () => void
 }
 
-export function HomePage({ onUnavailable, onOpenStock, onOpenPartners }: HomePageProps) {
+export function HomePage({ onUnavailable, onOpenStock, onOpenPartners, onOpenLocalPending }: HomePageProps) {
+  const [localPendingCount, setLocalPendingCount] = useState(0)
+
+  useEffect(() => {
+    let active = true
+    countOutboxCommands()
+      .then((count) => {
+        if (active) setLocalPendingCount(count)
+      })
+      .catch(() => undefined)
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
       <main className="conteudo-home">
         <section className="indicadores" aria-label="Resumo do que exige atenção">
@@ -17,6 +35,18 @@ export function HomePage({ onUnavailable, onOpenStock, onOpenPartners }: HomePag
             </div>
           ))}
         </section>
+
+        {localPendingCount > 0 ? (
+          <button className="resumo-pendencias-locais" type="button" onClick={onOpenLocalPending}>
+            <span>
+              <strong>
+                {localPendingCount} {localPendingCount === 1 ? 'registro salvo' : 'registros salvos'} neste aparelho
+              </strong>
+              <small>Ainda não {localPendingCount === 1 ? 'foi enviado' : 'foram enviados'} ao banco central.</small>
+            </span>
+            <span aria-hidden="true">Ver ›</span>
+          </button>
+        ) : null}
 
         <section className="prioridade" aria-labelledby="titulo-prioridade">
           <span className="sinal-atencao">Atenção</span>

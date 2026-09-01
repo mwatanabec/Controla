@@ -40,6 +40,26 @@ describe('Home', () => {
       'Este recurso será implementado nos próximos lotes: Reposição.',
     )
   })
+
+  it('abre a lista humana de operações salvas neste aparelho', async () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir ações de registro' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Compra' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
+    await screen.findByRole('heading', { name: 'Compra salva na demonstração' })
+
+    const [command] = await listOutboxCommands()
+    fireEvent.click(screen.getByRole('button', { name: 'Voltar para Início' }))
+    const localSummary = await screen.findByRole('button', { name: /1 registro salvo neste aparelho/ })
+    fireEvent.click(localSummary)
+
+    expect(await screen.findByRole('heading', { name: 'Salvos neste aparelho' })).toBeInTheDocument()
+    expect(await screen.findByText('1 operação local')).toBeInTheDocument()
+    expect(screen.getByText('Compra registrada')).toBeInTheDocument()
+    expect(screen.getByText('12 unidades de Caneca Flores')).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho')).toBeInTheDocument()
+    expect(screen.queryByText(command.command_id)).not.toBeInTheDocument()
+  })
 })
 
 describe('Estoque', () => {

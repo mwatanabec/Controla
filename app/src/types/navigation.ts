@@ -8,3 +8,4 @@ export type AppRoute =
   | 'sale'
   | 'return'
   | 'settlement-payment'
+  | 'local-pending'

@@ -65,7 +65,7 @@ Inclui:
 
 ## Etapa 3 — V1 funcional para o cliente pagante
 
-**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Os Lotes 11 a 13 converteram Estoque, Pontos Parceiros e Acertos. Os Lotes 14 a 18 implementaram formulários editáveis para os fluxos principais. O Lote 19 criou a fundação IndexedDB v1 e a outbox local. Os Lotes 20 a 24 conectaram os cinco fluxos principais à outbox com uma identidade temporária de demonstração. Os Lotes 25 a 27 passaram a refletir movimentações físicas pendentes na consulta, nas validações de estoque e nos Pontos Parceiros como saldos estimados. Os Lotes 28 e 29 projetaram pagamentos pendentes na consulta e no formulário de Acertos. Backend, autenticação, banco ativo e sincronização ainda não foram conectados.
+**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Os Lotes 11 a 13 converteram Estoque, Pontos Parceiros e Acertos. Os Lotes 14 a 18 implementaram formulários editáveis para os fluxos principais. O Lote 19 criou a fundação IndexedDB v1 e a outbox local. Os Lotes 20 a 24 conectaram os cinco fluxos principais à outbox com uma identidade temporária de demonstração. Os Lotes 25 a 27 passaram a refletir movimentações físicas pendentes na consulta, nas validações de estoque e nos Pontos Parceiros como saldos estimados. Os Lotes 28 e 29 projetaram pagamentos pendentes na consulta e no formulário de Acertos. O Lote 30 tornou a fila local visível em linguagem humana. Backend, autenticação, banco ativo e sincronização ainda não foram conectados.
 
 **Objetivo:** entregar um produto pronto para uso que permita ao cliente pagante controlar manualmente o ciclo de mercadorias.
 
@@ -105,7 +105,8 @@ Lotes técnicos desta etapa:
 18. **Concluído — Lote 27:** quantidades estimadas na consulta e nos detalhes de Pontos Parceiros, preservando separadamente os dados financeiros mockados;
 19. **Concluído — Lote 28:** projeção de pagamentos locais na consulta de Acertos, com valores e status estimados sem apagar a Venda vinculada;
 20. **Concluído — Lote 29:** carregamento do Acerto estimado no formulário e bloqueio de pagamentos consecutivos acima do saldo local restante;
-21. **Próximos lotes:** visão de pendências locais, autenticação, integração com o banco e sincronização.
+21. **Concluído — Lote 30:** contador na Home e visão somente de leitura das operações locais, com descrição humana e estado visível sem expor payload técnico;
+22. **Próximos lotes:** refinamentos de projeção, autenticação, integração com o banco e sincronização.
 
 ## Etapa 4 — Apresentação do produto e fila de melhorias
 

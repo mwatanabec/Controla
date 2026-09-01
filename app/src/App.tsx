@@ -3,6 +3,7 @@ import './App.css'
 import { AppHeader } from './components/AppHeader'
 import { BottomNavigation } from './components/BottomNavigation'
 import { HomePage } from './components/HomePage'
+import { LocalPendingPage } from './components/LocalPendingPage'
 import { PartnerPage } from './components/PartnerPage'
 import { PurchasePage } from './components/PurchasePage'
 import { ReturnPage } from './components/ReturnPage'
@@ -22,6 +23,7 @@ function routeFromAddress(): AppRoute {
   if (window.location.hash === '#registrar-venda') return 'sale'
   if (window.location.hash === '#registrar-devolucao') return 'return'
   if (window.location.hash === '#registrar-pagamento') return 'settlement-payment'
+  if (window.location.hash === '#pendencias-locais') return 'local-pending'
   return 'home'
 }
 
@@ -70,6 +72,8 @@ export default function App() {
                     ? 'registrar-devolucao'
                     : nextRoute === 'settlement-payment'
                       ? 'registrar-pagamento'
+                      : nextRoute === 'local-pending'
+                        ? 'pendencias-locais'
             : ''
     window.history.pushState(null, '', address)
     document.documentElement.scrollTop = 0
@@ -106,6 +110,7 @@ export default function App() {
           onUnavailable={showNextLotNotice}
           onOpenStock={() => navigate('stock')}
           onOpenPartners={() => navigate('partners')}
+          onOpenLocalPending={() => navigate('local-pending')}
         />
       ) : route === 'stock' ? (
         <StockPage onOpenPurchase={() => navigate('purchase')} />
@@ -121,6 +126,8 @@ export default function App() {
         <SalePage initialPartnerId={salePartnerId} onBack={() => navigate('home')} />
       ) : route === 'return' ? (
         <ReturnPage initialPartnerId={returnPartnerId} onBack={() => navigate('home')} />
+      ) : route === 'local-pending' ? (
+        <LocalPendingPage onBack={() => navigate('home')} />
       ) : (
         <SettlementPaymentPage
           initialSettlementId={paymentSettlementId}
