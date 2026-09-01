@@ -209,6 +209,31 @@ describe('Pontos Parceiros', () => {
       'Editar parceiro ficará disponível no lote do fluxo correspondente.',
     )
   })
+
+  it('mostra no parceiro o saldo estimado de um envio pendente', async () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Abrir ações de registro' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Envio' }))
+    await waitForEstimatedStock()
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
+    await screen.findByRole('heading', { name: 'Envio salvo na demonstração' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Voltar para Início' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Parceiros' }))
+
+    expect(
+      await screen.findByText('Quantidades estimadas incluem 1 movimentação salva neste aparelho.'),
+    ).toBeInTheDocument()
+    const lojaCard = screen.getByText('Loja da Ana').closest('article')
+    expect(lojaCard).toHaveTextContent('Mercadorias estimadas no ponto')
+    expect(lojaCard).toHaveTextContent('5 un.')
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Ver detalhes' })[1])
+    const dialog = screen.getByRole('dialog', { name: 'Loja da Ana' })
+    expect(dialog).toHaveTextContent('Vela Baunilha')
+    expect(dialog).toHaveTextContent('4 unidades')
+    expect(dialog).toHaveTextContent('Situação')
+  })
 })
 
 describe('Acertos', () => {

@@ -2031,3 +2031,56 @@ Fazer Envio, Venda e Devolução validarem e calcularem seus efeitos com o estoq
 ### Próximo passo recomendado
 
 Aplicar a projeção de estoque já existente à consulta de Pontos Parceiros, substituindo quantidades estáticas por saldos estimados e identificando visualmente as movimentações ainda salvas somente no aparelho.
+
+## 2026-09-01 — Lote 27: quantidades estimadas em Pontos Parceiros
+
+### Objetivo do lote
+
+Aplicar os saldos físicos estimados à consulta de Pontos Parceiros, atualizando totais e mercadorias por ponto sem recalcular ou misturar os valores financeiros mockados.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Dados, tipos, componente e testes de Pontos Parceiros, além do carregador de estoque estimado em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/services/partnerProjection.ts` e `app/src/services/partnerProjection.test.ts`.
+- Alterados `app/src/components/PartnerPage.tsx` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Criada projeção derivada de cada Ponto Parceiro a partir dos produtos e localizações do estoque estimado.
+- Recalculado o total de mercadorias por parceiro.
+- Reconstruída a lista de produtos e quantidades de cada ponto, incluindo apenas saldos diferentes de zero.
+- Preservados os detalhes não físicos, como `Valor a conferir` e `Situação`.
+- Alterado o rótulo para `Mercadorias estimadas no ponto` quando houver movimentos locais.
+- Exibido aviso com a quantidade de movimentações salvas no aparelho consideradas na consulta.
+- Adicionado aviso de falha caso a outbox não possa ser lida.
+- Mantidos filtros, busca, ações e folha de detalhes existentes.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Quantidades físicas e valores financeiros permanecem separados nesta etapa.
+- Um Envio, uma Venda no parceiro ou uma Devolução pendente pode alterar as quantidades estimadas sem reescrever o valor mockado do Acerto.
+- A fonte-base de parceiros permanece imutável.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta e cinco testes aprovados em quatro arquivos.
+- `npm run build` executado com sucesso.
+- Imutabilidade, preservação dos detalhes financeiros e integração de um Envio pendente no parceiro correto cobertas por testes automatizados.
+
+### Pendências
+
+- Projetar pagamentos pendentes na consulta de Acertos.
+- Projetar a pendência financeira criada por uma Venda no parceiro.
+- Criar uma visão consolidada das operações ainda salvas somente no aparelho.
+- Implementar autenticação, banco central e sincronização.
+
+### Próximo passo recomendado
+
+Criar uma projeção local de Acertos que aplique pagamentos pendentes aos valores já pagos e aos saldos restantes, preservando valor calculado, valor acordado e venda vinculada.

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { partners } from '../data/partners'
+import { useEstimatedStock } from '../hooks/useEstimatedStock'
+import { projectPartners } from '../services/partnerProjection'
 import type { Partner, PartnerFilter, PartnerView } from '../types/partner'
 
 const filters: Array<{ value: PartnerFilter; label: string }> = [
@@ -205,19 +207,25 @@ export function PartnerPage({
   const [filter, setFilter] = useState<PartnerFilter>('all')
   const [view, setView] = useState<PartnerView>('list')
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
-  const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null)
+  const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
+  const { products, localMovementCount, status: projectionStatus } = useEstimatedStock()
+  const projectedPartners = useMemo(
+    () => projectPartners(partners, products, localMovementCount > 0),
+    [localMovementCount, products],
+  )
+  const selectedPartner = projectedPartners.find((partner) => partner.id === selectedPartnerId) ?? null
 
   const visiblePartners = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase('pt-BR')
 
-    return partners.filter((partner) => {
+    return projectedPartners.filter((partner) => {
       const matchesSearch = !normalizedSearch || partner.name.toLocaleLowerCase('pt-BR').includes(normalizedSearch)
       const matchesFilter = filter === 'all' || partner.status === filter
 
       return matchesSearch && matchesFilter
     })
-  }, [filter, search])
+  }, [filter, projectedPartners, search])
 
   function handleAction(action: string, partner: Partner) {
     if (action === 'Registrar devolução') {
@@ -248,6 +256,19 @@ export function PartnerPage({
       {notice ? (
         <div className="estoque-aviso visivel" role="status">
           {notice}
+        </div>
+      ) : null}
+
+      {localMovementCount > 0 ? (
+        <div className="estoque-aviso estimado visivel" role="status">
+          Quantidades estimadas incluem {localMovementCount}{' '}
+          {localMovementCount === 1 ? 'movimentação salva' : 'movimentações salvas'} neste aparelho.
+        </div>
+      ) : null}
+
+      {projectionStatus === 'error' ? (
+        <div className="estoque-aviso alerta visivel" role="alert">
+          Não foi possível incluir agora as movimentações salvas neste aparelho.
         </div>
       ) : null}
 
@@ -310,7 +331,7 @@ export function PartnerPage({
               openMenuId={openMenuId}
               onToggleMenu={(partnerId) => setOpenMenuId((current) => (current === partnerId ? null : partnerId))}
               onAction={(action) => handleAction(action, partner)}
-              onOpenDetails={setSelectedPartner}
+              onOpenDetails={(item) => setSelectedPartnerId(item.id)}
               key={partner.id}
             />
           ))}
@@ -323,7 +344,9 @@ export function PartnerPage({
         </div>
       )}
 
-      {selectedPartner ? <PartnerSheet partner={selectedPartner} onClose={() => setSelectedPartner(null)} /> : null}
+      {selectedPartner ? (
+        <PartnerSheet partner={selectedPartner} onClose={() => setSelectedPartnerId(null)} />
+      ) : null}
     </main>
   )
 }
