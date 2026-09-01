@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { settlements } from '../data/settlements'
+import { loadProjectedSettlements } from '../services/settlementProjection'
 import type { Settlement, SettlementFilter, SettlementView } from '../types/settlement'
 
 const filters: Array<{ value: SettlementFilter; label: string }> = [
@@ -192,20 +193,43 @@ export function SettlementPage({ onOpenPayment }: { onOpenPayment: (settlementId
   const [filter, setFilter] = useState<SettlementFilter>('all')
   const [view, setView] = useState<SettlementView>('list')
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
-  const [selectedSettlement, setSelectedSettlement] = useState<Settlement | null>(null)
+  const [projectedSettlements, setProjectedSettlements] = useState(settlements)
+  const [localPaymentCount, setLocalPaymentCount] = useState(0)
+  const [projectionError, setProjectionError] = useState(false)
+  const [selectedSettlementId, setSelectedSettlementId] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
+  const selectedSettlement =
+    projectedSettlements.find((settlement) => settlement.id === selectedSettlementId) ?? null
+
+  useEffect(() => {
+    let active = true
+
+    loadProjectedSettlements()
+      .then((projection) => {
+        if (!active) return
+        setProjectedSettlements(projection.settlements)
+        setLocalPaymentCount(projection.appliedPaymentCount)
+      })
+      .catch(() => {
+        if (active) setProjectionError(true)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   const visibleSettlements = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase('pt-BR')
 
-    return settlements.filter((settlement) => {
+    return projectedSettlements.filter((settlement) => {
       const matchesSearch =
         !normalizedSearch || settlement.partnerName.toLocaleLowerCase('pt-BR').includes(normalizedSearch)
       const matchesFilter = filter === 'all' || settlement.status === filter
 
       return matchesSearch && matchesFilter
     })
-  }, [filter, search])
+  }, [filter, projectedSettlements, search])
 
   function handleAction(action: string, settlement: Settlement) {
     if (
@@ -232,6 +256,19 @@ export function SettlementPage({ onOpenPayment }: { onOpenPayment: (settlementId
       {notice ? (
         <div className="estoque-aviso visivel" role="status">
           {notice}
+        </div>
+      ) : null}
+
+      {localPaymentCount > 0 ? (
+        <div className="estoque-aviso estimado visivel" role="status">
+          Valores estimados incluem {localPaymentCount}{' '}
+          {localPaymentCount === 1 ? 'pagamento salvo' : 'pagamentos salvos'} neste aparelho.
+        </div>
+      ) : null}
+
+      {projectionError ? (
+        <div className="estoque-aviso alerta visivel" role="alert">
+          Não foi possível incluir agora os pagamentos salvos neste aparelho.
         </div>
       ) : null}
 
@@ -296,7 +333,7 @@ export function SettlementPage({ onOpenPayment }: { onOpenPayment: (settlementId
                 setOpenMenuId((current) => (current === settlementId ? null : settlementId))
               }
               onAction={(action) => handleAction(action, settlement)}
-              onOpenDetails={setSelectedSettlement}
+              onOpenDetails={(item) => setSelectedSettlementId(item.id)}
               key={settlement.id}
             />
           ))}
@@ -314,7 +351,7 @@ export function SettlementPage({ onOpenPayment }: { onOpenPayment: (settlementId
       )}
 
       {selectedSettlement ? (
-        <SettlementSheet settlement={selectedSettlement} onClose={() => setSelectedSettlement(null)} />
+        <SettlementSheet settlement={selectedSettlement} onClose={() => setSelectedSettlementId(null)} />
       ) : null}
     </main>
   )

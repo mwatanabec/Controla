@@ -2084,3 +2084,57 @@ Aplicar os saldos físicos estimados à consulta de Pontos Parceiros, atualizand
 ### Próximo passo recomendado
 
 Criar uma projeção local de Acertos que aplique pagamentos pendentes aos valores já pagos e aos saldos restantes, preservando valor calculado, valor acordado e venda vinculada.
+
+## 2026-09-01 — Lote 28: pagamentos estimados na consulta de Acertos
+
+### Objetivo do lote
+
+Aplicar pagamentos pendentes da outbox aos Acertos mockados, recalculando valor já pago, saldo restante e situação sem apagar ou modificar a Venda vinculada.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/MODELO_DADOS.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Dados, tipos, componente e testes de Acertos e pagamento, serviço IndexedDB e identidade demo em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/services/settlementProjection.ts` e `app/src/services/settlementProjection.test.ts`.
+- Alterados `app/src/components/SettlementPage.tsx` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Criada projeção derivada dos Acertos existentes e dos comandos `settlement.payment` ainda ativos na outbox.
+- Somados pagamentos pendentes ao valor já pago da base.
+- Preservados separadamente valor calculado, valor acordado, valor já pago e saldo restante.
+- Utilizado o valor acordado presente no comando mais recente para refletir a edição feita no formulário.
+- Recalculados estados aberto, parcial e pago.
+- Alterados rótulos para `Já pago estimado`, `Falta acertar estimado` e situação estimada quando houver pagamento local.
+- Removida a ação de registrar novo pagamento na visão detalhada quando o saldo estimado chegou a zero, mantendo acesso ao histórico preparado.
+- Exibido aviso com a quantidade de pagamentos locais considerados e aviso de falha de leitura.
+- Mantidos busca, filtros, Venda vinculada e valores-base imutáveis.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Este lote projeta somente pagamentos ligados a Acertos existentes.
+- Venda em parceiro pendente não abre nem aloca automaticamente um novo Acerto nesta camada.
+- Comandos rejeitados não alteram a projeção; comandos ativos e conflitos preservados participam do valor estimado.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta e oito testes aprovados em cinco arquivos.
+- `npm run build` executado com sucesso.
+- Pagamento parcial, conclusão total, imutabilidade da base e integração visual da consulta cobertos por testes automatizados.
+
+### Pendências
+
+- Usar a projeção no próprio formulário para impedir pagamentos consecutivos acima do saldo estimado.
+- Projetar a pendência financeira criada por uma Venda no parceiro somente após definir abertura e alocação transacionais.
+- Criar visão consolidada das operações ainda salvas somente no aparelho.
+- Implementar autenticação, banco central e sincronização.
+
+### Próximo passo recomendado
+
+Reutilizar a projeção de Acertos no formulário de pagamento, bloqueando novos pagamentos quando o saldo estimado já foi consumido por comandos pendentes no mesmo aparelho.

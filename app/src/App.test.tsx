@@ -308,6 +308,28 @@ describe('Acertos', () => {
       'Ver histórico ficará disponível no lote do fluxo correspondente.',
     )
   })
+
+  it('mostra como estimado um pagamento salvo no aparelho', async () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Acertos' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Ações do acerto de Salão Bella' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Registrar pagamento' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
+    await screen.findByRole('heading', { name: 'Pagamento parcial salvo' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Voltar para Acertos' }))
+
+    expect(await screen.findByText('Valores estimados incluem 1 pagamento salvo neste aparelho.')).toBeInTheDocument()
+    const salaoCard = screen.getByText('Salão Bella').closest('article')
+    expect(salaoCard).toHaveTextContent('Pagamento parcial estimado')
+    expect(salaoCard).toHaveTextContent('Já pago estimado')
+    expect(salaoCard).toHaveTextContent(/R\$\s85,00/)
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Ver detalhes' })[0])
+    const dialog = screen.getByRole('dialog', { name: 'Salão Bella' })
+    expect(dialog).toHaveTextContent('Falta acertar estimado')
+    expect(dialog).toHaveTextContent(/R\$\s25,00/)
+  })
 })
 
 describe('Registrar compra', () => {
