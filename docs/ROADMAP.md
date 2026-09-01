@@ -65,7 +65,7 @@ Inclui:
 
 ## Etapa 3 — V1 funcional para o cliente pagante
 
-**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Os Lotes 11 a 13 converteram Estoque, Pontos Parceiros e Acertos, ligados à navegação existente. Os Lotes 14 a 18 implementaram formulários editáveis para simular Compra, Envio, Venda, Devolução e pagamento de Acerto. Backend, autenticação, banco ativo e sincronização ainda não foram conectados.
+**Situação:** em andamento. O Lote 10 criou a fundação da PWA em React, TypeScript e Vite, sem biblioteca de componentes, e converteu a Home aprovada para o frontend com dados mockados. Os Lotes 11 a 13 converteram Estoque, Pontos Parceiros e Acertos. Os Lotes 14 a 18 implementaram formulários editáveis para os fluxos principais. O Lote 19 criou a fundação IndexedDB v1 e a outbox local. Backend, autenticação, banco ativo e sincronização ainda não foram conectados.
 
 **Objetivo:** entregar um produto pronto para uso que permita ao cliente pagante controlar manualmente o ciclo de mercadorias.
 
@@ -94,7 +94,8 @@ Lotes técnicos desta etapa:
 7. **Concluído — Lote 16:** formulário de Venda direta ou em Ponto Parceiro, com preço editável, validação de saldo e efeito projetado no acerto;
 8. **Concluído — Lote 17:** formulário de Devolução com validação do saldo no parceiro, retorno projetado ao estoque próprio e confirmação simulada;
 9. **Concluído — Lote 18:** formulário de pagamento de Acerto parcial ou total, com valores separados, validação do saldo e preservação do vínculo com a venda;
-10. **Próximos lotes:** estado local, fila offline, integração com o banco, autenticação e sincronização.
+10. **Concluído — Lote 19:** esquema IndexedDB v1, envelope tipado, sequência atômica por aparelho e operações básicas da outbox;
+11. **Próximos lotes:** conexão dos formulários ao estado local, autenticação, integração com o banco e sincronização.
 
 ## Etapa 4 — Apresentação do produto e fila de melhorias
 

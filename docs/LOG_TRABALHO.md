@@ -1604,3 +1604,59 @@ Implementar o formulário editável de pagamento de Acerto com dados mockados, p
 ### Próximo passo recomendado
 
 Revisar a arquitetura e o protocolo offline aprovados para planejar um lote pequeno de estado local e fila de comandos, sem conectar ainda o banco remoto.
+
+## 2026-09-01 — Lote 19: fundação IndexedDB e outbox local
+
+### Objetivo do lote
+
+Criar a fundação versionada do banco local e da fila de comandos offline, compatível com a arquitetura e o contrato de sincronização aprovados, sem conectar ainda os formulários ou o banco remoto.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/ARQUITETURA.md`, `docs/SINCRONIZACAO_OFFLINE.md`, `docs/MODELO_DADOS.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- `contracts/sync/v1/command-envelope.schema.json`, configurações e estrutura de testes do frontend.
+
+### Arquivos criados ou alterados
+
+- Criados `app/src/services/localDatabase.ts`, `app/src/services/localDatabase.test.ts` e `app/src/types/sync.ts`.
+- Alterado `app/src/test/setup.ts`.
+- Alterados `app/package.json` e `app/package-lock.json` pela inclusão de `fake-indexeddb` como dependência de desenvolvimento.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Criado banco IndexedDB `maria-controla-local` na versão 1.
+- Criados os armazenamentos `local_meta`, `catalog_cache`, `operations_cache`, `balances_cache`, `outbox`, `local_conflicts` e `sync_history`.
+- Criados índices iniciais para operações, estados da fila, sequência do aparelho, criação local, conflitos e histórico.
+- Tipado o envelope de comandos conforme o contrato v1 existente.
+- Implementados UUID local, `payload_version` 1, dependências, versões-base, tentativas e estados aprovados.
+- Implementada gravação atômica do comando e do próximo `device_sequence` por negócio e aparelho.
+- Implementadas listagem ordenada e contagem da outbox.
+- Centralizados os textos visíveis de todos os estados de sincronização.
+- Adicionado `fake-indexeddb` somente ao ambiente de testes, sem dependência adicional em produção.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- A implementação usa diretamente a API IndexedDB do navegador, sem biblioteca de produção.
+- `pending_files` permanece fora da primeira implementação porque anexos ainda não entraram no produto.
+- Comandos começam em `queued`, exibido como `Salvo neste aparelho`.
+- Os formulários ainda não gravam comandos porque identidade de negócio, usuário e aparelho será tratada no próximo lote apropriado.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test` executado com quarenta e nove testes aprovados em dois arquivos.
+- `npm run build` executado com sucesso.
+- Esquema, stores obrigatórios, UUID, sequência crescente e independente por aparelho, dependências, contagem e textos de estado cobertos por testes reais de IndexedDB.
+- Instalação concluída sem vulnerabilidades conhecidas reportadas pelo npm neste lote.
+
+### Pendências
+
+- Definir a identidade usada antes de conectar os formulários à outbox.
+- Criar projeções locais e atualizar consultas a partir dos comandos pendentes.
+- Implementar processamento da fila, integração com banco, autenticação e sincronização.
+
+### Próximo passo recomendado
+
+Definir se a próxima integração usará um modo de demonstração local explicitamente identificado ou se começará pela autenticação e pelo contexto real de negócio, usuário e aparelho.
