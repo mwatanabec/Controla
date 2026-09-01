@@ -362,7 +362,7 @@ describe('Registrar envio', () => {
 
     fireEvent.change(screen.getByLabelText('Produto'), { target: { value: 'kit' } })
     fireEvent.change(screen.getByLabelText('Quantidade'), { target: { value: '1' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent('Estoque insuficiente. Há 0 unidades no estoque próprio.')
     expect(screen.getByRole('heading', { name: 'Registrar envio' })).toBeInTheDocument()
@@ -379,19 +379,31 @@ describe('Registrar envio', () => {
     expect(screen.getByLabelText('Trajeto da mercadoria')).toHaveTextContent('Salão Bella')
   })
 
-  it('confirma o envio como simulação sem transformá-lo em venda', () => {
+  it('salva o envio na outbox local sem transformá-lo em venda', async () => {
     openShipping()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar simulação' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar neste aparelho' }))
 
-    expect(screen.getByRole('heading', { name: 'Envio simulado' })).toBeInTheDocument()
-    expect(screen.getByText('A conferência foi concluída. Nenhum dado foi salvo no banco.')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Envio salvo na demonstração' })).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho')).toBeInTheDocument()
+    expect(screen.getByText('Salvo neste aparelho. Ainda não foi enviado ao banco central.')).toBeInTheDocument()
     expect(screen.getByText(/O estoque próprio de Vela Baunilha passaria/)).toHaveTextContent(
       'de 4 para 2 unidades',
     )
     expect(
       screen.getByText('Envio não é venda. A mercadoria continua sendo acompanhada no Ponto Parceiro.'),
     ).toBeInTheDocument()
+
+    const commands = await listOutboxCommands()
+    expect(commands).toHaveLength(1)
+    expect(commands[0].command_type).toBe('transfer.confirm')
+    expect(commands[0].payload).toMatchObject({
+      transfer_type: 'send_to_partner',
+      partner_name: 'Loja da Ana',
+      product_name: 'Vela Baunilha',
+      quantity: 2,
+      demo_mode: true,
+    })
   })
 })
 

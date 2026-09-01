@@ -6,6 +6,8 @@ export type ShippingDraft = {
 }
 
 export type ShippingResult = {
+  commandId: string
+  syncStatus: 'queued'
   partnerName: string
   productName: string
   quantity: number

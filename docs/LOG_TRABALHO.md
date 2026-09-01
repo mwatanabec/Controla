@@ -1714,3 +1714,55 @@ Criar uma identidade temporária e explícita para a demonstração local e faze
 ### Próximo passo recomendado
 
 Conectar o formulário de Envio à outbox local usando a mesma identidade de demonstração, preservando a validação de saldo e deixando explícito que a transferência está salva somente no aparelho.
+
+## 2026-09-01 — Lote 21: Envio conectado à outbox local
+
+### Objetivo do lote
+
+Fazer o formulário de Envio gravar uma transferência pendente no IndexedDB usando a identidade local de demonstração, sem confundir envio com venda ou apresentar a operação como sincronizada.
+
+### Arquivos lidos
+
+- `AGENTS.md`, `README.md`, `docs/REGRAS_NEGOCIO.md`, `docs/FLUXOS_V1.md`, `docs/MODELO_DADOS.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+- Contrato de sincronização, dados, tipos, componente e testes do fluxo de Envio em `app/src/`.
+
+### Arquivos criados ou alterados
+
+- Alterados `app/src/services/demoIdentity.ts`, `app/src/components/ShippingPage.tsx`, `app/src/types/shipping.ts` e `app/src/App.test.tsx`.
+- Alterados `README.md`, `docs/ROADMAP.md` e `docs/LOG_TRABALHO.md`.
+
+### O que foi feito
+
+- Adicionados identificadores fictícios estáveis para estoque próprio, Pontos Parceiros e suas localizações.
+- Conectada a confirmação de Envio ao comando `transfer.confirm` da outbox local.
+- Gravados no comando identificador próprio da transferência, tipo `send_to_partner`, origem, destino, parceiro, produto, quantidade e data.
+- Preservadas as validações de quantidade inteira, data e saldo suficiente no estoque próprio antes da persistência.
+- Alterado o retorno visual para `Salvo neste aparelho`, deixando explícito que a transferência ainda não foi enviada ao banco central.
+- Mantida visível a explicação de que Envio não é Venda.
+- Bloqueada a conclusão visual quando a gravação local falha, preservando o formulário para nova tentativa.
+- Mantidos Venda, Devolução e pagamento de Acerto como simulações neste lote.
+
+### Decisões registradas
+
+- Nenhuma regra de produto foi alterada.
+- Envio usa o comando de transferência e o tipo `send_to_partner`, não o comando de Venda.
+- O resultado só aparece depois que a transferência foi persistida na outbox.
+- Os saldos mostrados permanecem projeções calculadas sobre os dados mockados até o lote específico de projeções locais.
+
+### Validação realizada
+
+- `npm run lint` executado sem erros.
+- `npm run test -- --run` executado com cinquenta testes aprovados em dois arquivos.
+- `npm run build` executado com sucesso.
+- Validação de saldo, conteúdo do comando, distinção entre Envio e Venda e estado local pendente cobertos por testes automatizados.
+
+### Pendências
+
+- Conectar Venda, Devolução e pagamento de Acerto à outbox local.
+- Criar projeções locais para refletir Compras e Envios pendentes nas consultas e validações seguintes.
+- Substituir a identidade de demonstração antes do uso real.
+- Implementar processamento da fila, banco central, autenticação e sincronização.
+
+### Próximo passo recomendado
+
+Conectar o formulário de Venda à outbox local, tratando separadamente venda direta e venda em Ponto Parceiro e preservando o efeito financeiro apenas no segundo canal.
